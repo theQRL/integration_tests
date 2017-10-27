@@ -1,0 +1,18 @@
+sudo: required
+dist: trusty
+services: docker
+language: cpp
+python:
+- '3.5'
+cache:
+  timeout: 600
+
+virtualenv:
+  system_site_packages: true
+
+jobs:
+  include:
+    - stage: local-testnet-start
+      os: linux
+      script:
+      - "./start_net.sh"
