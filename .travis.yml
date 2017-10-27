@@ -15,4 +15,6 @@ jobs:
     - stage: local-testnet-start
       os: linux
       script:
-      - "./start_net.sh"
+      - sudo pip install -U docker-compose
+      - docker-compose --version
+      - "./bootstrap_testnet.sh"
