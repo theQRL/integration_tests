@@ -7,7 +7,7 @@ import threading
 import time
 from collections import namedtuple
 
-TOTAL_NODES = 4
+TOTAL_NODES = 6
 
 ignore_errors = {
     "liberror-perl",
@@ -18,7 +18,7 @@ ignore_errors = {
 }
 
 fatal_errors = {
-    "error",
+#    "error",
     "Traceback (most recent call last)",
     "cp: cannot stat '/home/travis/genesis.yml': No such file or directory"
 }
@@ -45,13 +45,17 @@ class IntegrationTest(object):
         print("******************** SUCCESS!")
         quit(0)
 
-    @staticmethod
-    def fail_test():
-        print("******************** FAILED!")
-        os.kill(os.getpid(), signal.SIGABRT)
+    def fail_test(self):
+        def fail_exit():
+            print("******************** FAILED!")
+            os.kill(os.getpid(), signal.SIGABRT)
+
+        # Fail after 2 secs to the output is available
+        self.fail_timer = threading.Timer(2, fail_exit)
+        self.fail_timer.start()
 
     def start(self):
-        proc = subprocess.Popen(["./start_net.sh"], stdout=subprocess.PIPE)
+        proc = subprocess.Popen(["./start_net.sh"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         myThread = threading.Timer(self.max_running_time_secs, IntegrationTest.max_time_error)
         myThread.start()
