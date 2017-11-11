@@ -17,8 +17,9 @@ ignore_errors = {
     "<class 'twisted.internet.error.TimeoutError'>: User timeout caused connection failure."
 }
 
-fail_errors = {
+fatal_errors = {
     "error",
+    "Traceback (most recent call last)",
     "cp: cannot stat '/home/travis/genesis.yml': No such file or directory"
 }
 
@@ -70,8 +71,8 @@ class IntegrationTest(object):
         entry_raw = entry_raw.lower()
 
         possible_error = False
-        for e in fail_errors:
-            if e in entry_raw:
+        for e in fatal_errors:
+            if e.lower() in entry_raw:
                 possible_error = True
                 break
 
