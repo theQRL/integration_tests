@@ -10,10 +10,16 @@ from collections import namedtuple
 TOTAL_NODES = 4
 
 ignore_errors = {
+    "liberror-perl",
     "<class 'twisted.internet.error.ConnectionRefusedError'>: Connection was refused by other side: 111: Connection refused.",
     "<class 'twisted.internet.error.ConnectionDone'>: Connection was closed cleanly.",
     "<class 'twisted.internet.error.ConnectError'>: An error occurred while connecting: 113: No route to host.",
     "<class 'twisted.internet.error.TimeoutError'>: User timeout caused connection failure."
+}
+
+fail_errors = {
+    "error",
+    "cp: cannot stat '/home/travis/genesis.yml': No such file or directory"
 }
 
 LogEntry = namedtuple('LogEntry', 'full node_id time version sync_state rest')
@@ -62,12 +68,20 @@ class IntegrationTest(object):
     def check_errors(self, entry_raw: str):
         # Detect errors but ignore acceptable ones
         entry_raw = entry_raw.lower()
-        if "error" in entry_raw.lower():
+
+        possible_error = False
+        for e in fail_errors:
+            if e in entry_raw:
+                possible_error = True
+                break
+
+        if possible_error:
             ignore = False
             for e in ignore_errors:
                 if e.lower() in entry_raw:
                     ignore = True
                     break
+
             if not ignore:
                 self.fail_test()
 
@@ -75,14 +89,14 @@ class IntegrationTest(object):
         # FIXME: Improve this
         entry_parts = entry_raw.split('|')
         if len(entry_parts) > 4:
-            log_entry = LogEntry(full=entry_raw,
+            log_entry = LogEntry(full='',
                                  node_id=entry_parts[0],
                                  time=entry_parts[1],
                                  version=entry_parts[2],
                                  sync_state=entry_parts[3],
                                  rest=entry_parts[4])
         else:
-            log_entry = LogEntry(full=entry_raw,
+            log_entry = LogEntry(full='',
                                  node_id=None,
                                  time=None,
                                  version=None,
@@ -92,7 +106,7 @@ class IntegrationTest(object):
         return log_entry
 
     def process_log_entry(self, entry_raw: str):
-        print(entry_raw, end='')
+        print('[{:08.3f}] {}'.format(self.running_time, entry_raw), end='')
         self.check_errors(entry_raw)
 
         log_entry = self.parse_entry(entry_raw)

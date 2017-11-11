@@ -1,2 +1,4 @@
 volumes/*
 testnet/genesis\.yml
+
+\.idea/workspace\.xml

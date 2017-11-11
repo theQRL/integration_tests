@@ -8,6 +8,7 @@ services:
       - BOOT_PHASE=${BOOT_PHASE}
       - DOCKER_UID=${DOCKER_UID}
       - DOCKER_GID=${DOCKER_GID}
+      - LOCALNET_ONLY=${LOCALNET_ONLY}
     image: qrlnode_master
     # ports:
     # - "127.0.0.1:28001:18888"

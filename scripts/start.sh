@@ -12,7 +12,8 @@ mkdir -p ${VOLUME_NAME}
 ln -s ${VOLUME_NAME} /home/${USERNAME}/.qrl
 
 if [ -n "${LOCALNET_ONLY:+1}" ]; then
-    cp /root/scripts/config.yml  /home/${USERNAME}/.qrl/config.yml
+    echo "Restricting to LOCALNET"
+    cp /root/scripts/config.yml  ${VOLUME_NAME}/config.yml
     cp /root/scripts/genesis.yml  /home/${USERNAME}/genesis.yml
 fi
 

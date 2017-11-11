@@ -17,4 +17,4 @@ jobs:
       script:
       - sudo pip install -U docker-compose
       - docker-compose --version
-      - "./bootstrap_testnet.sh"
+      - "python3 run_inttest.py"
