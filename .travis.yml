@@ -1,9 +1,7 @@
 sudo: required
 dist: trusty
 services: docker
-language: cpp
-python:
-- '3.5'
+python: 3.6
 cache:
   timeout: 600
 

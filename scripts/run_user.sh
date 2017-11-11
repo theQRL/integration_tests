@@ -14,7 +14,8 @@ echo "GitRepo: " $GITHASH
 echo "Install dependencies"
 sudo -H pip3 install -r ${HOME}/QRL/requirements.txt #> /dev/null
 
-ifconfig | perl -nle 's/dr:(\S+)/print $1/e'
+ifconfig | perl -nle 's/dr:(\S+)/print $1/e' > ${HOME}/.qrl/node_ip
+cat ${HOME}/.qrl/node_ip
 
 echo "Boot phase: ${BOOT_PHASE}"
 case "${BOOT_PHASE}" in
