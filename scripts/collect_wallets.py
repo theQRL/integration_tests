@@ -15,6 +15,6 @@ wallets = sorted(wallets)
 with open('./scripts/genesis.yml', 'w') as f:
     f.write("genesis_info:\n")
     for w in wallets:
-        f.write("  {} : {}\n".format(w, 10000))
+        f.write("  {} : 100000000000000\n".format(w, ))
 
 print(wallets)

@@ -11,12 +11,18 @@ echo ${DOCKER_GID}
 echo ${NUM_NODES}
 echo "*****************************"
 echo
-echo
 
 echo "****************************************************************"
+echo "                       BOOTSTRAPPING"
+echo "****************************************************************"
+export BOOT_PHASE=bootstrap
+export LOCALNET_ONLY=1
+docker-compose up --scale node=${NUM_NODES}
+python3 ./scripts/collect_wallets.py # Get Addresses and prepare genesis block
+
 echo "****************************************************************"
 echo "                       STARTING LOCALNET"
 echo "****************************************************************"
-echo "****************************************************************"
-export BOOT_PHASE=bootstrap
+export BOOT_PHASE=start
+export LOCALNET_ONLY=1
 docker-compose up --scale node=${NUM_NODES}

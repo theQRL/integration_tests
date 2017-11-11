@@ -1,5 +1,5 @@
 #!/bin/sh
-export USERNAME=$(awk -v val=2000 -F ":" '$3==val{print $1}' /etc/passwd)
+export USERNAME=$(awk -v val=${DOCKER_UID} -F ":" '$3==val{print $1}' /etc/passwd)
 mkdir -p /home/${USERNAME}
 
 EASYNAME=$(python3 /root/scripts/get_name.py)
