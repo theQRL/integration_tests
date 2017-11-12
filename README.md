@@ -3,4 +3,4 @@
 
 # QRL Integration Tests
 
-This project periodically runs integration tests on a 4 node testnet
+This project periodically runs integration tests on a 6 node testnet
