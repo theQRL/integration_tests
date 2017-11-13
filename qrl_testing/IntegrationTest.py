@@ -18,7 +18,8 @@ ignore_errors = {
 }
 
 fatal_errors = {
-#    "error",
+    "error",
+    "fatal: Remote branch experiments not found in upstream origin",
     "Traceback (most recent call last)",
     "cp: cannot stat '/home/travis/genesis.yml': No such file or directory"
 }
