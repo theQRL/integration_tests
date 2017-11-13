@@ -22,11 +22,9 @@ Follow the corresponding instructions:
 |OSX     | https://docs.docker.com/docker-for-mac/install/ | 
 |||
 
->_Warning: there have been some problems when using Docker in Raspberry PIs. Until I get one to play with and prepare some detailed instructions, using docker in RPI3s is not supported or recommended._
-
 Install docker compose
 
-`pip install docker-compose`
+`pip3 install docker-compose`
 
 ### Start Integration Tests
 
