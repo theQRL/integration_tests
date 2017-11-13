@@ -8,9 +8,20 @@ cache:
 
 jobs:
   include:
-    - stage: local-testnet-start
+    - stage: integration-test
       os: linux
+      env:
+      - TEST='NODES_SYNC'
       script:
       - sudo pip install -U docker-compose
       - docker-compose --version
-      - "python3 run_inttest.py"
+      - "python3 runtest_nodes_synchronize.py"
+
+    - stage: integration-test
+      os: linux
+      env:
+      - TEST='RUN_10MIN'
+      script:
+      - sudo pip install -U docker-compose
+      - docker-compose --version
+      - "python3 runtest_nodes_run10mins.py"
