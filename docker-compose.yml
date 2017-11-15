@@ -4,16 +4,22 @@ services:
     build: 
       context: .
       dockerfile: ./environments/Dockerfile.qrlnode
+
     environment:
       - BOOT_PHASE=${BOOT_PHASE}
       - DOCKER_UID=${DOCKER_UID}
       - DOCKER_GID=${DOCKER_GID}
       - LOCALNET_ONLY=${LOCALNET_ONLY}
+      - REPO_SLUG=${REPO_SLUG}
+      - REPO_BRANCH=${REPO_BRANCH}
+      - REPO_COMMIT=${REPO_COMMIT}
+
     image: qrlnode_master
     # ports:
     # - "127.0.0.1:28001:18888"
     # - "127.0.0.1:22001:12000"
     # - "127.0.0.1:27001:18080"
+
     volumes:
     - ./volumes:/volumes
     - ./scripts:/root/scripts

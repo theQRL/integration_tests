@@ -1,22 +1,31 @@
 #!/bin/sh
 
-REPO=https://github.com/theQRL/QRL.git
-REPO_BRANCH=master
 #RUN pip install -i https://testpypi.python.org/pypi --extra-index-url https://pypi.python.org/simple/  --upgrade qrl
 
-# Common
-rm -rf ${HOME}/QRL
-
-git clone -b ${REPO_BRANCH} ${REPO} ${HOME}/QRL
-GITHASH=$(git -C ${HOME}/QRL/ rev-parse HEAD)
-echo "GitRepo: " $GITHASH
-
-echo "Install dependencies"
-sudo -H pip3 install -r ${HOME}/QRL/requirements.txt #> /dev/null
-
+# Check node IP addresses
 ifconfig | perl -nle 's/dr:(\S+)/print $1/e' > ${HOME}/.qrl/node_ip
 cat ${HOME}/.qrl/node_ip
 
+# Get source code
+rm -rf ${HOME}/QRL
+git clone https://github.com/${REPO_SLUG}.git ${HOME}/QRL
+
+if [[ ! -v REPO_COMMIT ]]; then
+    echo "get commit for branch: ${REPO_BRANCH}"
+    export REPO_COMMIT=$(git rev-parse ${REPO_BRANCH})
+fi
+
+cd ${HOME}/QRL
+git checkout -qf ${REPO_COMMIT}
+
+GITHASH=$(git -C ${HOME}/QRL/ rev-parse HEAD)
+echo "Checkout: $GITHASH" 
+
+# Get all dependencies
+echo "Install dependencies"
+sudo -H pip3 install -r ${HOME}/QRL/requirements.txt #> /dev/null
+
+# Execute phase
 echo "Boot phase: ${BOOT_PHASE}"
 case "${BOOT_PHASE}" in
         bootstrap)

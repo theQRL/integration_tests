@@ -1,15 +1,33 @@
-#!/bin/sh
+#!/bin/bash -u
+
+# Default values
+export NUM_NODES=6
+export LOCALNET_ONLY=1
+export REPO_SLUG=theQRL/QRL
+export REPO_BRANCH=origin/master
+export REPO_COMMIT=
+
+# Calculated values
+if [[ -v INTEGRATION_TESTINPLACE ]]; then
+    if [[ -v TRAVIS_REPO_SLUG ]]; then
+        export REPO_SLUG=${TRAVIS_REPO_SLUG}
+        export REPO_COMMIT=${TRAVIS_COMMIT}
+        export REPO_BRANCH=
+    fi
+fi
 
 export DOCKER_UID=$( id -u ${USER} )
 export DOCKER_GID=$( id -g ${USER} )
-export NUM_NODES=6
 
+# Dump some state information
 echo "*****************************"
-echo ${USER}
-echo ${DOCKER_UID}
-echo ${DOCKER_GID}
-echo ${NUM_NODES}
-python3 --version
+echo "user        : ${USER}" 
+echo "docker UID  : ${DOCKER_UID}"
+echo "docker GID  : ${DOCKER_GID}"
+echo "num_nodes   : ${NUM_NODES}"
+echo "repo slug   : ${REPO_SLUG}"
+echo "repo branch : ${REPO_BRANCH}"
+echo "repo commit : ${REPO_COMMIT}"
 echo "*****************************"
 echo
 
@@ -17,7 +35,6 @@ echo "****************************************************************"
 echo "                       BOOTSTRAPPING"
 echo "****************************************************************"
 export BOOT_PHASE=bootstrap
-export LOCALNET_ONLY=1
 docker-compose up --scale node=${NUM_NODES}
 python3 ./scripts/collect_node_data.py # Get Addresses/ips and prepare genesis block
 
@@ -28,5 +45,4 @@ cat ./scripts/config.yml
 cat ./scripts/genesis.yml
 
 export BOOT_PHASE=start
-export LOCALNET_ONLY=1
 docker-compose up --scale node=${NUM_NODES}

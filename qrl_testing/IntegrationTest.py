@@ -19,7 +19,7 @@ ignore_errors = {
 
 fatal_errors = {
     "error",
-    "fatal: Remote branch experiments not found in upstream origin",
+    "fatal:",
     "Traceback (most recent call last)",
     "cp: cannot stat '/home/travis/genesis.yml': No such file or directory"
 }
@@ -52,6 +52,7 @@ class IntegrationTest(object):
             os.kill(os.getpid(), signal.SIGABRT)
 
         # Fail after 2 secs to the output is available
+        print("******************** FAILURE TRIGGERED!")
         self.fail_timer = threading.Timer(2, fail_exit)
         self.fail_timer.start()
 
