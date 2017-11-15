@@ -57,7 +57,9 @@ class IntegrationTest(object):
         self.fail_timer.start()
 
     def start(self):
-        proc = subprocess.Popen(["./start_net.sh"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        current_path = os.path.dirname(__file__)
+        script_path = os.path.join(current_path, '..', 'start_net.sh')
+        proc = subprocess.Popen([script_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         myThread = threading.Timer(self.max_running_time_secs, IntegrationTest.max_time_error)
         myThread.start()
