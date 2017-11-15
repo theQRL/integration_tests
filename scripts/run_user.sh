@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash -u
 
 #RUN pip install -i https://testpypi.python.org/pypi --extra-index-url https://pypi.python.org/simple/  --upgrade qrl
 

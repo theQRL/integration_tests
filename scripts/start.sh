@@ -1,4 +1,5 @@
 #!/bin/bash -u
+
 export USERNAME=$(awk -v val=${DOCKER_UID} -F ":" '$3==val{print $1}' /etc/passwd)
 mkdir -p /home/${USERNAME}
 
