@@ -7,9 +7,9 @@ cli = Client(base_url='unix://var/run/docker.sock')
 data = cli.containers()
 
 for d in data:
-    id = d['Id'][:12]
+    container_id = d['Id'][:12]
     names = d['Names']
-    if id == hostname:
+    if container_id == hostname:
         print(names[0])
         quit()
 

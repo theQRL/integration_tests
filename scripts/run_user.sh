@@ -27,7 +27,7 @@ else
     echo "--------------------"
     ls /volumes/source
     echo "--------------------"
-    rsync -rv --progress /volumes/source ${HOME}/QRL --exclude tests_integration
+    rsync -qiar --progress /volumes/source/QRL/ ${HOME}/QRL --exclude tests_integration --exclude .git
     ls ${HOME}/QRL
 fi
 

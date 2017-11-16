@@ -20,6 +20,8 @@ wallets = sorted(wallets)
 with open('./scripts/genesis.yml', 'w') as f:
     f.write("genesis_info:\n")
     for w in wallets:
+        if len(w) < 1:
+            print("ERROR. EMPTY ADDRESS")
         f.write("  {} : 100000000000000\n".format(w, ))
 
 print(wallets)
