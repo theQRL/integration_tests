@@ -12,6 +12,7 @@ class RunFor10Minutes(IntegrationTest):
 
         myThread = threading.Timer(self.TEN_MINUTES_SECS, IntegrationTest.successful_test)
         myThread.start()
+        IntegrationTest.writeout("RunFor3Minutes")
 
 
     def custom_process_log_entry(self, log_entry: LogEntry):

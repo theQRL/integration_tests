@@ -8,8 +8,6 @@ EASYNAME=$(python3 /root/scripts/get_name.py)
 echo "EasyName: ${EASYNAME}"
 VOLUME_NAME="/volumes${EASYNAME}"
 
-ls /volumes/source
-
 # Copy scripts and configuration
 cp /root/scripts/run_user.sh  /home/${USERNAME}/run_user.sh
 mkdir -p ${VOLUME_NAME}
