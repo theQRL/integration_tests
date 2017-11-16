@@ -8,20 +8,12 @@ cat ${HOME}/.qrl/node_ip
 
 # Get source code
 rm -rf ${HOME}/QRL
-if [[ ! -v INTEGRATION_TESTINPLACE ]]; then
+if [ -z ${INTEGRATION_TESTINPLACE:-} ]; then
     echo "Checkout source code"
-    git clone https://github.com/${REPO_SLUG}.git ${HOME}/QRL
-
-    if [[ ! -v REPO_COMMIT ]]; then
-        echo "get commit for branch: ${REPO_BRANCH}"
-        export REPO_COMMIT=$(git rev-parse ${REPO_BRANCH})
-    fi
-
+    git clone -b ${REPO_BRANCH} https://github.com/${REPO_SLUG}.git ${HOME}/QRL
     cd ${HOME}/QRL
-    git checkout -qf ${REPO_COMMIT}
     GITHASH=$(git -C ${HOME}/QRL/ rev-parse HEAD)
     echo "Repo hash: $GITHASH"
-
 else
     echo "Copying local source"
     echo "--------------------"
