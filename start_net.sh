@@ -22,10 +22,10 @@ echo
 
 if [[ -v INTEGRATION_TESTINPLACE ]]; then
     # Symlink source code inside the integration test volumes
-    mkdir -p ./volumes/source
+    mkdir -p volumes/source
     SOURCE_DIR=$(readlink -m ../..)
     echo "SOURCE DIR: ${SOURCE_DIR}"
-    ln -s ${SOURCE_DIR} volumes/source
+    rsync -rv --progress ${SOURCE_DIR} volumes/source --exclude tests_integration
 fi
 
 echo "****************************************************************"

@@ -8,6 +8,8 @@ EASYNAME=$(python3 /root/scripts/get_name.py)
 echo "EasyName: ${EASYNAME}"
 VOLUME_NAME="/volumes${EASYNAME}"
 
+ls /volumes/source
+
 # Copy scripts and configuration
 cp /root/scripts/run_user.sh  /home/${USERNAME}/run_user.sh
 mkdir -p ${VOLUME_NAME}
@@ -25,4 +27,4 @@ chown -R ${USERNAME}:${USERNAME} ${VOLUME_NAME}
 chmod -R a+rwx /home/${USERNAME}
 
 # Launch user script
-sudo BOOT_PHASE=${BOOT_PHASE} INTEGRATION_TESTINPLACE=${INTEGRATION_TESTINPLACE} REPO_SLUG=${REPO_SLUG} REPO_BRANCH=${REPO_BRANCH} REPO_COMMIT=${REPO_COMMIT} EASYNAME=${EASYNAME} -i -u ${USERNAME} /home/${USERNAME}/run_user.sh
+sudo BOOT_PHASE=${BOOT_PHASE} INTEGRATION_TESTINPLACE=${INTEGRATION_TESTINPLACE} REPO_SLUG=${REPO_SLUG} REPO_BRANCH=${REPO_BRANCH} EASYNAME=${EASYNAME} -i -u ${USERNAME} /home/${USERNAME}/run_user.sh

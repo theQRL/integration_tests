@@ -24,7 +24,11 @@ if [[ ! -v INTEGRATION_TESTINPLACE ]]; then
 
 else
     echo "Copying local source"
+    echo "--------------------"
+    ls /volumes/source
+    echo "--------------------"
     rsync -rv --progress /volumes/source ${HOME}/QRL --exclude tests_integration
+    ls ${HOME}/QRL
 fi
 
 # Get all dependencies
