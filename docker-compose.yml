@@ -12,7 +12,7 @@ services:
       - LOCALNET_ONLY=${LOCALNET_ONLY}
       - REPO_SLUG=${REPO_SLUG}
       - REPO_BRANCH=${REPO_BRANCH}
-      - REPO_COMMIT=${REPO_COMMIT}
+      - INTEGRATION_TESTINPLACE=${INTEGRATION_TESTINPLACE}
 
     image: qrlnode_master
     # ports:

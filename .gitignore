@@ -1,4 +1,5 @@
 volumes/*
+!volumes/.gitkeep
 testnet/genesis\.yml
 
 \.idea/workspace\.xml

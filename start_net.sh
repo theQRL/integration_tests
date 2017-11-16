@@ -5,16 +5,6 @@ export NUM_NODES=6
 export LOCALNET_ONLY=1
 export REPO_SLUG=theQRL/QRL
 export REPO_BRANCH=origin/master
-export REPO_COMMIT=
-
-# Calculated values
-if [[ -v INTEGRATION_TESTINPLACE ]]; then
-    if [[ -v TRAVIS_REPO_SLUG ]]; then
-        export REPO_SLUG=${TRAVIS_REPO_SLUG}
-        export REPO_COMMIT=${TRAVIS_COMMIT}
-        export REPO_BRANCH=
-    fi
-fi
 
 export DOCKER_UID=$( id -u ${USER} )
 export DOCKER_GID=$( id -g ${USER} )
@@ -27,9 +17,16 @@ echo "docker GID  : ${DOCKER_GID}"
 echo "num_nodes   : ${NUM_NODES}"
 echo "repo slug   : ${REPO_SLUG}"
 echo "repo branch : ${REPO_BRANCH}"
-echo "repo commit : ${REPO_COMMIT}"
 echo "*****************************"
 echo
+
+if [[ -v INTEGRATION_TESTINPLACE ]]; then
+    # Symlink source code inside the integration test volumes
+    mkdir -p ./volumes/source
+    SOURCE_DIR=$(readlink -m ../..)
+    echo "SOURCE DIR: ${SOURCE_DIR}"
+    ln -s ${SOURCE_DIR} volumes/source
+fi
 
 echo "****************************************************************"
 echo "                       BOOTSTRAPPING"

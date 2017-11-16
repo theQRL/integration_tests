@@ -8,18 +8,24 @@ cat ${HOME}/.qrl/node_ip
 
 # Get source code
 rm -rf ${HOME}/QRL
-git clone https://github.com/${REPO_SLUG}.git ${HOME}/QRL
+if [[ ! -v INTEGRATION_TESTINPLACE ]]; then
+    echo "Checkout source code"
+    git clone https://github.com/${REPO_SLUG}.git ${HOME}/QRL
 
-if [[ ! -v REPO_COMMIT ]]; then
-    echo "get commit for branch: ${REPO_BRANCH}"
-    export REPO_COMMIT=$(git rev-parse ${REPO_BRANCH})
+    if [[ ! -v REPO_COMMIT ]]; then
+        echo "get commit for branch: ${REPO_BRANCH}"
+        export REPO_COMMIT=$(git rev-parse ${REPO_BRANCH})
+    fi
+
+    cd ${HOME}/QRL
+    git checkout -qf ${REPO_COMMIT}
+    GITHASH=$(git -C ${HOME}/QRL/ rev-parse HEAD)
+    echo "Repo hash: $GITHASH"
+
+else
+    echo "Copying local source"
+    rsync -rv --progress /volumes/source ${HOME}/QRL --exclude tests_integration
 fi
-
-cd ${HOME}/QRL
-git checkout -qf ${REPO_COMMIT}
-
-GITHASH=$(git -C ${HOME}/QRL/ rev-parse HEAD)
-echo "Checkout: $GITHASH" 
 
 # Get all dependencies
 echo "Install dependencies"
