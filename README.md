@@ -28,4 +28,6 @@ Install docker compose
 
 ### Start Integration Tests
 
-`python3 run_inittest.py`
+Run one of the scenarios, for example:
+
+`python3 runtest_nodes_synchronize.py`
