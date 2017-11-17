@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import threading
+import time
 
 from qrl_testing.IntegrationTest import IntegrationTest, TOTAL_NODES, LogEntry
 
@@ -10,12 +11,9 @@ class RunFor10Minutes(IntegrationTest):
         super().__init__(max_running_time_secs=620)
         self.node_state = dict()
 
-        myThread = threading.Timer(self.TEN_MINUTES_SECS, IntegrationTest.successful_test)
-        myThread.start()
-
-
     def custom_process_log_entry(self, log_entry: LogEntry):
-        pass
+        if time.time() - self.start_time > self.TEN_MINUTES_SECS:
+            self.successful_test()
 
 if __name__ == '__main__':
     test = RunFor10Minutes()
