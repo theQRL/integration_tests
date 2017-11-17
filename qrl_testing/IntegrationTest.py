@@ -1,3 +1,4 @@
+import re
 import io
 import os
 import signal
@@ -31,28 +32,34 @@ class IntegrationTest(object):
     def __init__(self, max_running_time_secs):
         self.max_running_time_secs = max_running_time_secs
         self.start_time = time.time()
+        self.regex_ansi_escape = re.compile(r'\x1b[^m]*m')
+        IntegrationTest.writeout("******************** INTEGRATION TEST STARTED ********************")
 
     @property
     def running_time(self):
         return time.time() - self.start_time
 
     @staticmethod
+    def writeout(text):
+        print("\033[0m\033[45m{} {} {}\033[0m".format('*'*20, text, '*'*20))
+
+    @staticmethod
     def max_time_error():
-        print("******************** MAX RUNNING TIME ERROR")
+        IntegrationTest.writeout("******************** MAX RUNNING TIME ERROR ********************")
         os.kill(os.getpid(), signal.SIGABRT)
 
     @staticmethod
     def successful_test():
-        print("******************** SUCCESS!")
+        IntegrationTest.writeout("******************** SUCCESS! ********************")
         quit(0)
 
     def fail_test(self):
         def fail_exit():
-            print("******************** FAILED!")
+            self.writeout("******************** FAILED!")
             os.kill(os.getpid(), signal.SIGABRT)
 
         # Fail after 2 secs to the output is available
-        print("******************** FAILURE TRIGGERED!")
+        IntegrationTest.writeout("******************** FAILURE TRIGGERED! ********************")
         self.fail_timer = threading.Timer(2, fail_exit)
         self.fail_timer.start()
 
@@ -94,8 +101,12 @@ class IntegrationTest(object):
             if not ignore:
                 self.fail_test()
 
+    def _remove_ansi_colors(self, s):
+        return self.regex_ansi_escape.sub('', s)
+
     def parse_entry(self, entry_raw: str):
         # FIXME: Improve this
+        entry_raw = self._remove_ansi_colors(entry_raw)
         entry_parts = entry_raw.split('|')
         if len(entry_parts) > 4:
             log_entry = LogEntry(full='',
