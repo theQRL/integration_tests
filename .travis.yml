@@ -24,4 +24,4 @@ jobs:
       script:
       - sudo pip install -U docker-compose
       - docker-compose --version
-      - "python3 runtest_nodes_run10mins.py"
+      - "python3 runtest_nodes_10mins.py"
