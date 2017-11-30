@@ -26,20 +26,48 @@ fatal_errors = {
     "cp: cannot stat '/home/travis/genesis.yml': No such file or directory"
 }
 
-LogEntry = namedtuple('LogEntry', 'full node_id time version sync_state rest')
+LogEntry = namedtuple('LogEntry', 'full node_id time version synced rest')
 
+class NodeState:
+    def __init__(self, ip='', Qaddress='', synced=False):
+        self.ip = ip
+        self.Qaddress = Qaddress
+        self.synced = synced
+
+    def __str__(self):
+        return "ip: {} Qaddress: {} synced: {}".format(self.ip, self.Qaddress, self.synced)
 
 class IntegrationTest(object):
     def __init__(self, max_running_time_secs):
         self.max_running_time_secs = max_running_time_secs
         self.start_time = time.time()
         self.regex_ansi_escape = re.compile(r'\x1b[^m]*m')
+
+        self.node_state = {}
+        """
+        {
+            "node_1": NodeState(
+                ip = "172.17.0.9"
+                Qaddress = "Q..."
+                synced = True
+            )
+            ...
+        }
+        """
         IntegrationTest.writeout("******************** INTEGRATION TEST STARTED ********************")
 
     @property
     def running_time(self):
         return time.time() - self.start_time
 
+    @property
+    def all_nodes_synced(self):
+        sync_status = []
+        for node_id in self.node_state:
+            sync_status.append(self.node_state[node_id].synced)
+
+        return all(sync_status) and (len(self.node_state) == TOTAL_NODES)
+    
     @staticmethod
     def writeout(text):
         print("\033[0m\033[45m{} {} {}\033[0m".format('*'*20, text, '*'*20))
@@ -53,6 +81,18 @@ class IntegrationTest(object):
     def successful_test():
         IntegrationTest.writeout("******************** SUCCESS! ********************")
         quit(0)
+
+    def update_node_synced(self, node_id, state:str):
+        node_id = node_id.strip()
+        
+        if state == 'synced':
+            state_bool = True
+        else:
+            state_bool = False
+                
+        state = self.node_state.get(node_id, NodeState())
+        state.synced = True
+        self.node_state[node_id] = state
 
     def fail_test(self):
         def fail_exit():
@@ -114,14 +154,14 @@ class IntegrationTest(object):
                                  node_id=entry_parts[0],
                                  time=entry_parts[1],
                                  version=entry_parts[2],
-                                 sync_state=entry_parts[3],
+                                 synced=entry_parts[3],
                                  rest=entry_parts[4])
         else:
             log_entry = LogEntry(full='',
                                  node_id=None,
                                  time=None,
                                  version=None,
-                                 sync_state=None,
+                                 synced=None,
                                  rest=None)
 
         return log_entry
