@@ -30,7 +30,7 @@ class NodeInterface:
     def send(self, from_addr:AddressBundle, to_addr:bytes, amount, fee):
         transferCoinsReq = qrl_pb2.TransferCoinsReq(
             address_from=from_addr.address,
-            address_to=to_addr.address,
+            address_to=to_addr,
             amount=10,
             fee=1,
             xmss_pk=from_addr.xmss.pk(),
@@ -41,8 +41,10 @@ class NodeInterface:
         transferCoinsResp = f.result(timeout=5)
 
         tx = Transaction.from_pbdata(transferCoinsResp.transaction_unsigned)
-        tx.sign(wallet1.address_bundle[0].xmss)
 
+        tx.sign(from_addr.xmss)
+
+        import ipdb; ipdb.set_trace()
         pushTransactionReq = qrl_pb2.PushTransactionReq(transaction_signed=tx.pbdata)
         f = self.stub.PushTransaction.future(pushTransactionReq, timeout=5)
         pushTransactionResp = f.result(timeout=5)
