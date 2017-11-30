@@ -19,16 +19,15 @@ class SendQRLToEachOther(IntegrationTest):
         """
         Why doesn't futures work with normal methods of a class?
         """
-        print(instance.node_state)
+        IntegrationTest.writeout("FUUUUUUCK")
         node = NodeInterface('172.19.0.3', debug=True)
         print(str(node))
 
     def custom_process_log_entry(self, log_entry: LogEntry):
         if log_entry.node_id is not None:
-            self.node_state[log_entry.node_id.strip()] = log_entry.sync_state
+            self.update_node_synced(log_entry.node_id, log_entry.synced)
 
-            if len(self.node_state) == TOTAL_NODES:
-                if all(s == 'synced' for s in self.node_state.values()):
+            if self.all_nodes_synced:
                     print("All nodes in sync! Uptime: {} secs".format(self.running_time))
                     # future = pool.submit(self.writeout, "WTF")
                     if not self.test_running:
