@@ -33,6 +33,14 @@ class IntegrationTest(object):
         self.max_running_time_secs = max_running_time_secs
         self.start_time = time.time()
         self.regex_ansi_escape = re.compile(r'\x1b[^m]*m')
+
+        self.node_state = {}
+        """
+        {
+            "node_1": {"ip": "172.17.0.9", "Qaddress": "Q...", "synced": True},
+            ...
+        }
+        """
         IntegrationTest.writeout("******************** INTEGRATION TEST STARTED ********************")
 
     @property
@@ -52,6 +60,10 @@ class IntegrationTest(object):
     def successful_test():
         IntegrationTest.writeout("******************** SUCCESS! ********************")
         quit(0)
+
+    @staticmethod
+    def update_node_synced_state(node_id, state:bool):
+        self.node_state[node_id.strip()] = state
 
     def fail_test(self):
         def fail_exit():
