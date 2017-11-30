@@ -29,16 +29,38 @@ fatal_errors = {
 LogEntry = namedtuple('LogEntry', 'full node_id time version synced rest')
 
 class NodeState:
-    def __init__(self, ip='', Qaddress='', synced=False, grpc_started=False):
-        self.ip = ip
-        self.Qaddress = Qaddress
-        self.synced = synced
+    def __init__(self, node_id):
+        self.node_id = node_id
+        self.ip = ''
+        self.Qaddress = ''
+        self.synced = False
         self.grpc_started = False
 
-        self.wallet_dir = ''  # path to its wallet dir in volumes
-
     def __repr__(self):
-        return "ip: {} Qaddress: {} synced: {}".format(self.ip, self.Qaddress, self.synced)
+        return "<NodeState ip: {} Qaddress: {} synced: {} grpc_started: {}>".format(self.ip, self.Qaddress, self.synced, self.grpc_started)
+
+    def find_ip_Qaddress_wallet(self):
+        tests_integration_path = os.path.dirname(os.path.dirname(__file__))
+        volumes_path = os.path.join(tests_integration_path, 'volumes/', 'testsintegration_{}'.format(self.node_id))
+
+        ip_file = os.path.join(volumes_path, "node_ip")
+        with open(ip_file) as f:
+            self.ip = f.readline().strip()
+
+        wallet_address_file = os.path.join(volumes_path, "wallet_address")
+        with open(wallet_address_file) as f:
+            self.Qaddress = f.readline().strip()
+        
+        self.wallet_dir = os.path.join(volumes_path, "wallet/")
+
+    def update(self, log_entry: LogEntry):
+        if log_entry.synced == 'synced':
+            self.synced = True
+        else:
+            self.synced = False
+
+        if 'grpc node - started' in log_entry.rest:
+            self.grpc_started = True
 
 class IntegrationTest(object):
     def __init__(self, max_running_time_secs):
@@ -46,7 +68,7 @@ class IntegrationTest(object):
         self.start_time = time.time()
         self.regex_ansi_escape = re.compile(r'\x1b[^m]*m')
 
-        self.node_state = {}
+        self.node_states = {}
         """
         {
             "node_1": NodeState(
@@ -65,19 +87,13 @@ class IntegrationTest(object):
 
     @property
     def all_nodes_synced(self):
-        sync_status = []
-        for node_id in self.node_state:
-            sync_status.append(self.node_state[node_id].synced)
-
-        return all(sync_status) and (len(self.node_state) == TOTAL_NODES)
+        sync_status = [n.synced for n in self.node_states.values()]
+        return all(sync_status) and (len(self.node_states) == TOTAL_NODES)
     
     @property
     def all_nodes_grpc_started(self):
-        grpc_started_status = []
-        for node_id in self.node_state:
-            grpc_started_status.append(self.node_state[node_id].grpc_started)
-
-        return all(grpc_started_status) and (len(self.node_state) == TOTAL_NODES)
+        grpc_started_status = [n.grpc_started for n in self.node_states.values()]
+        return all(grpc_started_status) and (len(self.node_states) == TOTAL_NODES)
 
     @staticmethod
     def writeout(text):
@@ -93,25 +109,16 @@ class IntegrationTest(object):
         IntegrationTest.writeout("******************** SUCCESS! ********************")
         quit(0)
 
-    def update_node_synced(self, node_id, state:str):
-        node_id = node_id.strip()
-        
-        if state == 'synced':
-            state_bool = True
-        else:
-            state_bool = False
-                
-        state = self.node_state.get(node_id, NodeState())
-        state.synced = True
-        self.node_state[node_id] = state
-
-    def update_node_grpc_started(self, node_id, msg:str):
-        node_id = node_id.strip()
-
-        if "grpc node - started" in msg:
-            state = self.node_state[node_id]
-            state.grpc_started = True
-            self.node_state[node_id] = state
+    def update_node_state(self, node_id, log_entry: LogEntry):
+        """
+        This function is called each time a line is output, don't put anything
+        intensive here
+        """
+        state = self.node_states.get(node_id, NodeState(node_id=node_id))
+        state.update(log_entry)
+        self.node_states[node_id] = state
+        # print("grpc_started", [n.grpc_started for n in self.node_states.values()])
+        # print("synced", [n.synced for n in self.node_states.values()])
 
     def fail_test(self):
         def fail_exit():
@@ -170,8 +177,8 @@ class IntegrationTest(object):
         entry_parts = entry_raw.split('|')
         if len(entry_parts) > 4:
             log_entry = LogEntry(full='',
-                                 node_id=entry_parts[0],
-                                 time=entry_parts[1],
+                                 node_id=entry_parts[0].strip(),
+                                 time=entry_parts[1].strip(),
                                  version=entry_parts[2],
                                  synced=entry_parts[3],
                                  rest=entry_parts[4])
