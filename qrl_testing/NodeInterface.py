@@ -6,13 +6,6 @@ from qrl_testing.tmp import qrl_pb2, qrl_pb2_grpc
 from qrl.core.Transaction import Transaction
 from qrl.core.Wallet import Wallet, AddressBundle
 
-# node1 = '172.19.0.5:9009'
-# node1_wallet_dir="tmp/qrlwallet1"
-# node2 = '127.0.0.2:9009'
-# node2_wallet_dir="tmp/qrlwallet2"
-
-# wallet1 = Wallet(wallet_path=node1_wallet_dir)
-# wallet2 = Wallet(wallet_path=node2_wallet_dir)
 
 class NodeInterface:
     """
@@ -44,7 +37,6 @@ class NodeInterface:
 
         tx.sign(from_addr.xmss)
 
-        import ipdb; ipdb.set_trace()
         pushTransactionReq = qrl_pb2.PushTransactionReq(transaction_signed=tx.pbdata)
         f = self.stub.PushTransaction.future(pushTransactionReq, timeout=5)
         pushTransactionResp = f.result(timeout=5)
