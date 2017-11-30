@@ -33,7 +33,9 @@ class NodeState:
         self.Qaddress = Qaddress
         self.synced = synced
 
-    def __str__(self):
+        self.wallet_dir = ''  # path to its wallet dir in volumes
+
+    def __repr__(self):
         return "ip: {} Qaddress: {} synced: {}".format(self.ip, self.Qaddress, self.synced)
 
 class IntegrationTest(object):
