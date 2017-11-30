@@ -6,13 +6,13 @@ from qrl_testing.tmp import qrl_pb2, qrl_pb2_grpc
 from qrl.core.Transaction import Transaction
 from qrl.core.Wallet import Wallet, AddressBundle
 
-node1 = '172.19.0.5:9009'
-node1_wallet_dir="tmp/qrlwallet1"
-node2 = '127.0.0.2:9009'
-node2_wallet_dir="tmp/qrlwallet2"
+# node1 = '172.19.0.5:9009'
+# node1_wallet_dir="tmp/qrlwallet1"
+# node2 = '127.0.0.2:9009'
+# node2_wallet_dir="tmp/qrlwallet2"
 
-wallet1 = Wallet(wallet_path=node1_wallet_dir)
-wallet2 = Wallet(wallet_path=node2_wallet_dir)
+# wallet1 = Wallet(wallet_path=node1_wallet_dir)
+# wallet2 = Wallet(wallet_path=node2_wallet_dir)
 
 class NodeInterface:
     """
@@ -66,10 +66,10 @@ class NodeInterface:
         return getAddressStateResp.state.balance
 
 
-node = NodeInterface('172.19.0.7', debug=True)
-print("Wallet 1 balance is", node.check_balance(wallet1.address_bundle[0].address))
-print("Wallet 2 balance is", node.check_balance(wallet2.address_bundle[0].address))
-print("Sending 10 QRL from Wallet 1 to Wallet 2")
-node.send(wallet1.address_bundle[0], wallet2.address_bundle[0], 10, 1)
-print("Wallet 1 balance is", node.check_balance(wallet1.address_bundle[0].address))
-print("Wallet 2 balance is", node.check_balance(wallet2.address_bundle[0].address))
+# node = NodeInterface('172.19.0.7', debug=True)
+# print("Wallet 1 balance is", node.check_balance(wallet1.address_bundle[0].address))
+# print("Wallet 2 balance is", node.check_balance(wallet2.address_bundle[0].address))
+# print("Sending 10 QRL from Wallet 1 to Wallet 2")
+# node.send(wallet1.address_bundle[0], wallet2.address_bundle[0], 10, 1)
+# print("Wallet 1 balance is", node.check_balance(wallet1.address_bundle[0].address))
+# print("Wallet 2 balance is", node.check_balance(wallet2.address_bundle[0].address))
