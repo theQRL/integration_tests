@@ -7,7 +7,7 @@ RUN apt-get update && \
 
 RUN echo "ALL ALL=NOPASSWD: ALL" >> /etc/sudoers
 
-RUN pip3 install -U pip docker-py
+RUN pip3 install -U pip docker-py==1.10.6
 
 # Save time by preinstalling 
 RUN pip3 install jsonpickle>=0.9.5 leveldb==0.20 ntplib>=0.3.3 Twisted>=17.5.0 colorlog>=3.0.1

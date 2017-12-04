@@ -1,0 +1,56 @@
+#!bash
+
+# TODO: Put some of this into README.md
+
+#=== venv deps ===
+    """
+    These are packages I added to my virtualenv
+    """
+
+    #--- grpc ---
+    python3 -m pip install grpcio grpcio-tools
+
+    #--- docker-py---
+    # Note: docker-py version MUST match exactly the version specified in Dockerfile.qrlnode
+    # That said, I still see:
+    #     WARNING: Dependency conflict: an older version of the 'docker-py' package may be polluting the namespace.
+    # when running `docker-compose exec --index=1 node /bin/bash`.
+    # My guess is that it just can't guarantee the versions match, so it shows the warning just in case.
+    python3 -m pip install docker-py==1.10.6
+
+    #--- PyYAML ---
+    # Match the version specified in Dockerfile.qrlnode
+    python3 -m pip install PyYAML==3.12
+
+#=== docker-compose ===
+    """
+    'node' is the name of the service, as defined in docker-compose.yml
+
+    We have $NUM_NODES of these 'node' services running in parallel in different containers.
+    (NUM_NODES=6 in start_net.sh); therefore, they cannot be identified by service name ('node').
+    They can be disambiguated by specifying --index in the `docker-compose exec` command.
+    The following examples use '--index 1' (in seq 1..$NUM_NODES).
+
+    Mapping port 9009 to a random available host port is the default behavior
+    when defining exposed ports in docker-compose.yml
+    """
+
+    #--- Shell into a running node ---
+        docker-compose exec --index 1 node /bin/bash
+
+    #--- Check grpc port (9009) -> host port mapping ---
+        docker-compose port --index 1 node 9009
+
+#=== protobuf ===
+    """
+    This assumes QRL and integration_tests in $HOME/src:
+      mkdir -p $HOME/src
+      cd $HOME/src
+      git clone 'https://github.com/theQRL/QRL.git'
+      git clone 'https://github.com/theQRL/integration_tests.git'
+    """
+
+    #--- Compile .proto (python) ---
+        cd $HOME/src/integration_tests
+        python -m grpc_tools.protoc -I$HOME/src/QRL/qrl/protos --python_out=. --grpc_python_out=. $HOME/src/QRL/qrl/protos/qrlbase.proto
+        python -m grpc_tools.protoc -I$HOME/src/QRL/qrl/protos --python_out=. --grpc_python_out=. $HOME/src/QRL/qrl/protos/qrl.proto

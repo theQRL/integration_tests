@@ -10,7 +10,7 @@ cat ${HOME}/.qrl/node_ip
 rm -rf ${HOME}/QRL
 if [ -z ${INTEGRATION_TESTINPLACE:-} ]; then
     echo "Checkout source code"
-    git clone -b ${REPO_BRANCH} https://github.com/${REPO_SLUG}.git ${HOME}/QRL
+    git clone -b ${REPO_BRANCH} --depth 1 https://github.com/${REPO_SLUG}.git ${HOME}/QRL
     cd ${HOME}/QRL
     GITHASH=$(git -C ${HOME}/QRL/ rev-parse HEAD)
     echo "Repo hash: $GITHASH"
