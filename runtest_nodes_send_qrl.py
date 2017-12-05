@@ -20,19 +20,15 @@ class SendQRLToEachOther(IntegrationTest):
         super().__init__(max_running_time_secs=600)
         self.test_running = False
 
-    @staticmethod
-    def send_qrl_test(instance):
-        """
-        Why doesn't futures work with normal methods of a class?
-        """
+    def send_qrl_test(self):
         IntegrationTest.writeout("Beginning Send QRL Integration Test")
-        for s in instance.node_states.values():
-            s.find_ip_Qaddress_wallet()
 
-        node_1 = instance.node_states["node_1"]
-        node_2 = instance.node_states["node_2"]
+        for s in self.node_states.values():
+            s.find_ip_Qaddress_wallet()
+        node_1 = self.node_states["node_1"]
+        node_2 = self.node_states["node_2"]
         node = NodeInterface(node_1.ip, debug=True)
-        
+
         # This is like saying Wallet(wallet_dir)
         config.user.wallet_path = node_1.wallet_dir
         node_1_wallet = Wallet()
@@ -72,9 +68,9 @@ class SendQRLToEachOther(IntegrationTest):
             "Sending address now has: {}, Receiving address now has: {}".format(sending_address_new_balance,
                                                                                 receiving_address_new_balance))
         if receiving_address_new_balance == (receiving_address_old_balance + 10):
-            instance.successful_test()
+            self.successful_test()
         else:
-            instance.fail_test()
+            self.fail_test()
 
 
     def custom_process_log_entry(self, log_entry: LogEntry):
@@ -84,7 +80,7 @@ class SendQRLToEachOther(IntegrationTest):
             if self.all_nodes_synced:
                 print("All nodes in sync! Uptime: {} secs".format(self.running_time))
                 if self.all_nodes_grpc_started and not self.test_running:
-                    pool.submit(self.send_qrl_test, self)
+                    pool.submit(self.send_qrl_test)
                     self.test_running = True
 
 if __name__ == '__main__':
