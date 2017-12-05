@@ -25,6 +25,7 @@ class SendQRLToEachOther(IntegrationTest):
         """
         Why doesn't futures work with normal methods of a class?
         """
+        IntegrationTest.writeout("Beginning Send QRL Integration Test")
         for s in instance.node_states.values():
             s.find_ip_Qaddress_wallet()
 
@@ -36,16 +37,41 @@ class SendQRLToEachOther(IntegrationTest):
         config.user.wallet_path = node_1.wallet_dir
         node_1_wallet = Wallet()
 
+        # This is like saying Wallet(wallet_dir)
+        config.user.wallet_path = node_2.wallet_dir
+        node_2_wallet = Wallet()
+
         # Because all nodes stake in the integration test network, we can't send txns
         # from them. So we need to create a second AddressBundle to send money from.
-        IntegrationTest.writeout("GENERATING SECOND ADDRESS TO SEND QRL FROM")
+        # Not only that, the receiving wallet must also have an address which isn't staking.
+        # Because if the address is staking, and wins a block, then it'll have more coins than we expect.
+        IntegrationTest.writeout("Generating second addresses")
         node_1_wallet.address_bundle.append(Wallet.get_new_address())
+        node_2_wallet.address_bundle.append(Wallet.get_new_address())
+        sending_address = node_1_wallet.address_bundle[1].address
+        sending_address_old_balance = node.check_balance(sending_address)
+        receiving_address = node_2_wallet.address_bundle[1].address
+        receiving_address_old_balance = node.check_balance(receiving_address)
 
-        response = node.send(from_addr=node_1_wallet.address_bundle[1], to_addr=node_2.Qaddress.encode(), amount=10, fee=1)
-        time.sleep(5)
-        node_2_balance = node.check_balance(address=node_2.Qaddress.encode())
-        IntegrationTest.writeout(node_2_balance)
-        if node_2_balance > 100000000000000:
+        state = node.check_state()
+        block_height_before_sending = state.block_height
+        block_height_target = block_height_before_sending + 3
+
+        response = node.send(from_addr=node_1_wallet.address_bundle[1], to_addr=receiving_address, amount=10, fee=1)
+
+        while state.block_height < block_height_target:
+            state = node.check_state()
+            IntegrationTest.writeout(
+                "block height before sending: {}; current block height: {}; waiting for this block height: {}".format(
+                    block_height_before_sending, state.block_height, block_height_target))
+            time.sleep(1)
+
+        sending_address_new_balance = node.check_balance(address=sending_address)
+        receiving_address_new_balance = node.check_balance(address=receiving_address)
+        IntegrationTest.writeout(
+            "Sending address now has: {}, Receiving address now has: {}".format(sending_address_new_balance,
+                                                                                receiving_address_new_balance))
+        if receiving_address_new_balance == (receiving_address_old_balance + 10):
             instance.successful_test()
         else:
             instance.fail_test()

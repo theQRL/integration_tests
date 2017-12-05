@@ -53,3 +53,13 @@ class NodeInterface:
             print(getAddressStateResp)
         
         return getAddressStateResp.state.balance
+
+    def check_state(self):
+        getNodeStateReq = qrl_pb2.GetNodeStateReq()
+        getNodeStateResp = self.stub.GetNodeState(getNodeStateReq)
+
+        if self.debug:
+            print(getNodeStateReq)
+            print(getNodeStateResp)
+
+        return getNodeStateResp.info
