@@ -2,7 +2,6 @@ import grpc
 
 from qrl_testing.tmp import qrl_pb2, qrl_pb2_grpc
 
-# This code depends on a modded qrl.core. Set PYTHONPATH.
 from qrl.core.Transaction import Transaction
 from qrl.core.Wallet import Wallet, AddressBundle
 
@@ -30,16 +29,13 @@ class NodeInterface:
             xmss_ots_index=from_addr.xmss.get_index()
         )
 
-        f = self.stub.TransferCoins.future(transferCoinsReq)
-        transferCoinsResp = f.result(timeout=5)
+        transferCoinsResp = self.stub.TransferCoins(transferCoinsReq)
 
         tx = Transaction.from_pbdata(transferCoinsResp.transaction_unsigned)
-
         tx.sign(from_addr.xmss)
 
         pushTransactionReq = qrl_pb2.PushTransactionReq(transaction_signed=tx.pbdata)
-        f = self.stub.PushTransaction.future(pushTransactionReq, timeout=5)
-        pushTransactionResp = f.result(timeout=5)
+        pushTransactionResp = self.stub.PushTransaction(pushTransactionReq)
 
         if self.debug:
             print(transferCoinsReq)
@@ -50,20 +46,10 @@ class NodeInterface:
 
     def check_balance(self, address:bytes):
         getAddressStateReq = qrl_pb2.GetAddressStateReq(address=address)
-        f = self.stub.GetAddressState.future(getAddressStateReq, timeout=5)
-        getAddressStateResp = f.result(timeout=5)
-        
+        getAddressStateResp = self.stub.GetAddressState(getAddressStateReq)
+
         if self.debug:
             print(getAddressStateReq)
             print(getAddressStateResp)
         
         return getAddressStateResp.state.balance
-
-
-# node = NodeInterface('172.19.0.7', debug=True)
-# print("Wallet 1 balance is", node.check_balance(wallet1.address_bundle[0].address))
-# print("Wallet 2 balance is", node.check_balance(wallet2.address_bundle[0].address))
-# print("Sending 10 QRL from Wallet 1 to Wallet 2")
-# node.send(wallet1.address_bundle[0], wallet2.address_bundle[0], 10, 1)
-# print("Wallet 1 balance is", node.check_balance(wallet1.address_bundle[0].address))
-# print("Wallet 2 balance is", node.check_balance(wallet2.address_bundle[0].address))
