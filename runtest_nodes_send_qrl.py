@@ -19,6 +19,7 @@ class SendQRLToEachOther(IntegrationTest):
     def __init__(self):
         super().__init__(max_running_time_secs=600)
         self.test_running = False
+        self.test_succeeded = None
 
     def send_qrl_test(self):
         IntegrationTest.writeout("Beginning Send QRL Integration Test")
@@ -53,7 +54,7 @@ class SendQRLToEachOther(IntegrationTest):
         block_height_before_sending = state.block_height
         block_height_target = block_height_before_sending + 3
 
-        response = node.send(from_addr=node_1_wallet.address_bundle[1], to_addr=receiving_address, amount=10, fee=1)
+        node.send(from_addr=node_1_wallet.address_bundle[1], to_addr=receiving_address, amount=10, fee=1)
 
         while state.block_height < block_height_target:
             state = node.check_state()
@@ -68,9 +69,9 @@ class SendQRLToEachOther(IntegrationTest):
             "Sending address now has: {}, Receiving address now has: {}".format(sending_address_new_balance,
                                                                                 receiving_address_new_balance))
         if receiving_address_new_balance == (receiving_address_old_balance + 10):
-            self.successful_test()
+            self.test_succeeded = True
         else:
-            self.fail_test()
+            self.test_succeeded = False
 
 
     def custom_process_log_entry(self, log_entry: LogEntry):
@@ -82,6 +83,12 @@ class SendQRLToEachOther(IntegrationTest):
                 if self.all_nodes_grpc_started and not self.test_running:
                     pool.submit(self.send_qrl_test)
                     self.test_running = True
+
+                if self.test_running:
+                    if self.test_succeeded is True:
+                        self.successful_test()
+                    elif self.test_succeeded is False:
+                        self.fail_test()
 
 if __name__ == '__main__':
     test = SendQRLToEachOther()

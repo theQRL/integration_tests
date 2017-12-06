@@ -23,8 +23,8 @@ class NodeInterface:
         transferCoinsReq = qrl_pb2.TransferCoinsReq(
             address_from=from_addr.address,
             address_to=to_addr,
-            amount=10,
-            fee=1,
+            amount=amount,
+            fee=fee,
             xmss_pk=from_addr.xmss.pk(),
             xmss_ots_index=from_addr.xmss.get_index()
         )
