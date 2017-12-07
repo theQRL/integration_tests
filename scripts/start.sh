@@ -1,6 +1,9 @@
 #!/bin/bash -u
 
-export USERNAME=$(awk -v val=${DOCKER_UID} -F ":" '$3==val{print $1}' /etc/passwd)
+groupadd -g $DOCKER_GID testuser
+useradd -u $DOCKER_UID -g $DOCKER_GID testuser
+export USERNAME="testuser"
+
 mkdir -p /home/${USERNAME}
 
 # Get volume name based on container name

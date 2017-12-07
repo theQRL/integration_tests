@@ -24,5 +24,3 @@ services:
     - ./volumes:/volumes
     - ./scripts:/root/scripts
     - /var/run/docker.sock:/var/run/docker.sock
-    - /etc/group:/etc/group:ro
-    - /etc/passwd:/etc/passwd:ro

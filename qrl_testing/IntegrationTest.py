@@ -19,6 +19,7 @@ ignore_errors = {
 }
 
 fatal_errors = {
+    "sudo: unknown user",
     "error",
     "fatal:",
     "Traceback (most recent call last)",
