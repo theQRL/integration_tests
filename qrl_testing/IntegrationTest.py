@@ -7,6 +7,7 @@ import threading
 
 import time
 from collections import namedtuple
+from enum import Enum
 
 TOTAL_NODES = 6
 
@@ -27,16 +28,22 @@ fatal_errors = {
 
 LogEntry = namedtuple('LogEntry', 'full node_id time version synced rest')
 
+class SyncStatus(Enum):
+    SYNCED = 'synced'
+    UNSYNCED = 'unsynced'
+    SYNCING = 'syncing'
+    UNDEFINED = ''
+
 class NodeState:
     def __init__(self, node_id):
         self.node_id = node_id
         self.ip = ''
         self.Qaddress = ''
-        self.synced = False
+        self.sync_status = SyncStatus('')
         self.grpc_started = False
 
     def __repr__(self):
-        return "<NodeState ip: {} Qaddress: {} synced: {} grpc_started: {}>".format(self.ip, self.Qaddress, self.synced, self.grpc_started)
+        return "<NodeState ip: {} Qaddress: {} sync_status: {} grpc_started: {}>".format(self.ip, self.Qaddress, self.sync_status, self.grpc_started)
 
     def find_ip_Qaddress_wallet(self):
         tests_integration_path = os.path.dirname(os.path.dirname(__file__))
@@ -53,10 +60,7 @@ class NodeState:
         self.wallet_dir = os.path.join(volumes_path, "wallet/")
 
     def update(self, log_entry: LogEntry):
-        if log_entry.synced == 'synced':
-            self.synced = True
-        else:
-            self.synced = False
+        self.sync_status = SyncStatus(log_entry.synced)
 
         if 'grpc node - started' in log_entry.rest:
             self.grpc_started = True
@@ -73,7 +77,7 @@ class IntegrationTest(object):
             "node_1": NodeState(
                 ip = "172.17.0.9"
                 Qaddress = "Q..."
-                synced = True
+                sync_status = SyncStatus.SYNCED
             )
             ...
         }
@@ -86,8 +90,8 @@ class IntegrationTest(object):
 
     @property
     def all_nodes_synced(self):
-        sync_status = [n.synced for n in self.node_states.values()]
-        return all(sync_status) and (len(self.node_states) == TOTAL_NODES)
+        s = [n.sync_status == SyncStatus.SYNCED for n in self.node_states.values()]
+        return all(s) and (len(self.node_states) == TOTAL_NODES)
     
     @property
     def all_nodes_grpc_started(self):
@@ -116,8 +120,6 @@ class IntegrationTest(object):
         state = self.node_states.get(node_id, NodeState(node_id=node_id))
         state.update(log_entry)
         self.node_states[node_id] = state
-        # print("grpc_started", [n.grpc_started for n in self.node_states.values()])
-        # print("synced", [n.synced for n in self.node_states.values()])
 
     def fail_test(self):
         def fail_exit():
