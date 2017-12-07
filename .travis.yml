@@ -8,20 +8,34 @@ cache:
 
 jobs:
   include:
-    - stage: integration-test
-      os: linux
-      env:
-      - TEST='NODES_SYNC'
-      script:
-      - sudo pip install -U docker-compose
-      - docker-compose --version
-      - "python3 runtest_nodes_synchronize.py"
+#    - stage: integration-test
+#      os: linux
+#      env:
+#      - TEST='NODES_SYNC'
+#      script:
+#      - sudo pip install -U docker-compose
+#      - docker-compose --version
+#      - "python3 runtest_nodes_synchronize.py"
+#
+#    - stage: integration-test
+#      os: linux
+#      env:
+#      - TEST='RUN_10MIN'
+#      script:
+#      - sudo pip install -U docker-compose
+#      - docker-compose --version
+#      - "python3 runtest_nodes_10mins.py"
 
     - stage: integration-test
       os: linux
       env:
-      - TEST='RUN_10MIN'
+      - TEST='SEND_QRL'
+      - PYTHONPATH=$HOME/build/
+      install:
+      - whoami
+      - sudo apt-get install python3-pip
       script:
       - sudo pip install -U docker-compose
+      - sudo pip3 install -U grpcio grpcio-tools
       - docker-compose --version
-      - "python3 runtest_nodes_10mins.py"
+      - "python3 runtest_nodes_send_qrl.py"
