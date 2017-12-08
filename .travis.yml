@@ -3,8 +3,7 @@ dist: trusty
 services: docker
 language: python
 python: 3.5
-cache:
-  timeout: 600
+cache: pip
 
 jobs:
   include:
@@ -30,12 +29,12 @@ jobs:
       os: linux
       env:
       - TEST='SEND_QRL'
-      - PYTHONPATH=$HOME/build/
       install:
-      - whoami
-      - sudo apt-get install python3-pip
-      script:
       - sudo pip install -U docker-compose
-      - sudo pip3 install -U grpcio grpcio-tools
+      - pip3 install grpcio grpcio-tools
+      - pip3 -V
+      - pip3 freeze
+      script:
       - docker-compose --version
+      - scripts/wget_qrl_pb2.sh qrl_testing/
       - "python3 runtest_nodes_send_qrl.py"

@@ -7,8 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from qrl_testing.IntegrationTest import IntegrationTest, TOTAL_NODES, LogEntry
 from qrl_testing.NodeInterface import NodeInterface
 
-from qrl.core.Transaction import Transaction
-from qrl.core.Wallet import Wallet, AddressBundle
+from qrl.core.Wallet import Wallet
 from qrl.core import config
 
 pool = ThreadPoolExecutor(3)
