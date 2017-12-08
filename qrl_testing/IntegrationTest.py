@@ -8,7 +8,7 @@ import threading
 import time
 from collections import namedtuple
 
-TOTAL_NODES = 6
+TOTAL_NODES = 4
 
 ignore_errors = {
     "liberror-perl",
