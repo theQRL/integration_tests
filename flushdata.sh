@@ -1,2 +1,2 @@
 #!/bin/sh
-rm -r volumes
+rm -rf volumes

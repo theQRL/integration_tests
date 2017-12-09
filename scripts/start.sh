@@ -24,7 +24,7 @@ fi
 
 # Fix permissions
 chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
-chown -R ${USERNAME}:${USERNAME} ${VOLUME_NAME}
+chown -R ${USERNAME}:${USERNAME} /volumes
 chmod -R a+rwx /home/${USERNAME}
 
 # Launch user script

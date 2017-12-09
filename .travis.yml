@@ -3,25 +3,45 @@ dist: trusty
 services: docker
 language: python
 python: 3.5
-cache:
-  timeout: 600
+cache: pip
 
 jobs:
   include:
-    - stage: integration-test
-      os: linux
-      env:
-      - TEST='NODES_SYNC'
-      script:
-      - sudo pip install -U docker-compose
-      - docker-compose --version
-      - "python3 runtest_nodes_synchronize.py"
+#    - stage: integration-test
+#      os: linux
+#      env:
+#      - TEST='NODES_SYNC'
+#      script:
+#      - sudo pip install -U docker-compose
+#      - docker-compose --version
+#      - "python3 runtest_nodes_synchronize.py"
+#
+#    - stage: integration-test
+#      os: linux
+#      env:
+#      - TEST='RUN_10MIN'
+#      script:
+#      - sudo pip install -U docker-compose
+#      - docker-compose --version
+#      - "python3 runtest_nodes_10mins.py"
 
     - stage: integration-test
       os: linux
       env:
-      - TEST='RUN_10MIN'
-      script:
+      - TEST='SEND_QRL'
+      install:
+      - sudo add-apt-repository -y ppa:george-edison55/cmake-3.x
+      - sudo apt-get update
+      - sudo apt-get -y upgrade cmake
       - sudo pip install -U docker-compose
+      - pip3 install qrl
+      - pip3 install -r requirements.txt
+      - pip3 -V
+      - pip3 freeze
+      - git clone https://github.com/theQRL/QRL.git
+      - export PYTHONPATH=$(pwd)/QRL
+      - echo $PYTHONPATH
+      script:
       - docker-compose --version
-      - "python3 runtest_nodes_10mins.py"
+      - scripts/wget_qrl_pb2.sh qrl_testing/
+      - "python3 runtest_nodes_send_qrl.py"

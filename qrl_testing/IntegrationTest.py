@@ -7,6 +7,7 @@ import threading
 
 import time
 from collections import namedtuple
+from enum import Enum
 
 TOTAL_NODES = 4
 
@@ -26,19 +27,77 @@ fatal_errors = {
     "cp: cannot stat '/home/travis/genesis.yml': No such file or directory"
 }
 
-LogEntry = namedtuple('LogEntry', 'full node_id time version sync_state rest')
+LogEntry = namedtuple('LogEntry', 'full node_id time version synced rest')
 
+class SyncStatus(Enum):
+    SYNCED = 'synced'
+    UNSYNCED = 'unsynced'
+    SYNCING = 'syncing'
+    UNDEFINED = ''
+
+class NodeState:
+    def __init__(self, node_id):
+        self.node_id = node_id
+        self.ip = ''
+        self.Qaddress = ''
+        self.sync_status = SyncStatus('')
+        self.grpc_started = False
+
+    def __repr__(self):
+        return "<NodeState ip: {} Qaddress: {} sync_status: {} grpc_started: {}>".format(self.ip, self.Qaddress, self.sync_status, self.grpc_started)
+
+    def find_ip_Qaddress_wallet(self):
+        tests_integration_path = os.path.dirname(os.path.dirname(__file__))
+        volumes_path = os.path.join(tests_integration_path, 'volumes/', 'testsintegration_{}'.format(self.node_id))
+
+        ip_file = os.path.join(volumes_path, "node_ip")
+        with open(ip_file) as f:
+            self.ip = f.readline().strip()
+
+        wallet_address_file = os.path.join(volumes_path, "wallet_address")
+        with open(wallet_address_file) as f:
+            self.Qaddress = f.readline().strip()
+        
+        self.wallet_dir = os.path.join(volumes_path, "wallet/")
+
+    def update(self, log_entry: LogEntry):
+        self.sync_status = SyncStatus(log_entry.synced)
+
+        if 'grpc node - started' in log_entry.rest:
+            self.grpc_started = True
 
 class IntegrationTest(object):
     def __init__(self, max_running_time_secs):
         self.max_running_time_secs = max_running_time_secs
         self.start_time = time.time()
         self.regex_ansi_escape = re.compile(r'\x1b[^m]*m')
+
+        self.node_states = {}
+        """
+        {
+            "node_1": NodeState(
+                ip = "172.17.0.9"
+                Qaddress = "Q..."
+                sync_status = SyncStatus.SYNCED
+            )
+            ...
+        }
+        """
         IntegrationTest.writeout("******************** INTEGRATION TEST STARTED ********************")
 
     @property
     def running_time(self):
         return time.time() - self.start_time
+
+    @property
+    def all_nodes_synced(self):
+        s = [n.sync_status == SyncStatus.SYNCED for n in self.node_states.values()]
+        return all(s) and (len(self.node_states) == TOTAL_NODES)
+    
+    @property
+    def all_nodes_grpc_started(self):
+        grpc_started_status = [n.grpc_started for n in self.node_states.values()]
+        return all(grpc_started_status) and (len(self.node_states) == TOTAL_NODES)
 
     @staticmethod
     def writeout(text):
@@ -53,6 +112,15 @@ class IntegrationTest(object):
     def successful_test():
         IntegrationTest.writeout("******************** SUCCESS! ********************")
         quit(0)
+
+    def update_node_state(self, node_id, log_entry: LogEntry):
+        """
+        This function is called each time a line is output, don't put anything
+        intensive here
+        """
+        state = self.node_states.get(node_id, NodeState(node_id=node_id))
+        state.update(log_entry)
+        self.node_states[node_id] = state
 
     def fail_test(self):
         def fail_exit():
@@ -111,17 +179,17 @@ class IntegrationTest(object):
         entry_parts = entry_raw.split('|')
         if len(entry_parts) > 4:
             log_entry = LogEntry(full='',
-                                 node_id=entry_parts[0],
-                                 time=entry_parts[1],
+                                 node_id=entry_parts[0].strip(),
+                                 time=entry_parts[1].strip(),
                                  version=entry_parts[2],
-                                 sync_state=entry_parts[3],
+                                 synced=entry_parts[3],
                                  rest=entry_parts[4])
         else:
             log_entry = LogEntry(full='',
                                  node_id=None,
                                  time=None,
                                  version=None,
-                                 sync_state=None,
+                                 synced=None,
                                  rest=None)
 
         return log_entry
