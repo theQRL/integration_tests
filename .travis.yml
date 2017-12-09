@@ -31,7 +31,7 @@ jobs:
       - TEST='SEND_QRL'
       install:
       - sudo pip install -U docker-compose
-      - pip3 install grpcio grpcio-tools
+      - pip3 install -r requirements.txt
       - pip3 -V
       - pip3 freeze
       script:
