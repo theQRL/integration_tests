@@ -5,5 +5,5 @@ tmp/*
 \.idea/workspace\.xml
 
 qrl_testing/__pycache__/
-
+qrl_testing/qrl_pb2*
 **__pycache__**
