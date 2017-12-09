@@ -1,6 +1,6 @@
 import grpc
 
-from qrl.generated import qrl_pb2, qrl_pb2_grpc
+from . import qrl_pb2, qrl_pb2_grpc
 
 from qrl.core.Transaction import Transaction
 from qrl.core.Wallet import Wallet, AddressBundle
