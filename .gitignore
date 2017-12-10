@@ -5,3 +5,5 @@ testnet/genesis\.yml
 \.idea/workspace\.xml
 
 qrl_testing/__pycache__/
+
+\.idea/

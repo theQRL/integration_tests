@@ -1,16 +1,19 @@
-from docker import Client
-import os
+#!/usr/bin/env python
+from __future__ import print_function
+import docker
+import socket
 
-hostname = os.environ['HOSTNAME']
 
-cli = Client(base_url='unix://var/run/docker.sock')
-data = cli.containers()
+def get_name():
+    client = docker.from_env()
+    hostname = socket.gethostname()
 
-for d in data:
-    container_id = d['Id'][:12]
-    names = d['Names']
-    if container_id == hostname:
-        print(names[0])
-        quit()
+    for c in client.containers.list():
+        print(c.id, c.name)
+        if c.id == hostname:
+            print(c.name)
+            quit()
 
-print(hostname)
+
+if __name__ == '__main__':
+    get_name()
