@@ -20,7 +20,7 @@ ln -sf ${VOLUME_NAME} /home/${USERNAME}/.qrl
 if [[ -v LOCALNET_ONLY ]]; then
     echo "Restricting to LOCALNET"
     cp /root/scripts/config.yml  ${VOLUME_NAME}/config.yml
-    cp /root/scripts/genesis.yml  /home/${USERNAME}/genesis.yml
+    cp /root/scripts/genesis.yml  /home/${USERNAME}/.qrl/genesis.yml
 fi
 
 # Fix permissions
