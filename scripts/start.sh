@@ -1,8 +1,8 @@
 #!/bin/bash -u
 
 export USERNAME="testuser"
-id -g $DOCKER_GID > /dev/null || groupadd -g $DOCKER_GID $USERNAME
-id -u $DOCKER_UID > /dev/null || useradd -u $DOCKER_UID -g $DOCKER_GID $USERNAME
+id -g $DOCKER_GID &> /dev/null || groupadd -g $DOCKER_GID $USERNAME
+id -u $DOCKER_UID &> /dev/null || useradd -u $DOCKER_UID -g $DOCKER_GID $USERNAME
 
 mkdir -p /home/${USERNAME}
 
@@ -10,6 +10,8 @@ mkdir -p /home/${USERNAME}
 EASYNAME=$(python3 /root/scripts/docker_helper.py)
 echo "EasyName: ${EASYNAME}"
 
+mkdir -p /volumes
+chown -R ${USERNAME}:${USERNAME} /volumes
 VOLUME_NAME="/volumes/${EASYNAME}"
 
 # Copy scripts and configuration
