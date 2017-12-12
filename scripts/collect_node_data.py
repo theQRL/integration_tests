@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from collections import OrderedDict
 import glob
 
 wallet_sources = []
@@ -36,6 +35,7 @@ for s in node_ip_sources:
 
 node_ips = sorted(node_ips)
 with open('./scripts/config.yml', 'w') as f:
-    f.write("peer_list:\n")
-    for ip in node_ips:
-        f.write("- '{}'\n".format(ip, ))
+    if len(node_ips) > 0:
+        f.write("peer_list:\n")
+        for ip in node_ips:
+            f.write("- '{}'\n".format(ip, ))

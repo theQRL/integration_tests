@@ -28,6 +28,13 @@ if [ ! -z ${INTEGRATION_TESTINPLACE:-} ]; then
     rsync -qiar --progress ${SOURCE_DIR} volumes/source --exclude tests_integration --exclude .git
 fi
 
+#echo "****************************************************************"
+#echo "                       FREEZE"
+#echo "****************************************************************"
+#export BOOT_PHASE=freeze
+#docker-compose up --scale node=${NUM_NODES}
+
+
 echo "****************************************************************"
 echo "                       BOOTSTRAPPING"
 echo "****************************************************************"
