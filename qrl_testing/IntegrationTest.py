@@ -27,7 +27,7 @@ fatal_errors = {
     "cp: cannot stat '/home/travis/genesis.yml': No such file or directory"
 }
 
-LogEntry = namedtuple('LogEntry', 'full node_id time version synced rest')
+LogEntry = namedtuple('LogEntry', 'full node_id time version sync_status rest')
 
 class SyncStatus(Enum):
     SYNCED = 'synced'
@@ -36,19 +36,20 @@ class SyncStatus(Enum):
     UNDEFINED = ''
 
 class NodeState:
-    def __init__(self, node_id):
-        self.node_id = node_id
+    def __init__(self, node_id:str):
+        self.node_id = node_id  # node_2
         self.ip = ''
         self.Qaddress = ''
         self.sync_status = SyncStatus('')
         self.grpc_started = False
+        self.wallet_dir = ''
 
     def __repr__(self):
         return "<NodeState ip: {} Qaddress: {} sync_status: {} grpc_started: {}>".format(self.ip, self.Qaddress, self.sync_status, self.grpc_started)
 
     def find_ip_Qaddress_wallet(self):
         tests_integration_path = os.path.dirname(os.path.dirname(__file__))
-        volumes_path = os.path.join(tests_integration_path, 'volumes/', 'testsintegration_{}'.format(self.node_id))
+        volumes_path = os.path.join(tests_integration_path, 'volumes/', 'integrationtests_{}'.format(self.node_id))
 
         ip_file = os.path.join(volumes_path, "node_ip")
         with open(ip_file) as f:
@@ -61,9 +62,9 @@ class NodeState:
         self.wallet_dir = os.path.join(volumes_path, "wallet/")
 
     def update(self, log_entry: LogEntry):
-        self.sync_status = SyncStatus(log_entry.synced)
+        self.sync_status = SyncStatus(log_entry.sync_status)
 
-        if 'grpc node - started' in log_entry.rest:
+        if 'grpc public service - started' in log_entry.rest:
             self.grpc_started = True
 
 class IntegrationTest(object):
@@ -182,14 +183,14 @@ class IntegrationTest(object):
                                  node_id=entry_parts[0].strip(),
                                  time=entry_parts[1].strip(),
                                  version=entry_parts[2],
-                                 synced=entry_parts[3],
+                                 sync_status=entry_parts[3],
                                  rest=entry_parts[4])
         else:
             log_entry = LogEntry(full='',
                                  node_id=None,
                                  time=None,
                                  version=None,
-                                 synced=None,
+                                 sync_status=None,
                                  rest=None)
 
         return log_entry
