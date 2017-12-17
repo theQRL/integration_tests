@@ -14,7 +14,7 @@ class RunFor10Minutes(IntegrationTest):
 
     def custom_process_log_entry(self, log_entry: LogEntry):
         if log_entry.node_id is not None:
-            self.node_state[log_entry.node_id] = log_entry.sync_state
+            self.node_state[log_entry.node_id] = log_entry.sync_status
             if len(self.node_state) == TOTAL_NODES and not self.could_sync:
                 if all(s == 'synced' for s in self.node_state.values()):
                     IntegrationTest.writeout("******************** NODES SYNCED ********************")
