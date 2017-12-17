@@ -13,7 +13,7 @@ jobs:
       env:
       - TEST='NODES_SYNC'
       script:
-      - sudo pip install -U docker-compose
+      - sudo pip install -U docker-compose | cat
       - docker-compose --version
       - "python3 runtest_nodes_synchronize.py"
 
@@ -22,6 +22,6 @@ jobs:
       env:
       - TEST='RUN_10MIN'
       script:
-      - sudo pip install -U docker-compose
+      - sudo pip install -U docker-compose | cat
       - docker-compose --version
       - "python3 runtest_nodes_10mins.py"

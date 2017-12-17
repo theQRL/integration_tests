@@ -31,3 +31,12 @@ Install docker compose
 Run one of the scenarios, for example:
 
 `python3 runtest_nodes_synchronize.py`
+
+
+### Limitations
+
+Docker for Mac has some limitations that result in problems when trying to connect from the host to the containers.
+https://docs.docker.com/docker-for-mac/networking/#known-limitations-use-cases-and-workarounds
+
+Typically in Linux, you can route traffic between your host and each of the containers without trouble using a Bridge.
+This is unfortunately not possible in OSX.

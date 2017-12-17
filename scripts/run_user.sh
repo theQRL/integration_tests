@@ -21,7 +21,7 @@ else
 fi
 
 # Get all dependencies
-sudo -H pip3 install -r ${HOME}/QRL/requirements.txt | grep -v 'Requirement already satisfied'
+sudo -H pip3 install -r ${HOME}/QRL/requirements.txt | grep -v 'Requirement already satisfied' | cat
 
 # Execute phase
 echo "Boot phase: ${BOOT_PHASE}"
