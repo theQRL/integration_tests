@@ -2,7 +2,7 @@ volumes/*
 !volumes/.gitkeep
 testnet/genesis\.yml
 
-\.idea/workspace\.xml
+.idea/**
 
 qrl_testing/__pycache__/
 
