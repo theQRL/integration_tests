@@ -2,19 +2,17 @@
 import json
 import os
 import subprocess
+import threading
 from time import sleep
-from concurrent.futures import ThreadPoolExecutor
 
 from qrl_testing.IntegrationTest import IntegrationTest, LogEntry
-
-pool = ThreadPoolExecutor(1)
 
 
 class SendQRLToEachOther(IntegrationTest):
 
     def __init__(self, max_running_time_secs=None):
         super().__init__(max_running_time_secs=max_running_time_secs)
-        self.test_running = False
+        self.test_thread = threading.Thread(target=self.send_qrl_test)
         self.test_successful = None
 
     def send_qrl_test(self):
@@ -99,17 +97,15 @@ class SendQRLToEachOther(IntegrationTest):
             self.update_node_state(log_entry.node_id, log_entry)
 
             if self.all_nodes_synced and self.all_nodes_grpc_started:
-                if not self.test_running:
+                if not self.test_thread.is_alive() and self.test_successful is None:
                     print("Uptime: {} secs, all nodes in sync and gRPC servers running! Starting test".format(
                         self.running_time))
-                    pool.submit(self.send_qrl_test)
-                    self.test_running = True
+                    self.test_thread.start()
 
-            if self.test_running:
-                if self.test_successful is True:
-                    self.successful_test()
-                elif self.test_successful is False:
-                    self.fail_test()
+            if self.test_successful is True:
+                self.successful_test()
+            elif self.test_successful is False:
+                self.fail_test()
 
 
 
