@@ -18,7 +18,7 @@ class SendQRLToEachOther(IntegrationTest):
 
     def send_qrl_test(self):
         def read_machine_decodable_output(o: str):
-            output = json.loads(o)
+            output = json.loads(o)["details"]
             location = output["location"]
             addr = output["addresses"][0]["address"]
             bal = output["addresses"][0]["balance"]
