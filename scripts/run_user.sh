@@ -31,10 +31,11 @@ case "${BOOT_PHASE}" in
             ;;
         bootstrap)
             echo "Collect Wallets"
-            python3 ${HOME}/QRL/start_qrl.py -q --get-wallets > ${HOME}/.qrl/wallet_address
+            #python3 ${HOME}/QRL/start_qrl.py -q --get-wallets > ${HOME}/.qrl/wallet_address
             ;;
          
         start)
+            cp ${HOME}/.qrl/genesis.json ${HOME}/QRL/qrl/core
             python3 ${HOME}/QRL/start_qrl.py -l DEBUG
             ;;
         *)
