@@ -16,7 +16,7 @@ if [ -z ${INTEGRATION_TESTINPLACE:-} ]; then
 else
     echo "Copying local source"
     ls /volumes/source
-    rsync -qiar --progress /volumes/source/QRL/ ${HOME}/QRL --exclude tests_integration --exclude .git
+    rsync -qiar --progress /volumes/source/QRL/ ${HOME}/QRL --exclude tests_integration
     ls ${HOME}/QRL
 fi
 
