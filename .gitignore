@@ -4,6 +4,6 @@ testnet/genesis\.yml
 
 .idea/**
 
-qrl_testing/__pycache__/
+**/__pycache__/
 
 \.idea/
