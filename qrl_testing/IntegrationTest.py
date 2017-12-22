@@ -49,7 +49,7 @@ class NodeState:
 
     def find_ip_Qaddress_wallet(self):
         tests_integration_path = os.path.dirname(os.path.dirname(__file__))
-        volumes_path = os.path.join(tests_integration_path, 'volumes/', 'integrationtests_{}'.format(self.node_id))
+        volumes_path = os.path.join(tests_integration_path, 'volumes/', 'testsintegration_{}'.format(self.node_id))
 
         ip_file = os.path.join(volumes_path, "node_ip")
         with open(ip_file) as f:
