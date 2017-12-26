@@ -22,7 +22,6 @@ ln -sf ${VOLUME_NAME} /home/${USERNAME}/.qrl
 if [[ -v LOCALNET_ONLY ]]; then
     echo "Restricting to LOCALNET"
     cp /root/scripts/config.yml  ${VOLUME_NAME}/config.yml
-    cp /root/scripts/genesis.yml  /home/${USERNAME}/.qrl/genesis.yml
 fi
 
 # Fix permissions
@@ -36,3 +35,7 @@ sudo BOOT_PHASE=${BOOT_PHASE} \
      REPO_SLUG=${REPO_SLUG} REPO_BRANCH=${REPO_BRANCH} \
      EASYNAME=${EASYNAME} -i -u ${USERNAME} \
      /home/${USERNAME}/run_user.sh
+
+mkdir -p /home/${USERNAME}/.qrl/wallet/
+rm /home/${USERNAME}/.qrl/wallet/wallet.qrl
+python3 /root/scripts/prepare_node.py

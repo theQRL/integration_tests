@@ -1,29 +1,9 @@
 #!/usr/bin/env python3
 import glob
 
-wallet_sources = []
-for filename in glob.iglob('./volumes/**/wallet_address', recursive=True):
-    wallet_sources.append(filename)
-
 node_ip_sources = []
 for filename in glob.iglob('./volumes/**/node_ip', recursive=True):
     node_ip_sources.append(filename)
-
-# Get all wallets
-wallets = []
-for s in wallet_sources:
-    with open(s) as f:
-        wallets.append(f.readline().strip())
-
-wallets = sorted(wallets)
-with open('./scripts/genesis.yml', 'w') as f:
-    f.write("genesis_info:\n")
-    for w in wallets:
-        if len(w) < 1:
-            print("ERROR. EMPTY ADDRESS")
-        f.write("  {} : 200000000000000\n".format(w, ))
-
-print(wallets)
 
 # Get all ips
 node_ips = []
