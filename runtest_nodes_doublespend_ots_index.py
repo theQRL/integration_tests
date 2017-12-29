@@ -31,11 +31,11 @@ class DoubleSpendOTSIndex(IntegrationTest):
             o = o.splitlines()
 
             location = o[0].split()[-1]
-            addresses = {}
+            addresses = []
             for line in o[3:]:
                 i, address, balance = line.split()
                 a = AddressRepr(number=i, address=address, balance=Decimal(balance))
-                addresses[address] = a
+                addresses.append(a)
 
             w = WalletRepr(location=location, addresses=addresses)
             return w
@@ -54,7 +54,7 @@ class DoubleSpendOTSIndex(IntegrationTest):
         def wallet_gen(container: docker.models.containers.Container, wallet_dir: str):
             """
             :param wallet_dir: /home/testuser/srcwallet; /home/testuser/dstwallet
-            :return: WalletRepr(location='/home/testuser/srcwallet', addresses={'Q...': AddressRepr(...)}
+            :return: WalletRepr(location='/home/testuser/srcwallet', addresses=[AddressRepr(...),]
             """
             IntegrationTest.writeout("Generating 3rd party {} wallet".format(wallet_dir))
             o = container.exec_run(["qrl", "--wallet_dir", wallet_dir, "wallet_gen"], environment=environment).decode()
@@ -63,7 +63,7 @@ class DoubleSpendOTSIndex(IntegrationTest):
         def wallet_ls(container: docker.models.containers.Container, wallet_dir: str):
             """
             :param wallet_dir: /home/testuser/srcwallet; /home/testuser/dstwallet
-            :return: WalletRepr(location='/home/testuser/srcwallet', addresses={'Q...': AddressRepr(...)}
+            :return: WalletRepr(location='/home/testuser/srcwallet', addresses=[AddressRepr(...),]
             """
             o = container.exec_run(["qrl", "--wallet_dir", wallet_dir, "wallet_ls"], environment=environment).decode()
             return parse_human_readable_output(o)
@@ -74,18 +74,18 @@ class DoubleSpendOTSIndex(IntegrationTest):
             prepare_container(node_1)
             src_wallet_repr = wallet_gen(node_1, '/home/testuser/srcwallet')
             dst_wallet_repr = wallet_gen(node_1, '/home/testuser/dstwallet')
-            src_addr = list(src_wallet_repr.addresses)[0]
-            dst_addr = list(dst_wallet_repr.addresses)[0]
+            src_addr = src_wallet_repr.addresses[0].address
+            dst_addr = dst_wallet_repr.addresses[0].address
 
             IntegrationTest.writeout("tx_prepare an unsigned transaction")
             tx_blob = node_1.exec_run(
-                ["qrl", "--wallet_dir", src_wallet_repr.location, "tx_prepare", "--src", src_addr, "--dst",
+                ["qrl", "--wallet_dir", src_wallet_repr.location, "tx_prepare", "--src", src_wallet_repr.addresses[0].number, "--dst",
                  dst_addr,
                  "--amount", "10", "--fee", "3"], environment=environment).decode().strip()
 
             IntegrationTest.writeout("tx_sign the transaction blob")
             tx_blob_signed = node_1.exec_run(
-                ["qrl", "--wallet_dir", src_wallet_repr.location, "tx_sign", "--src", src_addr, "--txblob", tx_blob],
+                ["qrl", "--wallet_dir", src_wallet_repr.location, "tx_sign", "--src", src_wallet_repr.addresses[0].number, "--txblob", tx_blob],
                  environment = environment).decode().strip()
 
             output = node_1.exec_run(
@@ -116,11 +116,12 @@ class DoubleSpendOTSIndex(IntegrationTest):
             _, lastline = parse_tx_push_output(output)
             IntegrationTest.writeout("tx_push signed transaction to network 4/3: {}".format(lastline))
 
+            src_wallet_repr_new = wallet_ls(node_1, '/home/testuser/srcwallet')
             dst_wallet_repr_new = wallet_ls(node_1, '/home/testuser/dstwallet')
-            IntegrationTest.writeout("src_addr balance: {}".format(src_wallet_repr.addresses[src_addr].balance))
-            IntegrationTest.writeout("dst_addr balance: {}".format(dst_wallet_repr_new.addresses[dst_addr].balance))
+            IntegrationTest.writeout("src_addr balance: {}".format(src_wallet_repr_new.addresses[0].balance))
+            IntegrationTest.writeout("dst_addr balance: {}".format(dst_wallet_repr_new.addresses[0].balance))
 
-            if dst_wallet_repr_new.addresses[dst_addr].balance == (dst_wallet_repr.addresses[dst_addr].balance + 10):
+            if dst_wallet_repr_new.addresses[0].balance == (dst_wallet_repr.addresses[0].balance + 10):
                 self.test_successful = True
             else:
                 self.test_successful = False
