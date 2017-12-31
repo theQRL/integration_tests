@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-import json
 import traceback
-import os
-import subprocess
 import threading
 from time import sleep
 
+from scripts.docker_helper import get_container_from_name
+from qrl_testing.helpers import wallet_gen, wallet_ls
 from qrl_testing.IntegrationTest import IntegrationTest, LogEntry
 
 
@@ -17,76 +16,38 @@ class SendQRLToEachOther(IntegrationTest):
         self.test_successful = None
 
     def send_qrl_test(self):
-        def read_machine_decodable_output(o: str):
-            output = json.loads(o)["details"]
-            location = output["location"]
-            addr = output["addresses"][0]["address"]
-            bal = output["addresses"][0]["balance"]
-            return (location, addr, bal)
-
-        def wallet_gen(wallet_dir, ip):
-            """
-            :param wallet_dir: volumes/srcwallet; volumes/dstwallet
-            :param ip: 127.0.0.1
-            :return: ('volumes/srcwallet', 'Q...', 100)
-            """
-            IntegrationTest.writeout("Generating 3rd party {} wallet".format(wallet_dir))
-            tempwallet_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), wallet_dir)
-            gen_cmd = subprocess.Popen(["qrl", "--wallet_dir", tempwallet_dir, "--host", ip, "-m", "wallet_gen"],
-                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            gen_cmd.wait(timeout=10)
-            return read_machine_decodable_output(gen_cmd.stdout.read().decode())
-
-        def wallet_ls(wallet_dir, ip):
-            """
-            :param wallet_dir: volumes/srcwallet; volumes/dstwallet
-            :param ip: 127.0.0.1
-            :return: ('volumes/srcwallet', 'Q...', 100)
-            """
-            tempwallet_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), wallet_dir)
-            ls_cmd = subprocess.Popen(
-                ["qrl", "--wallet_dir", tempwallet_dir, "--host", ip, "-m", "wallet_ls"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-            )
-            ls_cmd.wait(timeout=10)
-            return read_machine_decodable_output(ls_cmd.stdout.read().decode())
-
         IntegrationTest.writeout("Beginning Send QRL Integration Test")
         try:
-            for s in self.node_states.values():
-                s.find_ip_Qaddress_wallet()
-            node_1 = self.node_states["node_1"]
-            node_2 = self.node_states["node_2"]
-    
-            src_loc, src_addr, src_bal_old = wallet_gen('volumes/srcwallet', node_1.ip)
-            dst_loc, dst_addr, dst_bal_old = wallet_gen('volumes/dstwallet', node_1.ip)
-    
+            node_1 = get_container_from_name('testsintegration_node_1')
+            src_wallet_1 = wallet_ls(node_1, '/home/testuser/.qrl/wallet1')
+            dst_wallet_1 = wallet_ls(node_1, '/home/testuser/.qrl/wallet2')
+
             amount = 50
             fee = 13
             IntegrationTest.writeout("qrl tx_transfer {},{}".format(amount, fee))
-            tx_transfer = subprocess.Popen(
-                ["qrl", "--wallet_dir", src_loc, "-r", "--host", node_1.ip, "tx_transfer", "--src",
-                 src_addr, "--dst", dst_addr, "--amount", str(amount), "--fee", str(fee)],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-            )
-            tx_transfer.wait(timeout=10)
-            resp = tx_transfer.stdout.read().decode()
-            if 'True' not in resp:
-                IntegrationTest.writeout("qrl tx_transfer error: {}".format(resp))
+
+            output = node_1.exec_run(
+                ["qrl", "--wallet_dir", src_wallet_1.location, "-r", "tx_transfer", "--src",
+                 src_wallet_1.addresses[0].number, "--dst", dst_wallet_1.addresses[0].address,
+                 "--amount", str(amount), "--fee", str(fee)]).decode().strip()
+
+            if 'True' not in output:
+                IntegrationTest.writeout("qrl tx_transfer error: {}".format(output))
                 self.test_successful = False
-                return
-    
+
             IntegrationTest.writeout("TX sent. Waiting a bit...")
             sleep(120)
-    
-            _, _, src_bal_new = wallet_ls('volumes/srcwallet', node_2.ip)
-            _, _, dst_bal_new = wallet_ls('volumes/dstwallet', node_2.ip)
-            IntegrationTest.writeout("src balance {}->{}".format(src_bal_old, src_bal_new))
-            IntegrationTest.writeout("dst balance {}->{}".format(dst_bal_old, dst_bal_new))
-    
-            if (src_bal_new == src_bal_old - (amount + fee)) and (dst_bal_new == (dst_bal_old + amount)):
+
+            src_wallet_2 = wallet_ls(node_1, '/home/testuser/.qrl/wallet1')
+            dst_wallet_2 = wallet_ls(node_1, '/home/testuser/.qrl/wallet2')
+            IntegrationTest.writeout(
+                "src balance {}->{}".format(src_wallet_1.addresses[0].balance, src_wallet_2.addresses[0].balance))
+            IntegrationTest.writeout(
+                "dst balance {}->{}".format(dst_wallet_1.addresses[0].balance, dst_wallet_2.addresses[0].balance))
+
+            src_balance_correct = src_wallet_2.addresses[0].balance == (src_wallet_1.addresses[0].balance - (amount + fee))
+            dst_balance_correct = dst_wallet_2.addresses[0].balance == (dst_wallet_1.addresses[0].balance + amount)
+            if src_balance_correct and dst_balance_correct:
                 self.test_successful = True
             else:
                 self.test_successful = False
