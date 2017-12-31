@@ -23,6 +23,9 @@ fi
 # Get all dependencies
 sudo -H pip3 install -r ${HOME}/QRL/requirements.txt | grep -v 'Requirement already satisfied' | cat
 
+# Install QRL as a pip package. Makes CLI interaction easier.
+sudo -H pip3 install -e ${HOME}/QRL | grep -v 'Requirement already satisfied' | cat
+
 # Execute phase
 echo "Boot phase: ${BOOT_PHASE}"
 case "${BOOT_PHASE}" in
@@ -32,6 +35,9 @@ case "${BOOT_PHASE}" in
         bootstrap)
             echo "Collect Wallets"
             #python3 ${HOME}/QRL/start_qrl.py -q --get-wallets > ${HOME}/.qrl/wallet_address
+            echo "Pregenerate Test Wallets"
+            python3 ${HOME}/QRL/qrl/cli.py --wallet_dir ${HOME}/.qrl/wallet1 wallet_gen
+            python3 ${HOME}/QRL/qrl/cli.py --wallet_dir ${HOME}/.qrl/wallet2 wallet_gen
             ;;
          
         start)
