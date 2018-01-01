@@ -18,7 +18,7 @@ class TxDuplicates(IntegrationTest):
     def the_test(self):
         try:
             IntegrationTest.writeout("Beginning Test")
-            node_1 = get_container_from_name('testsintegration_node_1')
+            node_1 = get_container_from_name('node_1')
             src_wallet_1 = wallet_ls(node_1, '/home/testuser/.qrl/wallet1')
             dst_wallet_1 = wallet_ls(node_1, '/home/testuser/.qrl/wallet2')
 
