@@ -4,7 +4,7 @@ import threading
 from time import sleep
 
 from scripts.docker_helper import get_container_from_name
-from qrl_testing.helpers import wallet_gen, wallet_ls
+from qrl_testing.helpers import wallet_ls
 from qrl_testing.IntegrationTest import IntegrationTest, LogEntry
 
 
@@ -54,8 +54,6 @@ class SendQRLToEachOther(IntegrationTest):
         except:
             IntegrationTest.writeout(traceback.format_exc())
             self.test_successful = False
-            
-
 
     def custom_process_log_entry(self, log_entry: LogEntry):
         if log_entry.node_id is not None:

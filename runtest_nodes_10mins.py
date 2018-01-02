@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import threading
 import time
 
 from qrl_testing.IntegrationTest import IntegrationTest, TOTAL_NODES, LogEntry

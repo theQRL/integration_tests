@@ -4,7 +4,7 @@ import threading
 from scripts.docker_helper import get_container_from_name
 
 from time import sleep
-from qrl_testing.helpers import wallet_gen, wallet_ls, tx_push
+from qrl_testing.helpers import wallet_ls, tx_push
 from qrl_testing.IntegrationTest import IntegrationTest, LogEntry
 
 

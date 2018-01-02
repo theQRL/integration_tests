@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from qrl_testing.IntegrationTest import IntegrationTest, TOTAL_NODES, LogEntry
+from qrl_testing.IntegrationTest import IntegrationTest, LogEntry
 
 
 class CheckNodesSynchronize(IntegrationTest):

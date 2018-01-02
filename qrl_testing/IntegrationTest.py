@@ -86,7 +86,7 @@ class IntegrationTest(object):
     def all_nodes_synced(self):
         s = [n.sync_status == SyncStatus.SYNCED for n in self.node_states.values()]
         return all(s) and (len(self.node_states) == TOTAL_NODES)
-    
+
     @property
     def all_nodes_grpc_started(self):
         grpc_started_status = [n.grpc_started for n in self.node_states.values()]

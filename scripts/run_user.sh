@@ -4,7 +4,7 @@
 
 # Check node IP addresses
 ifconfig | perl -nle 's/dr:(\S+)/print $1/e' > ${HOME}/.qrl/node_ip
-cat ${HOME}/.qrl/node_ip | grep -v '127.0.0.1'
+grep -v '127.0.0.1' ${HOME}/.qrl/node_ip
 
 # Get source code
 rm -rf ${HOME}/QRL
