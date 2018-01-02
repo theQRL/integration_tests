@@ -25,3 +25,25 @@ jobs:
       - sudo pip install -U docker-compose | cat
       - docker-compose --version
       - "python3 runtest_nodes_10mins.py"
+
+    - stage: integration-test
+      os: linux
+      env:
+      - TEST='SEND_QRL'
+      before_install:
+      - sudo apt-get -y install swig3.0 build-essential software-properties-common
+      - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+      - sudo apt-get update
+      - sudo apt-get install -y gcc-snapshot gcc-6 g++-6
+      - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6
+      script: # /home/travis/build/randomshinichi/integration_tests
+      - git clone https://github.com/randomshinichi/QRL.git -b cli_inttests
+      - pip install -r QRL/requirements.txt
+      - pip install -e QRL/
+      - whoami
+      - pwd
+      - ls -l
+      - sudo pip install -U docker-compose | cat
+      - docker-compose --version
+      - qrl --help
+      - "python3 runtest_nodes_send_qrl.py"
