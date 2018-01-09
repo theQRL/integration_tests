@@ -25,7 +25,7 @@ if [ ! -z ${INTEGRATION_TESTINPLACE:-} ]; then
     mkdir -p volumes/source
     SOURCE_DIR=$(readlink -m ..)
     echo "SOURCE DIR: ${SOURCE_DIR}"
-    rsync -qiar --progress ${SOURCE_DIR} volumes/source --exclude tests_integration --exclude .git
+    rsync -qiar --progress ${SOURCE_DIR} volumes/source --exclude tests_integration
 fi
 
 #echo "****************************************************************"

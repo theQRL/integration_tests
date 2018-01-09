@@ -4,7 +4,7 @@
 
 # Check node IP addresses
 ifconfig | perl -nle 's/dr:(\S+)/print $1/e' > ${HOME}/.qrl/node_ip
-cat ${HOME}/.qrl/node_ip | grep -v '127.0.0.1'
+grep -v '127.0.0.1' ${HOME}/.qrl/node_ip
 
 # Get source code
 rm -rf ${HOME}/QRL
@@ -16,12 +16,15 @@ if [ -z ${INTEGRATION_TESTINPLACE:-} ]; then
 else
     echo "Copying local source"
     ls /volumes/source
-    rsync -qiar --progress /volumes/source/QRL/ ${HOME}/QRL --exclude tests_integration --exclude .git
+    rsync -qiar --progress /volumes/source/QRL/ ${HOME}/QRL --exclude tests_integration
     ls ${HOME}/QRL
 fi
 
 # Get all dependencies
 sudo -H pip3 install -r ${HOME}/QRL/requirements.txt | grep -v 'Requirement already satisfied' | cat
+
+# Install QRL as a pip package. Makes CLI interaction easier.
+sudo -H pip3 install -e ${HOME}/QRL | grep -v 'Requirement already satisfied' | cat
 
 # Execute phase
 echo "Boot phase: ${BOOT_PHASE}"
@@ -32,6 +35,9 @@ case "${BOOT_PHASE}" in
         bootstrap)
             echo "Collect Wallets"
             #python3 ${HOME}/QRL/start_qrl.py -q --get-wallets > ${HOME}/.qrl/wallet_address
+            echo "Pregenerate Test Wallets"
+            python3 ${HOME}/QRL/qrl/cli.py --wallet_dir ${HOME}/.qrl/wallet1 wallet_gen
+            python3 ${HOME}/QRL/qrl/cli.py --wallet_dir ${HOME}/.qrl/wallet2 wallet_gen
             ;;
          
         start)

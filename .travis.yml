@@ -13,6 +13,7 @@ jobs:
       env:
       - TEST='NODES_SYNC'
       script:
+      - sudo pip -V
       - sudo pip install -U docker-compose | cat
       - docker-compose --version
       - "python3 runtest_nodes_synchronize.py"
@@ -22,6 +23,37 @@ jobs:
       env:
       - TEST='RUN_10MIN'
       script:
+      - sudo pip -V
       - sudo pip install -U docker-compose | cat
       - docker-compose --version
       - "python3 runtest_nodes_10mins.py"
+
+    - stage: integration-test
+      os: linux
+      env:
+      - TEST='SEND_QRL'
+      script:
+      - sudo pip -V
+      - sudo pip install -U docker-compose | cat
+      - docker-compose --version
+      - "python3 runtest_nodes_send_qrl.py"
+
+    - stage: integration-test
+      os: linux
+      env:
+      - TEST='TX_DUPLICATES'
+      script:
+      - sudo pip -V
+      - sudo pip install -U docker-compose | cat
+      - docker-compose --version
+      - "python3 runtest_nodes_tx_duplicates.py"
+
+    - stage: integration-test
+      os: linux
+      env:
+      - TEST='TX_OTS_DUPLICATES'
+      script:
+      - sudo pip -V
+      - sudo pip install -U docker-compose | cat
+      - docker-compose --version
+      - "python3 runtest_nodes_tx_ots_duplicates.py"
