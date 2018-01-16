@@ -1,10 +1,10 @@
 #!/bin/bash -u
 
 # Default values
-export NUM_NODES=1
+export NUM_NODES=4
 export LOCALNET_ONLY=1
 export REPO_SLUG=theQRL/QRL
-export REPO_BRANCH=pow
+export REPO_BRANCH=master
 
 export DOCKER_UID=$( id -u ${USER} )
 export DOCKER_GID=$( id -g ${USER} )
