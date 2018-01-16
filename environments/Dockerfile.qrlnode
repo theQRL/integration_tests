@@ -3,7 +3,8 @@ FROM ubuntu:16.04
 RUN apt-get update && \
     apt-get -y install ca-certificates curl && \
     apt-get -y install build-essential net-tools git sudo socat && \
-    apt-get -y install swig3.0 python3-dev python3-pip build-essential cmake pkg-config libssl-dev libffi-dev libhwloc-dev
+    apt-get -y install swig3.0 python3-dev python3-pip build-essential cmake pkg-config && \
+    apt-get -y install libssl-dev libffi-dev libhwloc-dev libboost-dev
 
 RUN echo "ALL ALL=NOPASSWD: ALL" >> /etc/sudoers
 

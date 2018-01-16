@@ -47,7 +47,7 @@ class IntegrationTest(object):
     @staticmethod
     def max_time_error():
         IntegrationTest.writeout("******************** MAX RUNNING TIME ERROR ********************")
-        os.kill(os.getpid(), signal.SIGABRT)
+        os.kill(os.getpid(), signal.SIGINT)
 
     @staticmethod
     def successful_test():
@@ -57,7 +57,7 @@ class IntegrationTest(object):
     def fail_test(self):
         def fail_exit():
             self.writeout("******************** FAILED!")
-            os.kill(os.getpid(), signal.SIGABRT)
+            os.kill(os.getpid(), signal.SIGINT)
 
         # Fail after 2 secs to the output is available
         IntegrationTest.writeout("******************** FAILURE TRIGGERED! ********************")

@@ -7,3 +7,5 @@ testnet/genesis\.yml
 qrl_testing/__pycache__/
 
 \.idea/
+
+scripts/__pycache__/
