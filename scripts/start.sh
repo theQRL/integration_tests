@@ -38,4 +38,3 @@ sudo BOOT_PHASE=${BOOT_PHASE} \
 
 mkdir -p /home/${USERNAME}/.qrl/wallet/
 rm /home/${USERNAME}/.qrl/wallet/wallet.qrl
-python3 /root/scripts/prepare_node.py
