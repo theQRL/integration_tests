@@ -47,17 +47,25 @@ class IntegrationTest(object):
     @staticmethod
     def max_time_error():
         IntegrationTest.writeout("******************** MAX RUNNING TIME ERROR ********************")
-        os.kill(os.getpid(), signal.SIGABRT)
+        os.kill(os.getpid(), signal.SIGINT)
 
     @staticmethod
     def successful_test():
         IntegrationTest.writeout("******************** SUCCESS! ********************")
+
+    @staticmethod
+    def success():
         quit(0)
+
+    @staticmethod
+    def fail():
+        quit(1)
+
 
     def fail_test(self):
         def fail_exit():
             self.writeout("******************** FAILED!")
-            os.kill(os.getpid(), signal.SIGABRT)
+            os.kill(os.getpid(), signal.SIGINT)
 
         # Fail after 2 secs to the output is available
         IntegrationTest.writeout("******************** FAILURE TRIGGERED! ********************")
@@ -66,8 +74,8 @@ class IntegrationTest(object):
 
     def start(self):
         current_path = os.path.dirname(__file__)
-        script_path = os.path.join(current_path, '..', 'start_net.sh')
-        proc = subprocess.Popen([script_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        script_path = current_path + '/start_net.sh'
+        proc = subprocess.Popen([script_path], cwd=current_path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         myThread = threading.Timer(self.max_running_time_secs, IntegrationTest.max_time_error)
         myThread.start()
