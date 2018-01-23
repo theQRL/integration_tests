@@ -1,14 +1,16 @@
+#!/usr/bin/env python3
 import sys
 import socket
 import json
 
-from qrlnet import get_container_from_hash
-from qrlnet import wallets, transactions, genesis_balance
+from docker_helper import get_container_from_hash
+from test_metadata import wallets, transactions, genesis_balance
 
 sys.path.append("/root/scripts/")
 
 
 def prepare():
+    # TODO: This can probably be improved
     hostname = socket.gethostname()
     c = get_container_from_hash(hostname)
     if not c:

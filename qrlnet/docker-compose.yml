@@ -19,4 +19,5 @@ services:
     volumes:
     - ./volumes:/volumes
     - ./nodes_scripts:/root/scripts
+    - ./nodes_data:/root/data
     - /var/run/docker.sock:/var/run/docker.sock
