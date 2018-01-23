@@ -51,7 +51,8 @@ def set_up():
 
     w1.terminate()
     current_path = os.path.dirname(__file__)
-    subprocess.call([current_path + '/qrlnet/reset_net.sh'])
+    reset_cmd = os.path.join(current_path, os.pardir, "qrlnet", "reset_net.sh")
+    subprocess.call([ reset_cmd ])
 
     print('*****************************')
     print('*****************************')

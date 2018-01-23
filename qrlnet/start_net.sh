@@ -32,17 +32,8 @@ if [ ! -z ${INTEGRATION_TESTINPLACE:-} ]; then
 fi
 
 echo "****************************************************************"
-echo "                       BOOTSTRAPPING"
-echo "****************************************************************"
-export BOOT_PHASE=bootstrap
-docker-compose up --scale node=${NUM_NODES}
-python3 ./host_scripts/collect_node_data.py # Get Addresses/ips and prepare genesis block
-
-echo "****************************************************************"
 echo "                       STARTING LOCALNET"
 echo "****************************************************************"
-cat ./nodes_data/config.yml
-
 export BOOT_PHASE=start
 docker-compose up --scale node=${NUM_NODES}
 

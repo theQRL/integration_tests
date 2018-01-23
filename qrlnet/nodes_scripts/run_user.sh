@@ -3,12 +3,6 @@
 #RUN pip install -i https://testpypi.python.org/pypi --extra-index-url https://pypi.python.org/simple/  --upgrade qrl
 
 ##########################################
-# Check node IP addresses
-# TODO: This is obsolate but still necessary. Remove and use docker SDK
-ifconfig | perl -nle 's/dr:(\S+)/print $1/e' > ${HOME}/.qrl/node_ip
-cat ${HOME}/.qrl/node_ip | grep -v '127.0.0.1'
-
-##########################################
 # Get source code
 rm -rf ${HOME}/QRL
 if [ -z ${INTEGRATION_TESTINPLACE:-} ]; then
@@ -29,6 +23,11 @@ fi
 sudo -H pip3 install -r ${HOME}/QRL/requirements.txt | grep -v 'Requirement already satisfied' | cat
 
 #########################################
+# Patch source code genesis
+mkdir -p /home/${USERNAME}/.qrl/wallet/
+sudo python3 /home/${USERNAME}/scripts/prepare_node.py
+
+#########################################
 # Execute phase
 # TODO: We can probably remove this soon
 echo "Boot phase: ${BOOT_PHASE}"
@@ -37,14 +36,7 @@ case "${BOOT_PHASE}" in
         # TODO: We can probably remove this soon
         tail -f /dev/null
         ;;
-    bootstrap)
-        # TODO: We can probably remove this soon
-        echo "Collect Wallets"
-        #python3 ${HOME}/QRL/start_qrl.py -q --get-wallets > ${HOME}/.qrl/wallet_address
-        ;;
-
     start)
-        cp ${HOME}/.qrl/genesis.json ${HOME}/QRL/qrl/core
         python3 ${HOME}/QRL/start_qrl.py -l DEBUG
         ;;
 

@@ -3,21 +3,27 @@ import sys
 import socket
 import json
 
-from docker_helper import get_container_from_hash
+import docker
+from docker_helper import get_container_from_hash, get_main_ip
 from test_metadata import wallets, transactions, genesis_balance
 
 sys.path.append("/root/scripts/")
 
 
 def prepare():
-    # TODO: This can probably be improved
     hostname = socket.gethostname()
     c = get_container_from_hash(hostname)
     if not c:
         return
 
-    docker_name = c.name
+    client = docker.from_env()
+    containers = client.containers.list()
+    with open('/home/testuser/.qrl/config.yml', 'w') as f:
+        f.write("peer_list:\n")
+        for cont in containers:
+            f.write("- '{}'\n".format(get_main_ip(cont), ))
 
+    docker_name = c.name
     node_number = int(docker_name.split('node_')[1])
     with open('/home/testuser/.qrl/wallet/wallet.json', 'w') as f:
         json.dump([wallets[node_number - 1]], f)
@@ -28,7 +34,7 @@ def prepare():
     genesis['transactions'] = transactions
     genesis['genesis_balance'] = genesis_balance
 
-    with open('/home/testuser/.qrl/genesis.json', 'w') as f:
+    with open('/home/testuser/QRL/qrl/core/genesis.json', 'w') as f:
         json.dump(genesis, f)
 
 

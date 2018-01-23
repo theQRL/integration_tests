@@ -2,8 +2,8 @@ version: '3.3'
 services:
   node:
     build:
-      context: ..
-      dockerfile: environments/Dockerfile.qrlnode
+      context: .
+      dockerfile: Dockerfile.qrlnode
 
     environment:
       - BOOT_PHASE=${BOOT_PHASE}
@@ -19,5 +19,4 @@ services:
     volumes:
     - ./volumes:/volumes
     - ./nodes_scripts:/root/scripts
-    - ./nodes_data:/root/data
     - /var/run/docker.sock:/var/run/docker.sock

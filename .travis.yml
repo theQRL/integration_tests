@@ -16,6 +16,7 @@ jobs:
       - sudo pip install -U docker-compose | cat
       - docker-compose --version
       - sudo pip install pytest
+      - export PYTHONPATH=$(pwd)
       - pytest -s --ignore=tests/custom
 
     - stage: integration-test
@@ -26,4 +27,5 @@ jobs:
       - sudo pip install -U docker-compose | cat
       - docker-compose --version
       - sudo pip install pytest
+      - export PYTHONPATH=$(pwd)
       - pytest --noconftest -s -m runfor10minutes

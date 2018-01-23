@@ -20,7 +20,9 @@ VOLUME_NAME="/volumes/${EASYNAME}"
 
 ###########################################3
 # Copy scripts and configuration to the testuser
+mkdir -p /home/${USERNAME}/scripts
 cp /root/scripts/run_user.sh  /home/${USERNAME}/run_user.sh
+cp /root/scripts/*  /home/${USERNAME}/scripts
 mkdir -p ${VOLUME_NAME}
 ln -sf ${VOLUME_NAME} /home/${USERNAME}/.qrl
 
@@ -28,7 +30,7 @@ ln -sf ${VOLUME_NAME} /home/${USERNAME}/.qrl
 # If the network is restricted to localnet. Override the node configuration with a smaller set of ips
 if [[ -v LOCALNET_ONLY ]]; then
     echo "Restricting to LOCALNET"
-    cp /root/scripts/config.yml  ${VOLUME_NAME}/config.yml
+    # FIXME: Right now there is not setting. It will always restrict to local net
 fi
 
 ###########################################3
@@ -44,6 +46,3 @@ sudo BOOT_PHASE=${BOOT_PHASE} \
      REPO_SLUG=${REPO_SLUG} REPO_BRANCH=${REPO_BRANCH} \
      EASYNAME=${EASYNAME} -i -u ${USERNAME} \
      /home/${USERNAME}/run_user.sh
-
-mkdir -p /home/${USERNAME}/.qrl/wallet/
-python3 /root/scripts/prepare_node.py

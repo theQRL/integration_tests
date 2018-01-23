@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from __future__ import print_function
-import docker
-import socket
 
+import socket
 import sys
+
+import docker
 
 
 def eprint(*args, **kwargs):
@@ -11,7 +12,7 @@ def eprint(*args, **kwargs):
 
 
 def get_main_ip(container):
-    return container.attrs['NetworkSettings']['Networks']['integrationtests_default']['IPAddress']
+    return container.attrs['NetworkSettings']['Networks']['qrlnet_default']['IPAddress']
 
 
 def get_container_from_name(container_name):
