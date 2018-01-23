@@ -1,5 +1,9 @@
 #!/bin/bash -u
 
+# TODO: Use a bash trap here
+pushd . > /dev/null
+cd $( dirname "${BASH_SOURCE[0]}" )
+
 # Default values
 export NUM_NODES=4
 export LOCALNET_ONLY=1
@@ -27,25 +31,10 @@ if [ ! -z ${INTEGRATION_TESTINPLACE:-} ]; then
     rsync -qiar --progress ${SOURCE_DIR} volumes/source --exclude tests_integration --exclude .git
 fi
 
-#echo "****************************************************************"
-#echo "                       FREEZE"
-#echo "****************************************************************"
-#export BOOT_PHASE=freeze
-#docker-compose up --scale node=${NUM_NODES}
-
-
-echo "****************************************************************"
-echo "                       BOOTSTRAPPING"
-echo "****************************************************************"
-export BOOT_PHASE=bootstrap
-docker-compose up --scale node=${NUM_NODES}
-python3 ./collect_node_data.py # Get Addresses/ips and prepare genesis block
-
 echo "****************************************************************"
 echo "                       STARTING LOCALNET"
 echo "****************************************************************"
-cat ./nodes_scripts/config.yml
-cat ./nodes_scripts/genesis.yml
-
 export BOOT_PHASE=start
 docker-compose up --scale node=${NUM_NODES}
+
+popd > /dev/null

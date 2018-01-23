@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-from .nodes_logs_parser import IntegrationTest, TOTAL_NODES, LogEntry
+from .logs_parser import TestLogParser, TOTAL_NODES, LogEntry
 
-class CheckNodesSynchronize(IntegrationTest):
-    def __init__(self,sync_event):
+
+class CheckNodesSynchronize(TestLogParser):
+    def __init__(self, sync_event):
         super().__init__(max_running_time_secs=600)
         self.node_state = dict()
         self.sync_event = sync_event
@@ -13,13 +14,10 @@ class CheckNodesSynchronize(IntegrationTest):
             if len(self.node_state) == TOTAL_NODES:
                 if all(s == 'synced' for s in self.node_state.values()):
                     print("All nodes in sync! Uptime: {} secs".format(self.running_time))
-                    self.sync_event.set();
+                    self.sync_event.set()
                     return self.successful_test()
+
 
 def wait_for_sync(sync_event):
     test = CheckNodesSynchronize(sync_event)
-    test.start()
-
-if __name__ == '__main__':
-    test = CheckNodesSynchronize()
     test.start()
