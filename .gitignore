@@ -1,13 +1,9 @@
-volumes/*
-!volumes/.gitkeep
-testnet/genesis\.yml
+/qrlnet/volumes/
+!/qrlnet/volumes/.gitkeep
 .cache
-\.idea/workspace\.xml
-
-qrl_testing/__pycache__/
 
 \.idea/
 *.pyc
 *.pio
 report/junit.xml
-tests/helpers/nodes_scripts/config.yml
+.vscode/

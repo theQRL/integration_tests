@@ -5,10 +5,10 @@ import os
 import multiprocessing
 import subprocess
 
-from tests.helpers.nodes_logs_parser import IntegrationTest, LogEntry, TOTAL_NODES
+from tests.helpers.logs_parser import TestLogParser, LogEntry, TOTAL_NODES
 
 
-class RunFor1MinuteAfterSync(IntegrationTest):
+class RunFor1MinuteAfterSync(TestLogParser):
     ONE_MINUTE_SECS = 60
 
     def __init__(self, sync_event):
@@ -33,7 +33,7 @@ class RunFor1MinuteAfterSync(IntegrationTest):
 def setup():
     yield
     current_path = os.path.dirname(__file__)
-    script_path = os.path.join(current_path, '..', 'helpers/reset_net.sh')
+    script_path = os.path.join(current_path, '..', 'qrlnet/reset_net.sh')
     subprocess.call([script_path])
 
 

@@ -29,12 +29,13 @@ fatal_errors = {
 LogEntry = namedtuple('LogEntry', 'full node_id time version sync_state rest')
 
 
-class IntegrationTest(object):
+# TODO: Refactor this
+class TestLogParser(object):
     def __init__(self, max_running_time_secs):
         self.max_running_time_secs = max_running_time_secs
         self.start_time = time.time()
         self.regex_ansi_escape = re.compile(r'\x1b[^m]*m')
-        IntegrationTest.writeout("******************** INTEGRATION TEST STARTED ********************")
+        TestLogParser.writeout("******************** INTEGRATION TEST STARTED ********************")
 
     @property
     def running_time(self):
@@ -46,12 +47,12 @@ class IntegrationTest(object):
 
     @staticmethod
     def max_time_error():
-        IntegrationTest.writeout("******************** MAX RUNNING TIME ERROR ********************")
+        TestLogParser.writeout("******************** MAX RUNNING TIME ERROR ********************")
         os.kill(os.getpid(), signal.SIGINT)
 
     @staticmethod
     def successful_test():
-        IntegrationTest.writeout("******************** SUCCESS! ********************")
+        TestLogParser.writeout("******************** SUCCESS! ********************")
 
     def fail_test(self):
         def fail_exit():
@@ -59,16 +60,16 @@ class IntegrationTest(object):
             os.kill(os.getpid(), signal.SIGINT)
 
         # Fail after 2 secs to the output is available
-        IntegrationTest.writeout("******************** FAILURE TRIGGERED! ********************")
+        TestLogParser.writeout("******************** FAILURE TRIGGERED! ********************")
         self.fail_timer = threading.Timer(2, fail_exit)
         self.fail_timer.start()
 
     def start(self):
         current_path = os.path.dirname(__file__)
-        script_path = current_path + '/start_net.sh'
+        script_path = os.path.join(os.pardir, os.pardir, "qrlnet", "start_net.sh")
         proc = subprocess.Popen([script_path], cwd=current_path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-        my_thread = threading.Timer(self.max_running_time_secs, IntegrationTest.max_time_error)
+        my_thread = threading.Timer(self.max_running_time_secs, TestLogParser.max_time_error)
         my_thread.start()
 
         try:

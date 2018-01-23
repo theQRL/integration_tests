@@ -2,8 +2,8 @@ import sys
 import socket
 import json
 
-from tests.helpers.nodes_scripts.docker_helper import get_container_from_hash
-from tests.helpers.nodes_scripts.test_metadata import wallets, transactions, genesis_balance
+from qrlnet import get_container_from_hash
+from qrlnet import wallets, transactions, genesis_balance
 
 sys.path.append("/root/scripts/")
 

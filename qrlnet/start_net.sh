@@ -1,5 +1,9 @@
 #!/bin/bash -u
 
+# TODO: Use a bash trap here
+pushd . > /dev/null
+cd $( dirname "${BASH_SOURCE[0]}" )
+
 # Default values
 export NUM_NODES=4
 export LOCALNET_ONLY=1
@@ -49,3 +53,5 @@ cat ./nodes_scripts/genesis.yml
 
 export BOOT_PHASE=start
 docker-compose up --scale node=${NUM_NODES}
+
+popd > /dev/null

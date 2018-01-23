@@ -3,7 +3,7 @@ import subprocess
 import os
 import multiprocessing
 
-from tests.helpers import runtest_nodes_synchronize
+from tests.helpers.nodes_synchronize import wait_for_sync
 
 
 def pytest_addoption(parser):
@@ -32,7 +32,7 @@ def set_up():
     sync_event = multiprocessing.Event()
     w1 = multiprocessing.Process(
         name='nodes',
-        target=runtest_nodes_synchronize.wait_for_sync,
+        target=wait_for_sync,
         args=(sync_event,),
     )
 
@@ -51,7 +51,7 @@ def set_up():
 
     w1.terminate()
     current_path = os.path.dirname(__file__)
-    subprocess.call([current_path + '/helpers/reset_net.sh'])
+    subprocess.call([current_path + '/qrlnet/reset_net.sh'])
 
     print('*****************************')
     print('*****************************')

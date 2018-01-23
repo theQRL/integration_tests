@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-from .nodes_logs_parser import IntegrationTest, TOTAL_NODES, LogEntry
+from .logs_parser import TestLogParser, TOTAL_NODES, LogEntry
 
 
-class CheckNodesSynchronize(IntegrationTest):
+class CheckNodesSynchronize(TestLogParser):
     def __init__(self, sync_event):
         super().__init__(max_running_time_secs=600)
         self.node_state = dict()

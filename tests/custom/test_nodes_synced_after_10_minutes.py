@@ -4,10 +4,10 @@ import subprocess
 import time
 
 import pytest
-from tests.helpers.nodes_logs_parser import IntegrationTest, TOTAL_NODES, LogEntry
+from tests.helpers.logs_parser import TestLogParser, TOTAL_NODES, LogEntry
 
 
-class RunFor10Minutes(IntegrationTest):
+class RunFor10Minutes(TestLogParser):
     TEN_MINUTES_SECS = 600
 
     def __init__(self, timeout_event, shared_success_value):
@@ -22,7 +22,7 @@ class RunFor10Minutes(IntegrationTest):
             self.node_state[log_entry.node_id] = log_entry.sync_state
             if len(self.node_state) == TOTAL_NODES and not self.could_sync:
                 if all(s == 'synced' for s in self.node_state.values()):
-                    IntegrationTest.writeout("******************** NODES SYNCED ********************")
+                    TestLogParser.writeout("******************** NODES SYNCED ********************")
                     self.could_sync = True
 
         if time.time() - self.start_time > self.TEN_MINUTES_SECS:
@@ -39,7 +39,7 @@ class RunFor10Minutes(IntegrationTest):
 def setup():
     yield
     current_path = os.path.dirname(__file__)
-    script_path = os.path.join(current_path, '..', 'helpers/reset_net.sh')
+    script_path = os.path.join(current_path, '..', 'qrlnet/reset_net.sh')
     subprocess.call([script_path])
 
 
