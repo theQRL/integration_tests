@@ -23,19 +23,20 @@ def prepare():
         for cont in containers:
             f.write("- '{}'\n".format(get_main_ip(cont), ))
 
-    docker_name = c.name
-    node_number = int(docker_name.split('node_')[1])
-    with open('/home/testuser/.qrl/wallet/wallet.json', 'w') as f:
-        json.dump([wallets[node_number - 1]], f)
-
-    with open('/home/testuser/QRL/qrl/core/genesis.json', 'r') as f:
-        genesis = json.load(f)
-
-    genesis['transactions'] = transactions
-    genesis['genesis_balance'] = genesis_balance
-
-    with open('/home/testuser/QRL/qrl/core/genesis.json', 'w') as f:
-        json.dump(genesis, f)
+    # docker_name = c.name
+    # node_number = int(docker_name.split('node_')[1])
+    # if len(wallets) >= node_number:
+    #     with open('/home/testuser/.qrl/wallet/wallet.json', 'w') as f:
+    #         json.dump([wallets[node_number - 1]], f)
+    #
+    # with open('/home/testuser/QRL/qrl/core/genesis.json', 'r') as f:
+    #     genesis = json.load(f)
+    #
+    # genesis['transactions'] = transactions
+    # genesis['genesis_balance'] = genesis_balance
+    #
+    # with open('/home/testuser/QRL/qrl/core/genesis.json', 'w') as f:
+    #     json.dump(genesis, f)
 
 
 if __name__ == '__main__':

@@ -7,3 +7,5 @@
 *.pio
 report/junit.xml
 .vscode/
+
+scripts/__pycache__/
