@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/travis/theQRL/integration_tests/master.svg?label=Integration_Tests)](https://travis-ci.org/theQRL/integration_tests) 
+[![Build Status](https://img.shields.io/travis/theQRL/integration_tests/master.svg?label=Integration_Tests)](https://travis-ci.org/theQRL/integration_tests)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/theQRL/qrllib/master/LICENSE)
 
 # QRL Integration Tests
@@ -19,7 +19,7 @@ Follow the corresponding instructions:
 |---|---|
 |Windows | https://docs.docker.com/docker-for-windows/install/   |
 |Linux   | https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/ |
-|OSX     | https://docs.docker.com/docker-for-mac/install/ | 
+|OSX     | https://docs.docker.com/docker-for-mac/install/ |
 |||
 
 Install docker compose
@@ -28,9 +28,15 @@ Install docker compose
 
 ### Start Integration Tests
 
-Run one of the scenarios, for example:
+Run pytest
+`pytest`
 
-`python3 runtest_nodes_synchronize.py`
+To run a specific scenario use -m flag
+
+`pytest -s -m "runfor10minutes"`
+
+To avoid running a scenario
+`pytest -s  -m "not runfor10minutes"`
 
 
 ### Limitations

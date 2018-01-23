@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   node:
-    build: 
+    build:
       context: .
       dockerfile: ./environments/Dockerfile.qrlnode
 
@@ -22,5 +22,5 @@ services:
 
     volumes:
     - ./volumes:/volumes
-    - ./scripts:/root/scripts
+    - ./tests/helpers/nodes_scripts:/root/scripts
     - /var/run/docker.sock:/var/run/docker.sock

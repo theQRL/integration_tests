@@ -2,9 +2,8 @@
 import glob
 
 node_ip_sources = []
-for filename in glob.iglob('./volumes/**/node_ip', recursive=True):
+for filename in glob.iglob('../../volumes/**/node_ip', recursive=True):
     node_ip_sources.append(filename)
-
 # Get all ips
 node_ips = []
 for s in node_ip_sources:
@@ -14,7 +13,7 @@ for s in node_ip_sources:
             node_ips.append(tmp)
 
 node_ips = sorted(node_ips)
-with open('./scripts/config.yml', 'w') as f:
+with open('./nodes_scripts/config.yml', 'w') as f:
     if len(node_ips) > 0:
         f.write("peer_list:\n")
         for ip in node_ips:

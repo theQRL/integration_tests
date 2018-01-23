@@ -1,9 +1,13 @@
 volumes/*
 !volumes/.gitkeep
 testnet/genesis\.yml
-
+.cache
 \.idea/workspace\.xml
 
 qrl_testing/__pycache__/
 
 \.idea/
+*.pyc
+*.pio
+report/junit.xml
+tests/helpers/nodes_scripts/config.yml

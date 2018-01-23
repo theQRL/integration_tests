@@ -15,7 +15,8 @@ jobs:
       script:
       - sudo pip install -U docker-compose | cat
       - docker-compose --version
-      - "python3 runtest_nodes_synchronize.py"
+      - sudo pip install pytest
+      - pytest -s --ignore=tests/custom
 
     - stage: integration-test
       os: linux
@@ -24,4 +25,5 @@ jobs:
       script:
       - sudo pip install -U docker-compose | cat
       - docker-compose --version
-      - "python3 runtest_nodes_10mins.py"
+      - sudo pip install pytest
+      - pytest --noconftest -s -m runfor10minutes
