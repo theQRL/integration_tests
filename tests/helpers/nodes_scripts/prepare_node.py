@@ -2,13 +2,13 @@ import sys
 import socket
 import json
 
+from tests.helpers.nodes_scripts.docker_helper import get_container_from_hash
+from tests.helpers.nodes_scripts.test_metadata import wallets, transactions, genesis_balance
+
 sys.path.append("/root/scripts/")
 
 
 def prepare():
-    from test_metadata import wallets, transactions, genesis_balance
-    from docker_helper import get_container_from_hash
-
     hostname = socket.gethostname()
     c = get_container_from_hash(hostname)
     if not c:

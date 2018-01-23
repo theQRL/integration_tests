@@ -42,7 +42,7 @@ class IntegrationTest(object):
 
     @staticmethod
     def writeout(text):
-        print("\033[0m\033[45m{} {} {}\033[0m".format('*'*20, text, '*'*20))
+        print("\033[0m\033[45m{} {} {}\033[0m".format('*' * 20, text, '*' * 20))
 
     @staticmethod
     def max_time_error():
@@ -52,7 +52,6 @@ class IntegrationTest(object):
     @staticmethod
     def successful_test():
         IntegrationTest.writeout("******************** SUCCESS! ********************")
-
 
     def fail_test(self):
         def fail_exit():
@@ -69,8 +68,8 @@ class IntegrationTest(object):
         script_path = current_path + '/start_net.sh'
         proc = subprocess.Popen([script_path], cwd=current_path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-        myThread = threading.Timer(self.max_running_time_secs, IntegrationTest.max_time_error)
-        myThread.start()
+        my_thread = threading.Timer(self.max_running_time_secs, IntegrationTest.max_time_error)
+        my_thread.start()
 
         try:
             for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
@@ -78,8 +77,8 @@ class IntegrationTest(object):
         except Exception as e:
             print(e)
         finally:
-            if myThread.is_alive():
-                myThread.cancel()
+            if my_thread.is_alive():
+                my_thread.cancel()
             proc.kill()
 
     def check_errors(self, entry_raw: str):

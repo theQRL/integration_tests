@@ -1,13 +1,15 @@
 import pytest
 import subprocess
 import os
-import helpers.runtest_nodes_synchronize
 import multiprocessing
+
+from tests.helpers import runtest_nodes_synchronize
 
 
 def pytest_addoption(parser):
     parser.addoption("--runslow", action="store_true",
                      default=False, help="run slow tests")
+
 
 def pytest_collection_modifyitems(config, items):
     if config.getoption("--runslow"):
@@ -20,8 +22,7 @@ def pytest_collection_modifyitems(config, items):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def set_up(request):
-
+def set_up():
     print('\n*****************************')
     print('*****************************')
     print('\nSetting up Integration Test environment\n')
@@ -31,19 +32,20 @@ def set_up(request):
     sync_event = multiprocessing.Event()
     w1 = multiprocessing.Process(
         name='nodes',
-        target=helpers.runtest_nodes_synchronize.wait_for_sync,
+        target=runtest_nodes_synchronize.wait_for_sync,
         args=(sync_event,),
     )
+
     w1.start()
     synced = False
     while w1.is_alive():
-     #process is still alive
-     #we are still waiting for the sync event
-     if sync_event.is_set():
-      synced = True
-      break
-    #check that we could sync
-    if synced == False:
+        # process is still alive
+        # we are still waiting for the sync event
+        if sync_event.is_set():
+            synced = True
+            break
+    # check that we could sync
+    if not synced:
         raise Exception('CouldNotSync!')
     yield
 
