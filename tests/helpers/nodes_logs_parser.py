@@ -53,14 +53,6 @@ class IntegrationTest(object):
     def successful_test():
         IntegrationTest.writeout("******************** SUCCESS! ********************")
 
-    @staticmethod
-    def success():
-        quit(0)
-
-    @staticmethod
-    def fail():
-        quit(1)
-
 
     def fail_test(self):
         def fail_exit():

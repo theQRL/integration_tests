@@ -10,3 +10,4 @@ qrl_testing/__pycache__/
 *.pyc
 *.pio
 report/junit.xml
+tests/helpers/nodes_scripts/config.yml

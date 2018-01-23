@@ -4,7 +4,6 @@ import glob
 node_ip_sources = []
 for filename in glob.iglob('../../volumes/**/node_ip', recursive=True):
     node_ip_sources.append(filename)
-print(node_ip_sources)
 # Get all ips
 node_ips = []
 for s in node_ip_sources:
