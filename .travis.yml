@@ -16,7 +16,7 @@ jobs:
       - sudo pip install -U docker-compose | cat
       - docker-compose --version
       - sudo pip install pytest
-      - pytest -s  -m "not custom"
+      - pytest -s --ignore=tests/custom
 
     - stage: integration-test
       os: linux
