@@ -35,8 +35,16 @@ def set_up(request):
         args=(sync_event,),
     )
     w1.start()
-    sync_event.wait()
-
+    synced = False
+    while w1.is_alive():
+     #process is still alive
+     #we are still waiting for the sync event
+     if sync_event.is_set():
+      synced = True
+      break
+    #check that we could sync
+    if synced == False:
+        raise Exception('CouldNotSync!')
     yield
 
     w1.terminate()

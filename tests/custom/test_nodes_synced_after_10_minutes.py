@@ -27,8 +27,10 @@ class RunFor10Minutes(IntegrationTest):
 
         if time.time() - self.start_time > self.TEN_MINUTES_SECS:
          if self.could_sync:
+            #test successfull
             self.shared_success_value.value = 1
          else:
+            #test failed
             self.shared_success_value.value = 0
          self.timeout_event.set()
 
@@ -42,16 +44,24 @@ def setup(request):
 
 @pytest.mark.runfor10minutes
 def test_nodes_synced(setup):
-    success_value = multiprocessing.Value('i',0)
-    timeout_event =  multiprocessing.Event()
-    test = RunFor10Minutes(timeout_event,success_value)
-    w1 = multiprocessing.Process(
-        name='nodes',
-        target=test.start,
-        args=(),
-    )
-    w1.start()
-    timeout_event.wait()
-    if success_value.value != 1:
-       w1.terminate()
-       assert False
+     success_value = multiprocessing.Value('i',0)
+     timeout_event =  multiprocessing.Event()
+     test = RunFor10Minutes(timeout_event,success_value)
+     w1 = multiprocessing.Process(
+          name='nodes',
+          target=test.start,
+          args=(),
+     )
+     w1.start()
+     while w1.is_alive():
+      #process is still alive and we are still waiting for the time to pass
+      if timeout_event.is_set():
+       if success_value.value != 1:
+         w1.terminate()
+         assert False
+       else:
+         w1.terminate()
+         assert True
+         return
+    #process got killed , test failed
+     assert False
