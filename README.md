@@ -28,6 +28,8 @@ Install docker compose
 
 ### Start Integration Tests
 
+:information_source: Make sure you have `PYTHONPATH` set (e.g. `export PYTHONPATH=$(pwd)`), otherwise you could receive `ModuleNotFoundError`
+
 Run pytest
 `pytest`
 
