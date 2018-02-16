@@ -11,7 +11,9 @@ RUN echo "ALL ALL=NOPASSWD: ALL" >> /etc/sudoers
 RUN pip3 install -U pip docker
 
 # Save time by preinstalling
-RUN pip3 install -r https://raw.githubusercontent.com/theQRL/QRL/master/requirements.txt | cat
+ARG REPO_SLUG
+ARG REPO_BRANCH
+RUN pip3 install -r https://raw.githubusercontent.com/${REPO_SLUG}/${REPO_BRANCH}/requirements.txt | cat
 
 # ENV - Define environment variables
 # TODO: define any required environment variables
