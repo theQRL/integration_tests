@@ -28,7 +28,7 @@ def set_up():
     print('\nSetting up Integration Test environment\n')
     print('*****************************')
     print('*****************************')
-
+    """
     sync_event = multiprocessing.Event()
     w1 = multiprocessing.Process(
         name='nodes',
@@ -53,7 +53,7 @@ def set_up():
     current_path = os.path.dirname(__file__)
     reset_cmd = os.path.join(current_path, os.pardir, "qrlnet", "reset_net.sh")
     subprocess.call([ reset_cmd ])
-
+    """
     print('*****************************')
     print('*****************************')
     print('\nTearing Down Integration Test Environment\n')
