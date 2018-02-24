@@ -13,7 +13,8 @@ RUN pip3 install -U pip docker
 # Save time by preinstalling
 ARG REPO_SLUG
 ARG REPO_BRANCH
-RUN pip3 install -r https://raw.githubusercontent.com/${REPO_SLUG}/${REPO_BRANCH}/requirements.txt | cat
+#RUN pip3 install -r https://raw.githubusercontent.com/${REPO_SLUG}/${REPO_BRANCH}/requirements.txt | cat
+RUN pip3 install -r https://raw.githubusercontent.com/${REPO_SLUG}/${REPO_BRANCH}/requirements.txt
 
 # ENV - Define environment variables
 # TODO: define any required environment variables

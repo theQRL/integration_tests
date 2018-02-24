@@ -8,7 +8,7 @@ cd $( dirname "${BASH_SOURCE[0]}" )
 export NUM_NODES=4
 export LOCALNET_ONLY=1
 export REPO_SLUG=theQRL/QRL
-export REPO_BRANCH=master
+export REPO_BRANCH=feature/qrllib_new
 export DOCKER_UID=$( id -u ${USER} )
 export DOCKER_GID=$( id -g ${USER} )
 
