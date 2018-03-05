@@ -39,7 +39,7 @@ case "${BOOT_PHASE}" in
         tail -f /dev/null
         ;;
     start)
-        python3 ${HOME}/QRL/start_qrl.py -l DEBUG --randomizeSlaveXMSS
+        nice python3 ${HOME}/QRL/start_qrl.py -l DEBUG --randomizeSlaveXMSS
         ;;
 
     *)
