@@ -14,13 +14,15 @@ if [ -z ${INTEGRATION_TESTINPLACE:-} ]; then
 else
     echo "Copying source from local deployment"
     ls /volumes/source
-    rsync -qiar --progress /volumes/source/QRL/ ${HOME}/QRL --exclude tests_integration --exclude .git
+    # Do not exclude .git, otherwise pip install -e /home/testuser/QRL will fail
+    rsync -qiar --progress /volumes/source/QRL/ ${HOME}/QRL --exclude tests_integration
     ls ${HOME}/QRL
 fi
 
 #########################################
 # Install dependencies
 sudo -H pip3 install -r ${HOME}/QRL/requirements.txt | grep -v 'Requirement already satisfied' | cat
+sudo -H pip3 install -e ${HOME}/QRL | grep -v 'Requirement already satisfied' | cat
 
 #########################################
 # Patch source code genesis
