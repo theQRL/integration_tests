@@ -4,6 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.qrlnode
+      args:
+        - REPO_SLUG=${REPO_SLUG}
+        - REPO_BRANCH=${REPO_BRANCH}
 
     environment:
       - BOOT_PHASE=${BOOT_PHASE}

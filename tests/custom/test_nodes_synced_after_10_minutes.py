@@ -8,10 +8,10 @@ from tests.helpers.logs_parser import TestLogParser, TOTAL_NODES, LogEntry
 
 
 class RunFor10Minutes(TestLogParser):
-    TEN_MINUTES_SECS = 600
+    TEN_MINUTES_SECS = 700
 
     def __init__(self, timeout_event, shared_success_value):
-        super().__init__(max_running_time_secs=620)
+        super().__init__(max_running_time_secs=720)
         self.node_state = dict()
         self.could_sync = False
         self.timeout_event = timeout_event
