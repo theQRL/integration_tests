@@ -48,6 +48,13 @@ class TestLogParser(object):
     @staticmethod
     def max_time_error():
         TestLogParser.writeout("******************** MAX RUNNING TIME ERROR ********************")
+
+        # before you kill yourself, stop the testnet
+        current_path = os.path.dirname(__file__)
+        reset_cmd = os.path.join(current_path, os.pardir, os.pardir, "qrlnet", "reset_net.sh")
+        subprocess.call([reset_cmd])
+
+        # now you can kill yourself
         os.kill(os.getpid(), signal.SIGINT)
 
     @staticmethod
