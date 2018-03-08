@@ -13,19 +13,24 @@ jobs:
       env:
       - TEST='NODES_SYNC'
       script:
-      - sudo pip install -U docker-compose | cat
       - docker-compose --version
-      - sudo pip install pytest
       - export PYTHONPATH=$(pwd)
-      - pytest -s --ignore=tests/custom
+      - pytest -s -m oneminaftersync
 
     - stage: integration-test
       os: linux
       env:
       - TEST='RUN_10MIN'
       script:
-      - sudo pip install -U docker-compose | cat
       - docker-compose --version
-      - sudo pip install pytest
       - export PYTHONPATH=$(pwd)
       - pytest --noconftest -s -m runfor10minutes
+
+    - stage: integration-test
+      os: linux
+      env:
+      - TEST='CLI'
+      script:
+      - docker-compose --version
+      - export PYTHONPATH=$(pwd)
+      - pytest -s tests/test_wallet_transfer.py
