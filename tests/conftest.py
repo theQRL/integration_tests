@@ -21,7 +21,7 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_slow)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def set_up():
     print('\n*****************************')
     print('*****************************')
@@ -50,6 +50,8 @@ def set_up():
     yield
 
     w1.terminate()
+
+    # FIXME: MAX_RUNNING_TIME_ERROR also has to do this in TestLogParser. Duplication of logic
     current_path = os.path.dirname(__file__)
     reset_cmd = os.path.join(current_path, os.pardir, "qrlnet", "reset_net.sh")
     subprocess.call([ reset_cmd ])

@@ -28,7 +28,8 @@ if [ ! -z ${INTEGRATION_TESTINPLACE:-} ]; then
     mkdir -p volumes/source
     SOURCE_DIR=$(readlink -m ../..)
     echo "SOURCE DIR: ${SOURCE_DIR}"
-    rsync -qar ${SOURCE_DIR} volumes/source --exclude tests_integration --exclude .git > /dev/null
+    # Do not exclude .git, otherwise pip install -e /home/testuser/QRL will fail
+    rsync -qar ${SOURCE_DIR} volumes/source --exclude tests_integration > /dev/null
 fi
 
 echo "****************************************************************"

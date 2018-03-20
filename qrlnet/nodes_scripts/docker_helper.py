@@ -18,7 +18,7 @@ def get_main_ip(container):
 def get_container_from_name(container_name):
     client = docker.from_env()
     for cont in client.containers.list():
-        if cont.id.startswith(container_name):
+        if container_name in cont.name:
             return cont
 
 
