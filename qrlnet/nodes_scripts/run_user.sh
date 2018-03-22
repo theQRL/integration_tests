@@ -39,7 +39,7 @@ case "${BOOT_PHASE}" in
         tail -f /dev/null
         ;;
     start)
-        nice python3 ${HOME}/QRL/start_qrl.py -l DEBUG --randomizeSlaveXMSS
+        nice python3 ${HOME}/QRL/start_qrl.py -l DEBUG --miningCreditWallet=Q0105001cdd844d816b76eab7d1c846b05a7c5cdcef3c4665d2f050a0f41f2bd2f7b824e6d093a5
         ;;
 
     *)
