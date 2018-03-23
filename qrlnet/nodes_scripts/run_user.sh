@@ -30,6 +30,9 @@ sudo -H pip3 install -e ${HOME}/QRL | grep -v 'Requirement already satisfied' | 
 mkdir -p /home/${USERNAME}/.qrl/wallet/
 sudo python3 /home/${USERNAME}/scripts/prepare_node_config.py
 
+sed -i 's|self.genesis_difficulty = 5000|self.genesis_difficulty = 10|g' ${HOME}/QRL/qrl/core/config.py
+
+
 #########################################
 # Execute phase
 # TODO: We can probably remove this soon
