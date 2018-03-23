@@ -21,13 +21,14 @@ fi
 
 #########################################
 # Install dependencies
-sudo -H pip3 install -r ${HOME}/QRL/requirements.txt | grep -v 'Requirement already satisfied' | cat
+sudo -H pip3 install -U pip | grep -v 'Requirement already satisfied' | cat
+sudo -H pip3 install -U -r ${HOME}/QRL/requirements.txt | grep -v 'Requirement already satisfied' | cat
 sudo -H pip3 install -e ${HOME}/QRL | grep -v 'Requirement already satisfied' | cat
 
 #########################################
 # Patch source code genesis
 mkdir -p /home/${USERNAME}/.qrl/wallet/
-sudo python3 /home/${USERNAME}/scripts/prepare_node.py
+sudo python3 /home/${USERNAME}/scripts/prepare_node_config.py
 
 #########################################
 # Execute phase

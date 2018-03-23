@@ -3,8 +3,8 @@
 ###########################################3
 # We need to set the container user id to match the host id to avoid permission problems in the host
 export USERNAME="testuser"
-id -g $DOCKER_GID &> /dev/null || groupadd -g $DOCKER_GID $USERNAME
-id -u $DOCKER_UID &> /dev/null || useradd -u $DOCKER_UID -g $DOCKER_GID $USERNAME
+id -g ${DOCKER_GID} &> /dev/null || groupadd -g ${DOCKER_GID} ${USERNAME}
+id -u ${DOCKER_UID} &> /dev/null || useradd -u ${DOCKER_UID} -g ${DOCKER_GID} ${USERNAME}
 
 ###########################################3
 # Create a home directory for the testuser
