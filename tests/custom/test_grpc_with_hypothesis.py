@@ -7,7 +7,7 @@ import docker
 from random import choice
 import grpc
 
-from tests.helpers.module_conversion import modules_to_strategies
+from hypothesis_protobuf.module_conversion import modules_to_strategies
 from qrl.generated import qrl_pb2
 from qrl.generated import qrl_pb2_grpc
 
