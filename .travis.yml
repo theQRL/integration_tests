@@ -12,6 +12,7 @@ jobs:
     - stage: integration-test
       os: linux
       install:
+          - sudo apt-get -y install nodejs 
           - sudo npm install
       before_script:
           - npm install
