@@ -8,6 +8,23 @@ cache:
 
 jobs:
   include:
+    - stage: integration-test
+      os: linux
+      env:
+      - TEST='NODES_SYNC'
+      script:
+      - docker-compose --version
+      - export PYTHONPATH=$(pwd)
+      - pytest -s -m oneminaftersync
+
+    - stage: integration-test
+      os: linux
+      env:
+      - TEST='RUN_10MIN'
+      script:
+      - docker-compose --version
+      - export PYTHONPATH=$(pwd)
+      - pytest --noconftest -s -m runfor10minutes
 
     - stage: integration-test
       os: linux

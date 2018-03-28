@@ -40,6 +40,16 @@ To run a specific scenario use -m flag
 To avoid running a scenario
 `pytest -s  -m "not runfor10minutes"`
 
+### Integration Tests for the API (JavaScript)
+
+`cd tests/js
+# install all dependencies
+npm install
+# run test
+npm test
+`
+
+
 ### How it works (short explanation)
 
 #### qrlnet

@@ -1,7 +1,7 @@
 /qrlnet/volumes/
 !/qrlnet/volumes/.gitkeep
 .cache
-
+test/js/node_modules/
 \.idea/
 *.pyc
 *.pio
