@@ -12,9 +12,8 @@ jobs:
     - stage: integration-test
       os: linux
       install:
-          - sudo apt-get -y install nodejs 
-          - sudo npm install
+          - sudo apt-get -y install nodejs
       before_script:
           - npm install
       script:
-          - mocha $(find test -name 'test.js')
+          - cd tests/js && npm install && npm test
