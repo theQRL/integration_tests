@@ -67,8 +67,8 @@ binaryToBytes = (convertMe) => {
 
 
 // Connecting to the API
-// let qrlClient = getQRLClient('104.237.3.185:9009');
-let qrlClient = getQRLClient('104.251.219.215:9009');
+let qrlClient = getQRLClient('104.237.3.185:9009');
+// let qrlClient = getQRLClient('104.251.219.215:9009');
 
 
 
@@ -487,56 +487,56 @@ describe('GetLatestData - All', function() {
 
 // rpc TransferCoins (TransferCoinsReq) returns (TransferCoinsResp);
 
-describe('TransferCoins', function() {
-    // example wallet address
-    let response;
-
-    // Generate random bytes to form XMSS seed.
-    let i
-    const randomBytes = require('crypto').randomBytes(48)
-    const randomSeed = new qrllib.VectorUChar()
-    for (i = 0; i < 48; i += 1) {
-        randomSeed.push_back(randomBytes[i])
-        console.log(randomBytes[i])
-    }
-    console.log(randomSeed);
-
-    XMSS_OBJECT = new qrllib.Xmss(randomSeed, 8)
-    const thisAddressBytes = XMSS_OBJECT.getAddress()
-    console.log(XMSS_OBJECT.getPK())
-
-    // const pubKey = binaryToBytes(XMSS_OBJECT.getPK())
-
-    testfromaddress = stringToBytes('01050048a8b31d8dda8a25c5c0d02994fe87e54032ba67910657ade9114d0cdff2eeb5f6285446');
-    testtoaddress = stringToBytes('');
-    testxmsspk = '';
-    // call API
-    before(function() {
-        return new Promise((resolve) => {
-            qrlClient.then( function (qrlClient) {
-                qrlClient.transferCoins({address_from: testfromaddress, address_to: testtoaddress, amount: 1, fee:1, xmss_pk: testxmsspk}, (err, res) => {
-                    if (err){
-                        console.log("Error: ", err.message);
-                        return;
-                    }
-                    console.log(res)
-                    response = res;
-                    resolve();
-                });
-            });
-        });
-    });
-
-    it('GetLatestDataResp has correct *blockheaders* property', function(){
-        expect(response).to.have.property('blockheaders');
-    });
-    it('GetLatestDataResp has correct *transactions* property', function(){
-        expect(response).to.have.property('transactions');
-    });
-    it('GetLatestDataResp has correct *transactions_unconfirmed* property', function(){
-        expect(response).to.have.property('transactions_unconfirmed');
-    });
-});
+// describe('TransferCoins', function() {
+//     // example wallet address
+//     let response;
+//
+//     // Generate random bytes to form XMSS seed.
+//     let i
+//     const randomBytes = require('crypto').randomBytes(48)
+//     const randomSeed = new qrllib.VectorUChar()
+//     for (i = 0; i < 48; i += 1) {
+//         randomSeed.push_back(randomBytes[i])
+//         console.log(randomBytes[i])
+//     }
+//     console.log(randomSeed);
+//
+//     XMSS_OBJECT = new qrllib.Xmss(randomSeed, 8)
+//     const thisAddressBytes = XMSS_OBJECT.getAddress()
+//     console.log(XMSS_OBJECT.getPK())
+//
+//     // const pubKey = binaryToBytes(XMSS_OBJECT.getPK())
+//
+//     testfromaddress = stringToBytes('01050048a8b31d8dda8a25c5c0d02994fe87e54032ba67910657ade9114d0cdff2eeb5f6285446');
+//     testtoaddress = stringToBytes('');
+//     testxmsspk = '';
+//     // call API
+//     before(function() {
+//         return new Promise((resolve) => {
+//             qrlClient.then( function (qrlClient) {
+//                 qrlClient.transferCoins({address_from: testfromaddress, address_to: testtoaddress, amount: 1, fee:1, xmss_pk: testxmsspk}, (err, res) => {
+//                     if (err){
+//                         console.log("Error: ", err.message);
+//                         return;
+//                     }
+//                     console.log(res)
+//                     response = res;
+//                     resolve();
+//                 });
+//             });
+//         });
+//     });
+//
+//     it('GetLatestDataResp has correct *blockheaders* property', function(){
+//         expect(response).to.have.property('blockheaders');
+//     });
+//     it('GetLatestDataResp has correct *transactions* property', function(){
+//         expect(response).to.have.property('transactions');
+//     });
+//     it('GetLatestDataResp has correct *transactions_unconfirmed* property', function(){
+//         expect(response).to.have.property('transactions_unconfirmed');
+//     });
+// });
 
 
 

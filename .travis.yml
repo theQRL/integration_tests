@@ -13,7 +13,5 @@ jobs:
       os: linux
       install:
           - sudo apt-get -y install nodejs
-      before_script:
-          - npm install
       script:
           - cd tests/js && npm install && npm test
