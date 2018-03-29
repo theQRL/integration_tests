@@ -1,7 +1,9 @@
 /qrlnet/volumes/
 !/qrlnet/volumes/.gitkeep
 .cache
-test/js/node_modules/
+tests/js/node_modules/
+tests/js/xmssTest.js
+tests/js/package-lock.json
 \.idea/
 *.pyc
 *.pio
