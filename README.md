@@ -40,6 +40,17 @@ To run a specific scenario use -m flag
 To avoid running a scenario
 `pytest -s  -m "not runfor10minutes"`
 
+### Integration Tests for the API (JavaScript)
+
+```
+cd tests/js
+# install all dependencies
+npm install
+# run test
+npm test
+```
+
+
 ### How it works (short explanation)
 
 #### qrlnet
@@ -53,7 +64,7 @@ The qrlnet directory contains all the scripts to start a qrl network from scratc
 - `INTEGRATION_TESTINPLACE` Indicates that source code should not be retrived. This is used to run the integration tests locally.
 In particular as a submodule as it is done in https://github.com/theQRL/QRL
 
-When the script is executed, it will launch several docker-compose nodes/containers. 
+When the script is executed, it will launch several docker-compose nodes/containers.
 
 Each node will run `qrlnet/node_scripts/start.sh`. This scripts prepares the container to run a qrl node (user permissions, etc.)
 
@@ -63,16 +74,16 @@ This local network could be used for any purposes.
 
 #### pytest
 
-At the moment, a few example tests derive from `TestLogParser`. This base class starts a network and allows for monitoring 
+At the moment, a few example tests derive from `TestLogParser`. This base class starts a network and allows for monitoring
 the logfiles of the running nodes. A few very simple tests like checking that nodes sync or throw exceptions can be done.
 
-However, this is not ideal and are just examples as a proof of concept. 
+However, this is not ideal and are just examples as a proof of concept.
 
 We expect to extend test to go through the grpc API, use direct CLI, interact directly with the network configuration, etc.
 
-Example: Use something similar to `qrlnet/nodes_scripts/docker_helper.py`. Using the Docker SDK, it is possible to determine 
+Example: Use something similar to `qrlnet/nodes_scripts/docker_helper.py`. Using the Docker SDK, it is possible to determine
 each node IP address based on their name and run commands or scripts directly inside the corresponding containers using `exec_run` https://docker-py.readthedocs.io/en/stable/containers.html
-This way it would be possible to test the CLI or node.js apps (wallet/explorer) from inside the container. 
+This way it would be possible to test the CLI or node.js apps (wallet/explorer) from inside the container.
 More complex tests could confirm transfers by running CLI on more than one node.
 
 The Docker SDK could be also use to model network issues/errors. etc.

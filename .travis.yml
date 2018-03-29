@@ -25,3 +25,10 @@ jobs:
       - docker-compose --version
       - export PYTHONPATH=$(pwd)
       - pytest --noconftest -s -m runfor10minutes
+
+    - stage: integration-test
+      os: linux
+      install:
+          - sudo apt-get -y install nodejs
+      script:
+          - cd tests/js && npm install && npm test
