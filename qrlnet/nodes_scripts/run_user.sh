@@ -26,7 +26,7 @@ sudo -H pip3 install -e ${HOME}/QRL | grep -v 'Requirement already satisfied' | 
 
 #########################################
 # Patch source code genesis
-mkdir -p /home/${USERNAME}/.qrl/wallet/
+mkdir -p /home/${USERNAME}/qrl/wallet/
 sudo python3 /home/${USERNAME}/scripts/prepare_node.py
 
 #########################################

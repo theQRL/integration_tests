@@ -18,7 +18,7 @@ def prepare():
 
     client = docker.from_env()
     containers = client.containers.list()
-    with open('/home/testuser/.qrl/config.yml', 'w') as f:
+    with open('/home/testuser/qrl/config.yml', 'w') as f:
         f.write("peer_list:\n")
         for cont in containers:
             f.write("- '{}'\n".format(get_main_ip(cont), ))
@@ -26,7 +26,7 @@ def prepare():
     # docker_name = c.name
     # node_number = int(docker_name.split('node_')[1])
     # if len(wallets) >= node_number:
-    #     with open('/home/testuser/.qrl/wallet/wallet.json', 'w') as f:
+    #     with open('/home/testuser/qrl/wallet/wallet.json', 'w') as f:
     #         json.dump([wallets[node_number - 1]], f)
     #
     # with open('/home/testuser/QRL/qrl/core/genesis.json', 'r') as f:
