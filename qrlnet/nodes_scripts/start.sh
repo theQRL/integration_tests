@@ -24,7 +24,7 @@ mkdir -p /home/${USERNAME}/scripts
 cp /root/scripts/run_user.sh  /home/${USERNAME}/run_user.sh
 cp /root/scripts/*  /home/${USERNAME}/scripts
 mkdir -p ${VOLUME_NAME}
-ln -sf ${VOLUME_NAME} /home/${USERNAME}/.qrl
+ln -sf ${VOLUME_NAME} /home/${USERNAME}/qrl
 
 ###########################################3
 # If the network is restricted to localnet. Override the node configuration with a smaller set of ips
