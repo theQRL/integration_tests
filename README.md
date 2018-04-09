@@ -42,12 +42,26 @@ To avoid running a scenario
 
 ### Integration Tests for the API (JavaScript)
 
+The following test have been implemented:
+- GetNodeState
+- GetStats
+- GetObject - AddressState
+- GetObject - TransactionExtended
+- GetAddressState
+- GetLatestData
+- GetLatestDate - All
+- GetLatestDate - TransactionExtended
+- TransferCoins
+
 ```
 cd tests/js
 # install all dependencies
 npm install
-# run test
+# run all tests
 npm test
+
+To run a specific test (i.e GetNodeState):
+mocha -g 'GetNodeState'
 ```
 
 
