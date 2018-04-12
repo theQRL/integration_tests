@@ -32,6 +32,7 @@ LogEntry = namedtuple('LogEntry', 'full node_id time version sync_state rest')
 # TODO: Refactor this
 class TestLogParser(object):
     def __init__(self, max_running_time_secs):
+        self.non_docker = False  # Warning: Remove when no docker is needed for parsing
         self.max_running_time_secs = max_running_time_secs
         self.start_time = time.time()
         self.regex_ansi_escape = re.compile(r'\x1b[^m]*m')
@@ -116,7 +117,14 @@ class TestLogParser(object):
         # FIXME: Improve this
         entry_raw = self._remove_ansi_colors(entry_raw)
         entry_parts = entry_raw.split('|')
-        if len(entry_parts) > 4:
+        if self.non_docker and len(entry_parts) > 3:
+            log_entry = LogEntry(full='',
+                                 node_id='',
+                                 time=entry_parts[0],
+                                 version=entry_parts[1],
+                                 sync_state=entry_parts[2],
+                                 rest=entry_parts[3])
+        elif len(entry_parts) > 4:
             log_entry = LogEntry(full='',
                                  node_id=entry_parts[0],
                                  time=entry_parts[1],

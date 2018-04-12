@@ -28,6 +28,15 @@ jobs:
 
     - stage: integration-test
       os: linux
+      env:
+      - TEST='FORK_RECOVERY'
+      script:
+      - docker-compose --version
+      - export PYTHONPATH=$(pwd)
+      - pytest --noconftest -s -m forkrecovery
+
+    - stage: integration-test
+      os: linux
       install:
           - sudo apt-get -y install nodejs
       script:
