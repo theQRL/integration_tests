@@ -42,6 +42,9 @@ To avoid running a scenario
 
 ### Integration Tests for the API (JavaScript)
 
+The following test have been implemented:
+-
+
 ```
 cd tests/js
 # install all dependencies
