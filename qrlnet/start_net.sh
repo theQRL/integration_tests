@@ -5,12 +5,26 @@ pushd . > /dev/null
 cd $( dirname "${BASH_SOURCE[0]}" )
 
 # Default values
-export NUM_NODES=4
+export NUM_NODES_DEFAULT=4
+export REPO_SLUG_DEFAULT=theQRL/QRL
+export REPO_BRANCH_DEFAULT=master
 export LOCALNET_ONLY=1
-export REPO_SLUG=theQRL/QRL
-export REPO_BRANCH=master
 export DOCKER_UID=$( id -u ${USER} )
 export DOCKER_GID=$( id -g ${USER} )
+
+
+# Apply default values if not previously set
+if [ -z ${NUM_NODES:-} ]; then
+    export NUM_NODES=${NUM_NODES_DEFAULT}
+fi
+
+if [ -z ${REPO_SLUG:-} ]; then
+    export REPO_SLUG=${REPO_SLUG_DEFAULT}
+fi
+
+if [ -z ${REPO_BRANCH:-} ]; then
+    export REPO_BRANCH=${REPO_BRANCH_DEFAULT}
+fi
 
 # Dump some state information
 echo "*****************************"
