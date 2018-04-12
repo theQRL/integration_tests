@@ -14,7 +14,7 @@ from tests.helpers.logs_parser import TestLogParser, LogEntry
 TOTAL_NODES = 2
 NODE_SPAWN_DELAY = 5
 MONITOR_DELAY = 10
-BOOTSTRAP_TIMEOUT_SEC = 20
+BOOTSTRAP_TIMEOUT_SEC = 300
 
 
 class ForkRecovery(TestLogParser):
@@ -64,8 +64,10 @@ class ForkRecovery(TestLogParser):
                     self.fork_recovery_event.set()
 
     def start_node(self):
-        proc = subprocess.Popen(["/opt/python/3.5.5/bin/python3", "start_qrl.py", "--qrldir", self.qrl_dir,
-                                 "--mockGetMeasurement", "1000000000"],
+        proc = subprocess.Popen(["source ~/virtualenv/python3.5/bin/activate && "
+                                 "start_qrl.py --qrldir {0} --mockGetMeasurement {1}".format(self.qrl_dir,
+                                                                                             "1000000000")],
+                                executable='/bin/bash',
                                 env={"PYTHONPATH": self.python_path},
                                 cwd=self.qrl_code_base,
                                 stdout=subprocess.PIPE,

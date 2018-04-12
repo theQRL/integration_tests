@@ -21,5 +21,11 @@ echo
 echo "Cloning source from github"
 git clone -b ${REPO_BRANCH} https://github.com/${REPO_SLUG}.git ${HOME}/QRL --depth=1
 cd ${HOME}/QRL
+
+source ~/virtualenv/python3.5/bin/activate
+
+pip3 install -r ${HOME}/QRL/requirements.txt
+pip3 install -r ${HOME}/QRL/test-requirements.txt
+
 GITHASH=$(git -C ${HOME}/QRL/ rev-parse HEAD)
 echo "Repo hash: $GITHASH"
