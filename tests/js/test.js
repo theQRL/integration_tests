@@ -376,8 +376,6 @@ describe('GetObject - AddressState', function() {
                         console.log("Error: ", err.message);
                         return;
                     }
-                    // console.log(res)
-                    console.log(typeof(res.address_state.ots_bitfield[0]))
                     response = res;
                     resolve();
                 });
@@ -451,7 +449,6 @@ describe('GetObject - TransactionExtended', function() {
                         console.log("Error: ", err.message);
                         return;
                     }
-                    // console.log(res)
                     response = res;
                     resolve();
                 });
@@ -524,7 +521,6 @@ describe('GetAddressState', function() {
                         console.log("Error: ", err.message);
                         return;
                     }
-                    // console.log(res)
                     response = res;
                     resolve();
                 });
@@ -603,9 +599,64 @@ describe('GetLatestData - All', function() {
 
     it('GetLatestDataResp has correct *blockheaders* property', function(){
         expect(response).to.have.property('blockheaders');
+        response.blockheaders.forEach(i => expect(i).to.have.all.keys(['header','transaction_count']));
+        response.blockheaders.forEach(i => expect(i.header).to.have.all.keys(['hash_header','block_number','timestamp_seconds','hash_header_prev','reward_block','reward_fee','merkle_root','mining_nonce']));
+        response.blockheaders.forEach(i => expect( Buffer.isBuffer(i.header.hash_header)).to.equal(true) );
+        response.blockheaders.forEach(i => expect(i.header.hash_header.length).to.equal(32) );
+        response.blockheaders.forEach(i => expect(i.header.block_number).to.be.a('string') );
+        response.blockheaders.forEach(i => expect(parseInt(i.header.block_number)).to.be.a('number') );
+        response.blockheaders.forEach(i => expect(i.header.timestamp_seconds).to.be.a('string') );
+        response.blockheaders.forEach(i => expect(parseInt(i.header.timestamp_seconds)).to.be.a('number') );
+        response.blockheaders.forEach(i => expect(i.header.reward_block).to.be.a('string') );
+        response.blockheaders.forEach(i => expect(parseInt(i.header.reward_block)).to.be.a('number') );
+        response.blockheaders.forEach(i => expect(i.header.reward_fee).to.be.a('string') );
+        response.blockheaders.forEach(i => expect(parseInt(i.header.reward_fee)).to.be.a('number') );
+        response.blockheaders.forEach(i => expect(i.header.mining_nonce).to.be.a('string') );
+        response.blockheaders.forEach(i => expect(parseInt(i.header.mining_nonce)).to.be.a('number') );
+        response.blockheaders.forEach(i => expect( Buffer.isBuffer(i.header.hash_header_prev)).to.equal(true) );
+        response.blockheaders.forEach(i => expect(i.header.hash_header_prev.length).to.equal(32) );
+        response.blockheaders.forEach(i => expect( Buffer.isBuffer(i.header.merkle_root)).to.equal(true) );
+        response.blockheaders.forEach(i => expect(i.header.merkle_root.length).to.equal(32) );
+    });
+    it('GetLatestDataResp.blockheaders has correct *transaction_count* property', function(){
+        response.blockheaders.forEach(i => expect(i.transaction_count).to.have.all.keys(['count']));
+        // TODO: check the transaction counts
     });
     it('GetLatestDataResp has correct *transactions* property', function(){
         expect(response).to.have.property('transactions');
+    });
+    it('GetLatestDataResp.transactions has correct *header* property', function(){
+        response.transactions.forEach(i => expect(i).to.have.all.keys(['header','tx','addr_from','size']));
+        response.transactions.forEach(i => expect( Buffer.isBuffer(i.header.hash_header)).to.equal(true) );
+        response.transactions.forEach(i => expect(i.header.hash_header.length).to.equal(32) );
+        response.transactions.forEach(i => expect(i.header.block_number).to.be.a('string') );
+        response.transactions.forEach(i => expect(parseInt(i.header.block_number)).to.be.a('number') );
+        response.transactions.forEach(i => expect(i.header.timestamp_seconds).to.be.a('string') );
+        response.transactions.forEach(i => expect(parseInt(i.header.timestamp_seconds)).to.be.a('number') );
+        response.transactions.forEach(i => expect(i.header.reward_block).to.be.a('string') );
+        response.transactions.forEach(i => expect(parseInt(i.header.reward_block)).to.be.a('number') );
+        response.transactions.forEach(i => expect(i.header.reward_fee).to.be.a('string') );
+        response.transactions.forEach(i => expect(parseInt(i.header.reward_fee)).to.be.a('number') );
+        response.transactions.forEach(i => expect(i.header.mining_nonce).to.be.a('string') );
+        response.transactions.forEach(i => expect(parseInt(i.header.mining_nonce)).to.be.a('number') );
+        response.transactions.forEach(i => expect( Buffer.isBuffer(i.header.hash_header_prev)).to.equal(true) );
+        response.transactions.forEach(i => expect(i.header.hash_header_prev.length).to.equal(32) );
+        response.transactions.forEach(i => expect( Buffer.isBuffer(i.header.merkle_root)).to.equal(true) );
+        response.transactions.forEach(i => expect(i.header.merkle_root.length).to.equal(32) );
+    });
+    it('GetLatestDataResp.transactions has correct *tx* property', function(){
+        response.transactions.forEach(i => expect(i.tx).to.have.all.keys(['transactionType','master_addr','fee','public_key','signature','nonce','transaction_hash','transfer','coinbase','latticePK','message','token','transfer_token','slave']));
+        response.transactions.forEach(i => expect( Buffer.isBuffer(i.tx.master_addr)).to.equal(true) );
+        // response.transactions.forEach(i => expect(i.tx.master_addr.length).to.equal(39));
+        response.transactions.forEach(i => expect(i.tx.transaction_hash.length).to.equal(32));
+        response.transactions.forEach(i => expect(i.tx.transactionType).to.be.a('string') );
+        response.transactions.forEach(i => expect(i.tx.transactionType).to.equal('transfer') );
+        response.transactions.forEach(i => expect(i.tx.fee).to.be.a('string') );
+        response.transactions.forEach(i => expect(parseInt(i.tx.fee)).to.be.a('number') );
+        response.transactions.forEach(i => expect(i.tx.nonce).to.be.a('string') );
+        response.transactions.forEach(i => expect(parseInt(i.tx.nonce)).to.be.a('number') );
+        response.transactions.forEach(i => expect(i.tx.public_key.length).to.equal(67));
+        response.transactions.forEach(i => expect(i.tx.signature.length).to.equal(2564));
     });
     it('GetLatestDataResp has correct *transactions_unconfirmed* property', function(){
         expect(response).to.have.property('transactions_unconfirmed');
@@ -674,31 +725,87 @@ describe('TransferCoins', function() {
     });
     it('TransferCoinsResp.extended_transaction_unsigned has correct *tx* property', function(){
         expect(response.extended_transaction_unsigned).to.have.property('tx');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transactionType* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('transactionType');
+        expect(response.extended_transaction_unsigned.tx.transactionType).to.equal('transfer');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *master_addr* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('master_addr');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.master_addr)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.master_addr.length).to.equal(39);
         expect(Buffer.from(response.extended_transaction_unsigned.tx.master_addr).toString('hex')).to.equal(testfromaddress);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *fee* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('fee');
+        expect(response.extended_transaction_unsigned.tx.fee).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.tx.fee)).to.be.a('number');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *public_key* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('public_key');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.public_key)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.public_key.length).to.equal(67);
         expect(Buffer.from(response.extended_transaction_unsigned.tx.public_key).toString('hex')).to.equal(testfromxmsspk);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *signature* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('signature');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.signature)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.signature.length).to.equal(0);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *nonce* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('nonce');
+        expect(response.extended_transaction_unsigned.tx.nonce).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.tx.nonce)).to.be.a('number');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transaction_hash* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('transaction_hash');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.transaction_hash)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.transaction_hash.length).to.equal(0);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transactionType* transfer', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('transfer');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *coinbase* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('coinbase');
         expect(response.extended_transaction_unsigned.tx.coinbase).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *latticePK* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('latticePK');
         expect(response.extended_transaction_unsigned.tx.latticePK).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *message* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('message');
         expect(response.extended_transaction_unsigned.tx.message).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *token* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('token');
         expect(response.extended_transaction_unsigned.tx.token).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transfer_token* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('transfer_token');
         expect(response.extended_transaction_unsigned.tx.transfer_token).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *slave* property', function(){
         expect(response.extended_transaction_unsigned.tx).to.have.property('slave');
         expect(response.extended_transaction_unsigned.tx.slave).to.equal(null);
     });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transfer* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transfer');
+        expect(response.extended_transaction_unsigned.tx.transfer).to.have.all.keys(['addrs_to','amounts'])
+        response.extended_transaction_unsigned.tx.transfer.addrs_to.forEach(i => expect(Buffer.isBuffer(i)).to.equal(true) );
+        response.extended_transaction_unsigned.tx.transfer.addrs_to.forEach(i => expect(i.length).to.equal(39) );
+        response.extended_transaction_unsigned.tx.transfer.amounts.forEach(i => expect(i).to.be.a('string') );
+        response.extended_transaction_unsigned.tx.transfer.amounts.forEach(i => expect(parseInt(i)).to.be.a('number') );
+
+    });
     it('TransferCoinsResp.extended_transaction_unsigned has correct *addr_from* property', function(){
         expect(response.extended_transaction_unsigned).to.have.property('addr_from');
+        expect(response.extended_transaction_unsigned.addr_from.length).to.equal(39);
         expect(Buffer.from(response.extended_transaction_unsigned.addr_from).toString('hex')).to.equal(testfromaddress);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *size* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('size');
+        expect(response.extended_transaction_unsigned.size).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.size)).to.be.a('number');
     });
 });
