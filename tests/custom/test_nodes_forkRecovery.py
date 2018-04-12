@@ -64,10 +64,10 @@ class ForkRecovery(TestLogParser):
                     self.fork_recovery_event.set()
 
     def start_node(self):
-        proc = subprocess.Popen(["source ~/virtualenv/python3.5/bin/activate && "
+        proc = subprocess.Popen(["/home/travis/virtualenv/python3.5.5/bin/python3.5 "
                                  "start_qrl.py --qrldir {0} --mockGetMeasurement {1}".format(self.qrl_dir,
                                                                                              "1000000000")],
-                                executable='/bin/bash',
+                                shell=True,
                                 env={"PYTHONPATH": self.python_path},
                                 cwd=self.qrl_code_base,
                                 stdout=subprocess.PIPE,
@@ -109,13 +109,13 @@ def test_nodes_synced():
     exit_counter = Value('i', 0)
     w = []
 
-    current_path = os.path.dirname(__file__)
+    # current_path = os.path.dirname(__file__)
     # Bootstrap node, with fork recovery data and QRL repository
-    script_path = os.path.join(current_path, '..', '..', 'qrlnet/fork_recovery_bootstrap.sh')
+    # script_path = os.path.join(current_path, '..', '..', 'qrlnet/fork_recovery_bootstrap.sh')
 
-    proc = subprocess.Popen([script_path], cwd=current_path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    proc.wait(BOOTSTRAP_TIMEOUT_SEC)
-    print(proc.stdout.read().decode())
+    # proc = subprocess.Popen([script_path], cwd=current_path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # proc.wait(BOOTSTRAP_TIMEOUT_SEC)
+    # print(proc.stdout.read().decode())
 
     for i in range(1, TOTAL_NODES + 1):
         test = ForkRecovery(i, fork_recovery_event, exit_counter)
