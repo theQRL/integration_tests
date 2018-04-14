@@ -1,20 +1,36 @@
 import concurrent.futures
 import io
+import os
+import shutil
 import subprocess
-
-from pebble import ProcessPool
+from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Queue
 
 
 class MockNet(object):
     def __init__(self,
                  test_function,
                  timeout_secs=60,
-                 nodes=0):
-        self.pool = ProcessPool(max_workers=10, max_tasks=1)
+                 node_count=0):
+        self.pool = ThreadPoolExecutor()
 
-        self.nodes = nodes
+        self.node_count = node_count
         self.test_function = test_function
         self.timeout_secs = timeout_secs
+
+        self.nodes = []
+        self.log_queue = Queue()
+        self.this_file = os.path.realpath(__file__)
+        self.this_dir = os.path.dirname(self.this_file)
+        self.src_dst = os.path.join(self.this_dir, "src")
+
+        self.src_pythonpath = "{}/src".format(self.src_dst)
+
+    def prepare_source(self):
+        shutil.rmtree(self.src_dst, ignore_errors=True)
+        cmd = "{}/prepare_source.sh".format(self.this_dir)
+        p = subprocess.Popen(cmd, shell=True)
+        p.wait()
 
     @staticmethod
     def writeout(text):
@@ -25,23 +41,25 @@ class MockNet(object):
         print("\033[0m\033[40m{} {:^35} {}\033[0m".format('*' * 20, text, '*' * 20))
 
     def start_node(self, node_idx):
-        print("Starting node %d", node_idx)
-        p = subprocess.Popen("start_qrl.py",
+        p = subprocess.Popen("{}/start_qrl.py".format(self.src_dst),
                              shell=True,
+                             env={"PYTHONPATH": self.src_pythonpath},
                              stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
+                             stderr=subprocess.STDOUT)
 
+        # Enqueue any output
         for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
-            print(line)
+            s = "Node{:2} | {}".format(node_idx, line)
+            self.log_queue.put(s)
 
     def run(self):
         print("")
         self.writeout("Starting mocknet")
-        test_future = self.pool.schedule(self.test_function)
+        test_future = self.pool.submit(self.test_function, self)
 
         # TODO: Launch mocknet
-        for node_idx in range(self.nodes):
-            self.pool.schedule(self.start_node, node_idx)
+        for node_idx in range(self.node_count):
+            self.nodes.append(self.pool.submit(self.start_node, node_idx))
 
         try:
             result = test_future.result(self.timeout_secs)
@@ -54,3 +72,4 @@ class MockNet(object):
             raise
 
         self.writeout("Finished")
+        return result
