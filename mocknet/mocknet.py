@@ -1,8 +1,10 @@
 import concurrent.futures
+import contextlib
 import io
 import multiprocessing
 import os
 import shutil
+import signal
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Queue
@@ -10,8 +12,15 @@ from multiprocessing import Queue
 import yaml
 
 
-class MockNetSuccess(Exception):
-    pass
+@contextlib.contextmanager
+def clean_pid_queue(pid_queue):
+    try:
+        yield
+    finally:
+        while not pid_queue.empty():
+            pid = pid_queue.get_nowait()
+            pgrp = os.getpgid(pid)
+            os.killpg(pgrp, signal.SIGKILL)
 
 
 class MockNet(object):
@@ -33,6 +42,8 @@ class MockNet(object):
         self.this_file = os.path.realpath(__file__)
         self.this_dir = os.path.dirname(self.this_file)
         self.data_dir = os.path.join(self.this_dir, 'data')
+
+        self.nodes_pids = Queue()
 
         # Clear mocknet data
         shutil.rmtree(self.data_dir, ignore_errors=True)
@@ -72,47 +83,39 @@ class MockNet(object):
 
         p = subprocess.Popen("{}/run_node.sh --qrldir {}".format(self.this_dir, node_data_dir),
                              shell=True,
+                             preexec_fn=os.setsid,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
 
-        # Enqueue any output
-        while not stop_event.is_set():
-            for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
-                s = "Node{:2} | {}".format(node_idx, line)
-                self.log_queue.put(s)
-                if stop_event.is_set():
-                    break
+        self.nodes_pids.put(p.pid)
 
-        self.writeout_error("EXIT")
-        p.kill()
+        # Enqueue any output
+        for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
+            s = "Node{:2} | {}".format(node_idx, line)
+            self.log_queue.put(s, block=False)
+            if stop_event.is_set():
+                break
 
     def run(self):
         result = None
         stop_event = multiprocessing.Event()
         stop_event.clear()
 
-        test_future = self.pool.submit(self.test_function, self)
+        with clean_pid_queue(self.nodes_pids):
+            test_future = self.pool.submit(self.test_function)
 
-        # TODO: Launch mocknet
-        for node_idx in range(self.node_count):
-            self.nodes.append(self.pool.submit(self.start_node, node_idx, stop_event))
+            for node_idx in range(self.node_count):
+                self.nodes.append(self.pool.submit(self.start_node, node_idx, stop_event))
 
-        try:
-            result = test_future.result(self.timeout_secs)
-        except concurrent.futures.TimeoutError:
-            test_future.cancel()
-            self.writeout_error("TIMEOUT")
-            raise TimeoutError
-        except MockNetSuccess:
-            pass
-        except Exception:
-            self.writeout_error("Exception detected")
-            raise
+            try:
+                result = test_future.result(self.timeout_secs)
+            except concurrent.futures.TimeoutError:
+                test_future.cancel()
+                self.writeout_error("TIMEOUT")
+                raise TimeoutError
+            except Exception:
+                self.writeout_error("Exception detected")
+                raise
 
-        stop_event.set()
-
-        test_future.cancel()
-        for node in self.nodes:
-            node.cancel()
-        self.writeout("Finished")
-        return result
+            self.writeout("Finished")
+            return result
