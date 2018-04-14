@@ -11,3 +11,6 @@ report/junit.xml
 .vscode/
 
 scripts/__pycache__/
+
+mocknet/src
+mocknet/venv

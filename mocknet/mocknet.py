@@ -41,9 +41,8 @@ class MockNet(object):
         print("\033[0m\033[40m{} {:^35} {}\033[0m".format('*' * 20, text, '*' * 20))
 
     def start_node(self, node_idx):
-        p = subprocess.Popen("{}/start_qrl.py".format(self.src_dst),
+        p = subprocess.Popen("{}/run_node.sh".format(self.this_dir),
                              shell=True,
-                             env={"PYTHONPATH": self.src_pythonpath},
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
 
