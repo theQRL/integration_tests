@@ -1,0 +1,4 @@
+{
+  "tests/python/basic/test_timeout.py::TestMocknetBasic::test_start_net": true,
+  "tests/python/mocknet/test_mocknet.py::TestMocknetHelpers::test_launch_1_node": true
+}

@@ -3,17 +3,17 @@ import subprocess
 import os
 import multiprocessing
 
-from tests.helpers.nodes_synchronize import wait_for_sync
+from tests_old.helpers.nodes_synchronize import wait_for_sync
 
 
 def pytest_addoption(parser):
     parser.addoption("--runslow", action="store_true",
-                     default=False, help="run slow tests")
+                     default=False, help="run slow tests_old")
 
 
 def pytest_collection_modifyitems(config, items):
     if config.getoption("--runslow"):
-        # --runslow given in cli: do not skip slow tests
+        # --runslow given in cli: do not skip slow tests_old
         return
     skip_slow = pytest.mark.skip(reason="need --runslow option to run")
     for item in items:

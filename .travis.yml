@@ -53,4 +53,4 @@ jobs:
       install:
           - sudo apt-get -y install nodejs
       script:
-          - cd tests/js && npm install && npm test
+          - cd tests_old/js && npm install && npm test

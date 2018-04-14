@@ -9,7 +9,7 @@ import subprocess
 from time import sleep
 from multiprocessing import Value
 
-from tests.helpers.logs_parser import TestLogParser, LogEntry
+from tests_old.helpers.logs_parser import TestLogParser, LogEntry
 
 TOTAL_NODES = 2
 NODE_SPAWN_DELAY = 5

@@ -4,7 +4,7 @@ import subprocess
 import time
 
 import pytest
-from tests.helpers.logs_parser import TestLogParser, TOTAL_NODES, LogEntry
+from tests_old.helpers.logs_parser import TestLogParser, TOTAL_NODES, LogEntry
 
 
 class RunFor10Minutes(TestLogParser):

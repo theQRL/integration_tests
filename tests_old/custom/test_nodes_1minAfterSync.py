@@ -5,7 +5,7 @@ import os
 import multiprocessing
 import subprocess
 
-from tests.helpers.logs_parser import TestLogParser, LogEntry, TOTAL_NODES
+from tests_old.helpers.logs_parser import TestLogParser, LogEntry, TOTAL_NODES()
 
 
 class RunFor1MinuteAfterSync(TestLogParser):
