@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: qrledger/qrl-docker:xenial
+    steps:
+      - checkout
+      - run: pip install -U setuptools
+      - run: pip install -U -r requirements.txt
+      - run: pip install -U -r test-requirements.txt
+#
+#      # ONLY the main job sends coverage information
+#      - run: python3 setup.py test --addopts "--cov . --cov-report term-missing --cov-report xml"
+#      - run: sudo pip install -U coverage codacy-coverage
+#      - run: if [ "${CIRCLE_BRANCH}" == "master" ]; then python-codacy-coverage -r coverage.xml || echo "failed"; fi
+
+  tests_js:
+    docker:
+      - image: qrledger/qrl-docker:xenial
+    steps:
+      - checkout
+      - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+      - run: apt-get install -y nodejs
+      - run: npm -v
+      - run: cd tests/js && npm install && npm test
+
+workflows:
+  version: 2
+  build_all:
+    jobs:
+      - build
+      - tests_js
