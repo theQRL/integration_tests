@@ -20,4 +20,9 @@ if you want to run some specific group/job, you can select it by using:
 circleci build --job JOB_NAME
 ```
 
-where JOB_NAME is one of the job described in `.circleci/config.yml`
+where JOB_NAME is one of the job described in `.circleci/config.yml`.
+
+Example:
+```bash
+circleci build --job tests_js
+```
