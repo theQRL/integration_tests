@@ -656,7 +656,7 @@ describe('GetLatestData - All', function() {
         response.transactions.forEach(i => expect(i.tx.nonce).to.be.a('string') );
         response.transactions.forEach(i => expect(parseInt(i.tx.nonce)).to.be.a('number') );
         response.transactions.forEach(i => expect(i.tx.public_key.length).to.equal(67));
-        response.transactions.forEach(i => expect(i.tx.signature.length).to.equal(2564));
+        response.transactions.forEach(i => expect(i.tx.signature.length).to.equal(2756));
     });
     it('GetLatestDataResp has correct *transactions_unconfirmed* property', function(){
         expect(response).to.have.property('transactions_unconfirmed');
