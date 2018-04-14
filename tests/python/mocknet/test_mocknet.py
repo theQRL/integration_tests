@@ -4,7 +4,7 @@
 import time
 from unittest import TestCase
 
-from mocknet.mocknet import MockNet
+from mocknet.mocknet import MockNet, MockNetSuccess
 
 
 class TestMocknetHelpers(TestCase):
@@ -33,9 +33,10 @@ class TestMocknetHelpers(TestCase):
         mocknet.run()
 
     def test_launch_1_node(self):
-        mocknet = MockNet(func_no_issues,
+        mocknet = MockNet(func_monitor_log,
                           timeout_secs=3,
                           node_count=1)
+        mocknet.prepare_source()
         mocknet.run()
 
     def test_launch_log_nodes(self):
@@ -71,3 +72,4 @@ def func_monitor_log(mocknet):
             print(msg, end='')
         except Exception:  # noqa
             time.sleep(0.1)
+    raise MockNetSuccess()

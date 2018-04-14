@@ -14,3 +14,4 @@ scripts/__pycache__/
 
 mocknet/src
 mocknet/venv
+mocknet/data
