@@ -3,8 +3,6 @@
 
 # QRL Integration Tests
 
-This project periodically runs integration tests on a 6 node testnet
-
 ## How to run integration tests
 
 Get CircleCI CLI (https://circleci.com/docs/2.0/local-cli/#installing-the-circleci-local-cli-on-macos-and-linux-distros)
