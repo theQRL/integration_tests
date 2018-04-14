@@ -4,9 +4,10 @@ jobs:
     docker:
       - image: qrledger/qrl-docker:xenial
     steps:
+      - run: apt install -y python3-venv
       - checkout
       - run: pip install -U -r requirements.txt
-      - run: pytest --ignore=tests/python/helpers
+      - run: PYTHONPATH=$(pwd) pytest --ignore=tests/python/helpers
 
   tests_js:
     docker:

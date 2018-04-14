@@ -34,7 +34,7 @@ class TestMocknetHelpers(TestCase):
 
     def test_launch_1_node(self):
         mocknet = MockNet(func_monitor_log,
-                          timeout_secs=3,
+                          timeout_secs=10,
                           node_count=1)
         mocknet.prepare_source()
         mocknet.run()
@@ -42,7 +42,7 @@ class TestMocknetHelpers(TestCase):
     def test_launch_log_nodes(self):
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=5,
-                          node_count=3)
+                          node_count=2)
         mocknet.prepare_source()
         mocknet.run()
 
@@ -64,12 +64,13 @@ def func_no_issues(mocknet):
 
 
 def func_monitor_log(mocknet):
-    running_time = 2
+    running_time = 3
     start = time.time()
     while time.time() - start < running_time:
         try:
             msg = mocknet.log_queue.get(False)
             print(msg, end='')
-        except Exception:  # noqa
+        except Exception as e:  # noqa
             time.sleep(0.1)
+
     raise MockNetSuccess()

@@ -6,5 +6,5 @@ VENV_PATH=${SCRIPT_PATH}/venv
 echo
 source ${VENV_PATH}/bin/activate
 export PYTHONPATH=${SOURCE_PATH}/src
-${SOURCE_PATH}/start_qrl.py "$@"
+${SOURCE_PATH}/start_qrl.py -l DEBUG "$@"
 

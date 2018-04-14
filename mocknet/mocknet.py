@@ -1,5 +1,6 @@
 import concurrent.futures
 import io
+import multiprocessing
 import os
 import shutil
 import subprocess
@@ -18,6 +19,9 @@ class MockNet(object):
                  test_function,
                  timeout_secs=60,
                  node_count=0):
+        print("")
+        self.writeout("Starting mocknet")
+
         self.pool = ThreadPoolExecutor()
 
         self.node_count = node_count
@@ -46,7 +50,7 @@ class MockNet(object):
     def writeout_error(text):
         print("\033[0m\033[40m{} {:^35} {}\033[0m".format('*' * 20, text, '*' * 20))
 
-    def start_node(self, node_idx):
+    def start_node(self, node_idx: int, stop_event: multiprocessing.Event):
         node_data_dir = os.path.join(self.data_dir, "node{:03}".format(node_idx))
         os.makedirs(node_data_dir, exist_ok=True)
 
@@ -72,20 +76,26 @@ class MockNet(object):
                              stderr=subprocess.STDOUT)
 
         # Enqueue any output
-        for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
-            s = "Node{:2} | {}".format(node_idx, line)
-            self.log_queue.put(s)
+        while not stop_event.is_set():
+            for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
+                s = "Node{:2} | {}".format(node_idx, line)
+                self.log_queue.put(s)
+                if stop_event.is_set():
+                    break
+
+        self.writeout_error("EXIT")
+        p.kill()
 
     def run(self):
         result = None
+        stop_event = multiprocessing.Event()
+        stop_event.clear()
 
-        print("")
-        self.writeout("Starting mocknet")
         test_future = self.pool.submit(self.test_function, self)
 
         # TODO: Launch mocknet
         for node_idx in range(self.node_count):
-            self.nodes.append(self.pool.submit(self.start_node, node_idx))
+            self.nodes.append(self.pool.submit(self.start_node, node_idx, stop_event))
 
         try:
             result = test_future.result(self.timeout_secs)
@@ -98,6 +108,8 @@ class MockNet(object):
         except Exception:
             self.writeout_error("Exception detected")
             raise
+
+        stop_event.set()
 
         test_future.cancel()
         for node in self.nodes:
