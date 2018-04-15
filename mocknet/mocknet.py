@@ -10,6 +10,7 @@ import os
 import shutil
 import signal
 import subprocess
+from time import sleep
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Queue
 
@@ -31,7 +32,9 @@ class MockNet(object):
     def __init__(self,
                  test_function,
                  timeout_secs=60,
-                 node_count=0):
+                 node_count=0,
+                 node_args="",
+                 remove_data=True):
         print("")
         self.writeout("Starting mocknet")
 
@@ -42,6 +45,7 @@ class MockNet(object):
         self.timeout_secs = timeout_secs
 
         self.nodes = []
+        self.node_args = node_args
         self.log_queue = Queue()
         self.this_file = os.path.realpath(__file__)
         self.this_dir = os.path.dirname(self.this_file)
@@ -49,8 +53,9 @@ class MockNet(object):
 
         self.nodes_pids = Queue()
 
-        # Clear mocknet data
-        shutil.rmtree(self.data_dir, ignore_errors=True)
+        if remove_data:
+            # Clear mocknet data
+            shutil.rmtree(self.data_dir, ignore_errors=True)
 
     def prepare_source(self):
         cmd = "{}/prepare_source.sh".format(self.this_dir)
@@ -85,7 +90,7 @@ class MockNet(object):
         with open(config_file, 'w') as f:
             yaml.dump(config, stream=f, Dumper=yaml.Dumper)
 
-        p = subprocess.Popen("{}/run_node.sh --qrldir {}".format(self.this_dir, node_data_dir),
+        p = subprocess.Popen("{}/run_node.sh --qrldir {} {}".format(self.this_dir, node_data_dir, self.node_args),
                              shell=True,
                              preexec_fn=os.setsid,
                              stdout=subprocess.PIPE,
@@ -110,6 +115,7 @@ class MockNet(object):
 
             for node_idx in range(self.node_count):
                 self.nodes.append(self.pool.submit(self.start_node, node_idx, stop_event))
+                sleep(2)  # Delay before starting each node, so that nodes can connect to each other
 
             try:
                 result = test_future.result(self.timeout_secs)
