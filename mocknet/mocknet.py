@@ -33,6 +33,7 @@ class MockNet(object):
                  test_function,
                  timeout_secs=60,
                  node_count=0,
+                 node_args="",
                  remove_data=True):
         print("")
         self.writeout("Starting mocknet")
@@ -44,6 +45,7 @@ class MockNet(object):
         self.timeout_secs = timeout_secs
 
         self.nodes = []
+        self.node_args = node_args
         self.log_queue = Queue()
         self.this_file = os.path.realpath(__file__)
         self.this_dir = os.path.dirname(self.this_file)
@@ -88,7 +90,7 @@ class MockNet(object):
         with open(config_file, 'w') as f:
             yaml.dump(config, stream=f, Dumper=yaml.Dumper)
 
-        p = subprocess.Popen("{}/run_node.sh --qrldir {}".format(self.this_dir, node_data_dir),
+        p = subprocess.Popen("{}/run_node.sh --qrldir {} {}".format(self.this_dir, node_data_dir, self.node_args),
                              shell=True,
                              preexec_fn=os.setsid,
                              stdout=subprocess.PIPE,

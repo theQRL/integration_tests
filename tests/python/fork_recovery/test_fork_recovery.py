@@ -25,7 +25,7 @@ class TestMocknetForkRecovery(TestCase):
         p.wait()
 
     def test_launch_log_nodes(self):
-        timeout = 1200
+        timeout = 120
 
         def func_monitor_log():
             running_time = timeout
@@ -47,6 +47,7 @@ class TestMocknetForkRecovery(TestCase):
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=timeout,
                           node_count=2,
+                          node_args="--mockGetMeasurement 1000000000",
                           remove_data=False)
 
         mocknet.prepare_source()

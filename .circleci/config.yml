@@ -19,14 +19,14 @@ jobs:
       - run: npm -v
       - run: cd tests/js && npm install && npm test
 
-#  tests_fork_recovery:
-#    docker:
-#      - image: qrledger/qrl-docker:xenial
-#    steps:
-#      - run: apt install -y python3-venv
-#      - checkout
-#      - run: pip install -U -r requirements.txt
-#      - run: PYTHONPATH=$(pwd) pytest tests/python/fork_recovery
+  tests_fork_recovery:
+    docker:
+      - image: qrledger/qrl-docker:xenial
+    steps:
+      - run: apt install -y python3-venv
+      - checkout
+      - run: pip install -U -r requirements.txt
+      - run: PYTHONPATH=$(pwd) pytest tests/python/fork_recovery
 
 
 workflows:
