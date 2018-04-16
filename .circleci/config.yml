@@ -1,15 +1,34 @@
 version: 2
 jobs:
   build:
+    # Test mocknet
     docker:
       - image: qrledger/qrl-docker:xenial
     steps:
-      - run: apt install -y python3-venv
+      - checkout
+      - run: pip install -U -r requirements.txt
+      - run: PYTHONPATH=$(pwd) pytest tests/python/basic tests/python/mocknet
+
+  tests_xenial:
+    # Run all tests in xenial
+    docker:
+      - image: qrledger/qrl-docker:bionic
+    steps:
+      - checkout
+      - run: pip install -U -r requirements.txt
+      - run: PYTHONPATH=$(pwd) pytest --ignore=tests/python/helpers
+
+  tests_bionic:
+    # Run all tests in bionic
+    docker:
+      - image: qrledger/qrl-docker:bionic
+    steps:
       - checkout
       - run: pip install -U -r requirements.txt
       - run: PYTHONPATH=$(pwd) pytest --ignore=tests/python/helpers
 
   tests_js:
+    # Run javascript tests
     docker:
       - image: qrledger/qrl-docker:xenial
     steps:
@@ -19,11 +38,12 @@ jobs:
       - run: npm -v
       - run: cd tests/js && npm install && npm test
 
-  tests_fork_recovery:
+  debug:
+    # debugging job - this can be customize locally but it wont run in circleci
+    # to run this, execute circleci build --job debug
     docker:
       - image: qrledger/qrl-docker:xenial
     steps:
-      - run: apt install -y python3-venv
       - checkout
       - run: pip install -U -r requirements.txt
       - run: PYTHONPATH=$(pwd) pytest tests/python/fork_recovery
@@ -34,5 +54,6 @@ workflows:
   build_all:
     jobs:
       - build
+      - tests_xenial
+      - tests_bionic
       - tests_js
-      - tests_fork_recovery
