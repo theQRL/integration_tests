@@ -39,7 +39,10 @@ class MockNet(object):
         print("")
         self.writeout("Starting mocknet")
 
-        self.pool = ThreadPoolExecutor()
+        if node_count > 0:
+            self.pool = ThreadPoolExecutor(max_workers=node_count * 2)
+        else:
+            self.pool = ThreadPoolExecutor()
 
         self.node_count = node_count
         self.test_function = test_function
@@ -118,7 +121,7 @@ class MockNet(object):
             test_future = self.pool.submit(self.test_function)
 
             for node_idx in range(self.node_count):
-                self.nodes.append(self.pool.submit(self.start_node, node_idx, stop_event))
+                self.nodes.append(self.pool.submit(self.start_node, node_idx, self.stop_event))
                 sleep(2)  # Delay before starting each node, so that nodes can connect to each other
 
             try:
