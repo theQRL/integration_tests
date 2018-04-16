@@ -63,7 +63,7 @@ class MockNet(object):
         self.stop_event = multiprocessing.Event()
         self.stop_event.clear()
 
-        # Addresses exposing gRPC connections
+        # Addresses exposing gRPC services
         self._admin_addresses = []
         self._public_addresses = []
         self._mining_addresses = []

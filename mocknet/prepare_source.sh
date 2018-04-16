@@ -20,6 +20,8 @@ source ${VENV_PATH}/bin/activate
 # Get source code
 git clone -b ${REPO_BRANCH} https://github.com/${REPO_SLUG}.git ${SOURCE_PATH} --depth=1
 
+cp ${SOURCE_PATH}/src/qrl/generated/* qrl/generated/
+
 # Install dependencies
 pip install -U setuptools
 pip install -U pip
