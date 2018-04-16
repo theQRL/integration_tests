@@ -39,7 +39,7 @@ class MockNet(object):
         print("")
         self.writeout("Starting mocknet")
 
-        self.pool = ThreadPoolExecutor(thread_name_prefix='mocknet')
+        self.pool = ThreadPoolExecutor()
 
         self.node_count = node_count
         self.test_function = test_function
