@@ -157,7 +157,7 @@ class MockNet(object):
 
             for node_idx in range(self.node_count):
                 self.nodes.append(self.pool.submit(self.start_node, node_idx, self.stop_event))
-                sleep(2)  # Delay before starting each node, so that nodes can connect to each other
+                sleep(0.05)  # Delay before starting each node, so that nodes can connect to each other
 
             try:
                 result = test_future.result(self.timeout_secs)
