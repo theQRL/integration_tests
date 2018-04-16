@@ -24,3 +24,10 @@ Example:
 ```bash
 circleci build --job tests_js
 ```
+
+When running locally, it might be useful to run the `debug` job
+Example:
+```bash
+circleci build --job debug
+```
+This job is not run in the CI server but can be used locally to test different scenarios, filter specific tests, etc.

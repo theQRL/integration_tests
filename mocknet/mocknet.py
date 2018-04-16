@@ -18,10 +18,11 @@ import yaml
 
 
 @contextlib.contextmanager
-def clean_pid_queue(pid_queue):
+def clean_up(pid_queue, stop_event):
     try:
         yield
     finally:
+        stop_event.set()
         while not pid_queue.empty():
             pid = pid_queue.get_nowait()
             pgrp = os.getpgid(pid)
@@ -38,7 +39,7 @@ class MockNet(object):
         print("")
         self.writeout("Starting mocknet")
 
-        self.pool = ThreadPoolExecutor()
+        self.pool = ThreadPoolExecutor(thread_name_prefix='mocknet')
 
         self.node_count = node_count
         self.test_function = test_function
@@ -52,6 +53,8 @@ class MockNet(object):
         self.data_dir = os.path.join(self.this_dir, 'data')
 
         self.nodes_pids = Queue()
+        self.stop_event = multiprocessing.Event()
+        self.stop_event.clear()
 
         if remove_data:
             # Clear mocknet data
@@ -61,6 +64,10 @@ class MockNet(object):
         cmd = "{}/prepare_source.sh".format(self.this_dir)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
+
+    @property
+    def running(self):
+        return not self.stop_event.is_set()
 
     @staticmethod
     def writeout(text):
@@ -106,11 +113,8 @@ class MockNet(object):
                 break
 
     def run(self):
-        result = None
-        stop_event = multiprocessing.Event()
-        stop_event.clear()
-
-        with clean_pid_queue(self.nodes_pids):
+        self.stop_event.clear()
+        with clean_up(self.nodes_pids, self.stop_event):
             test_future = self.pool.submit(self.test_function)
 
             for node_idx in range(self.node_count):
@@ -121,11 +125,16 @@ class MockNet(object):
                 result = test_future.result(self.timeout_secs)
             except concurrent.futures.TimeoutError:
                 test_future.cancel()
+                self.stop_event.set()
                 self.writeout_error("TIMEOUT")
                 raise TimeoutError
             except Exception:
+                test_future.cancel()
+                self.stop_event.set()
                 self.writeout_error("Exception detected")
                 raise
 
+            test_future.cancel()
+            self.stop_event.set()
             self.writeout("Finished")
             return result

@@ -13,7 +13,8 @@ class TestMocknetHelpers(TestCase):
 
     def test_timeout(self):
         def func_blocks():
-            time.sleep(100)
+            while mocknet.running:
+                time.sleep(1)
 
         mocknet = MockNet(func_blocks,
                           timeout_secs=2,
