@@ -7,7 +7,8 @@ jobs:
     steps:
       - checkout
       - run: pip install -U -r requirements.txt
-      - run: PYTHONPATH=$(pwd) pytest tests/python/basic tests/python/mocknet
+      - run: PYTHONPATH=$(pwd) pytest tests/python/basic
+      - run: PYTHONPATH=$(pwd) pytest tests/python/mocknet
 
   tests_xenial:
     # Run all tests in xenial
@@ -16,7 +17,9 @@ jobs:
     steps:
       - checkout
       - run: pip install -U -r requirements.txt
-      - run: PYTHONPATH=$(pwd) pytest --ignore=tests/python/helpers
+      - run: PYTHONPATH=$(pwd) pytest tests/python/basic
+      - run: PYTHONPATH=$(pwd) pytest tests/python/mocknet
+      - run: PYTHONPATH=$(pwd) pytest tests/python/fork_recovery
 
   tests_bionic:
     # Run all tests in bionic
@@ -25,7 +28,9 @@ jobs:
     steps:
       - checkout
       - run: pip install -U -r requirements.txt
-      - run: PYTHONPATH=$(pwd) pytest --ignore=tests/python/helpers
+      - run: PYTHONPATH=$(pwd) pytest tests/python/basic
+      - run: PYTHONPATH=$(pwd) pytest tests/python/mocknet
+      - run: PYTHONPATH=$(pwd) pytest tests/python/fork_recovery
 
   tests_js:
     # Run javascript tests
@@ -46,7 +51,7 @@ jobs:
     steps:
       - checkout
       - run: pip install -U -r requirements.txt
-      - run: PYTHONPATH=$(pwd) pytest tests/python/fork_recovery
+      - run: PYTHONPATH=$(pwd) pytest tests/python/basic
 
 
 workflows:
