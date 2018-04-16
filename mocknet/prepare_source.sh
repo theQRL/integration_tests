@@ -14,7 +14,7 @@ rm -rf ${VENV_PATH}
 rm -rf ${SOURCE_PATH}
 
 # Prepare clean virtual environment to run the tests
-python3 -m venv ${VENV_PATH}
+python3 -m venv ${VENV_PATH} --system-site-packages
 source ${VENV_PATH}/bin/activate
 
 # Get source code
