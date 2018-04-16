@@ -4,11 +4,20 @@
 import time
 import os
 import subprocess
+import grpc
 from queue import Empty
 from unittest import TestCase
 
 from mocknet.mocknet import MockNet
 from mocknet.NodeTracker import NodeLogTracker
+
+from pyqrllib.pyqrllib import hstr2bin, bin2hstr
+
+from qrl.generated import qrl_pb2_grpc, qrl_pb2
+
+
+LAST_BLOCK_NUMBER = 201
+LAST_BLOCK_HEADERHASH = '7132f0828a2689bff7c563b2ad941092525e48e6afb66bf62a4311d3e438495e'
 
 
 class TestMocknetForkRecovery(TestCase):
@@ -27,6 +36,28 @@ class TestMocknetForkRecovery(TestCase):
     def test_launch_log_nodes(self):
         timeout = 120
 
+        def state_check(mocknet):
+            public_api_addresses = mocknet.public_addresses
+            for public_api_address in public_api_addresses:
+                channel_public = grpc.insecure_channel(public_api_address)
+                stub = qrl_pb2_grpc.PublicAPIStub(channel_public)
+
+                # TODO: Check coins emitted, coins total supply, epoch, block_last_reward
+                # response = stub.GetStats(request=qrl_pb2.GetStatsReq())
+
+                response = stub.GetNodeState(request=qrl_pb2.GetNodeStateReq())
+                if response.info.block_height != LAST_BLOCK_NUMBER:
+                    raise Exception('Expected Blockheight %s \n Found blockheight %s',
+                                    LAST_BLOCK_NUMBER,
+                                    response.info.block_height)
+
+                if response.info.block_last_hash != bytes(hstr2bin(LAST_BLOCK_HEADERHASH)):
+                    raise Exception('Last Block Headerhash mismatch\n'
+                                    'Expected : %s\n', bin2hstr(response.info.block_last_hash),
+                                    'Found : %s ', LAST_BLOCK_HEADERHASH)
+
+                return True
+
         def func_monitor_log():
             running_time = timeout
             start = time.time()
@@ -38,7 +69,8 @@ class TestMocknetForkRecovery(TestCase):
                     print(msg, end='')
                     node_tracker.parse(msg)
 
-                    if "Received Block #201 7132f0828a2689bff7c563b2ad941092525e48e6afb66bf62a4311d3e438495e" in msg:
+                    if "Added Block #{0} {1}".format(LAST_BLOCK_NUMBER, LAST_BLOCK_HEADERHASH) in msg:
+                        state_check(mocknet)
                         return
 
                 except Empty:
