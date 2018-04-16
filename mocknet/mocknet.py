@@ -16,6 +16,10 @@ from multiprocessing import Queue
 
 import yaml
 
+LOCALHOST_IP = '127.0.0.1'
+PORT_COUNT = 5  # Number of ports assigned to each node
+START_PORT = 10000  # Port from which assignment will start
+
 
 @contextlib.contextmanager
 def clean_up(pid_queue, stop_event):
@@ -59,6 +63,11 @@ class MockNet(object):
         self.stop_event = multiprocessing.Event()
         self.stop_event.clear()
 
+        # Addresses exposing gRPC connections
+        self._admin_addresses = []
+        self._public_addresses = []
+        self._mining_addresses = []
+
         if remove_data:
             # Clear mocknet data
             shutil.rmtree(self.data_dir, ignore_errors=True)
@@ -80,21 +89,47 @@ class MockNet(object):
     def writeout_error(text):
         print("\033[0m\033[40m{} {:^35} {}\033[0m".format('*' * 20, text, '*' * 20))
 
+    @staticmethod
+    def calc_port(node_idx, count=0):
+        return START_PORT + node_idx * PORT_COUNT + count
+
+    @staticmethod
+    def ip_port(ip, port):
+        return "{0}:{1}".format(ip, port)
+
+    @property
+    def admin_addresses(self):
+        return self._admin_addresses
+
+    @property
+    def public_addresses(self):
+        return self._public_addresses
+
+    @property
+    def mining_addresses(self):
+        return self._mining_addresses
+
+    def append_api_addresses(self, config):
+        self._admin_addresses.append(self.ip_port(LOCALHOST_IP, config['admin_api_port']))
+        self._public_addresses.append(self.ip_port(LOCALHOST_IP, config['public_api_port']))
+        self._mining_addresses.append(self.ip_port(LOCALHOST_IP, config['mining_api_port']))
+
     def start_node(self, node_idx: int, stop_event: multiprocessing.Event):
         node_data_dir = os.path.join(self.data_dir, "node{:03}".format(node_idx))
         os.makedirs(node_data_dir, exist_ok=True)
 
-        port_count = 5
         config = {
-            'peer_list': ["127.0.0.1:{0}".format(10000 + num * port_count, ) for num in range(node_idx)],
+            'peer_list': [self.ip_port(LOCALHOST_IP, self.calc_port(num)) for num in range(node_idx)],
             'mining_enabled': False,
-            'p2p_local_port': 10000 + node_idx * port_count,
-            'p2p_public_port': 10000 + node_idx * port_count,
-            'admin_api_port': 10000 + node_idx * port_count + 1,
-            'public_api_port': 10000 + node_idx * port_count + 2,
-            'mining_api_port': 10000 + node_idx * port_count + 3,
-            'grpc_proxy_port': 10000 + node_idx * port_count + 4
+            'p2p_local_port': self.calc_port(node_idx),
+            'p2p_public_port': self.calc_port(node_idx),
+            'admin_api_port': self.calc_port(node_idx, 1),
+            'public_api_port': self.calc_port(node_idx, 2),
+            'mining_api_port': self.calc_port(node_idx, 3),
+            'grpc_proxy_port': self.calc_port(node_idx, 4)
         }
+
+        self.append_api_addresses(config)
 
         config_file = os.path.join(node_data_dir, 'config.yml')
         with open(config_file, 'w') as f:
