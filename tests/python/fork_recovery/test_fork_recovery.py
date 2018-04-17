@@ -59,11 +59,9 @@ class TestMocknetForkRecovery(TestCase):
                 return True
 
         def func_monitor_log():
-            running_time = timeout
-            start = time.time()
             node_tracker = NodeLogTracker()
 
-            while time.time() - start < running_time:
+            while mocknet.running:
                 try:
                     msg = mocknet.log_queue.get(block=True, timeout=1)
                     print(msg, end='')

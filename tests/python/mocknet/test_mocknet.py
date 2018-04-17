@@ -46,13 +46,11 @@ class TestMocknetHelpers(TestCase):
 
     def test_launch_1_node(self):
         def func_monitor_log():
-            running_time = 5
-            start = time.time()
-            while time.time() - start < running_time:
+            while mocknet.uptime < 5:
                 try:
                     msg = mocknet.log_queue.get(False)
                     print(msg, end='')
-                except Exception as e:  # noqa
+                except Exception:  # noqa
                     time.sleep(0.1)
 
         mocknet = MockNet(func_monitor_log,
@@ -63,17 +61,46 @@ class TestMocknetHelpers(TestCase):
 
     def test_launch_log_nodes(self):
         def func_monitor_log():
-            running_time = 10
-            start = time.time()
-            while time.time() - start < running_time:
+            while mocknet.running:
                 try:
                     msg = mocknet.log_queue.get(False)
                     print(msg, end='')
+
+                    if len(mocknet.nodes) >= 10:
+                        return
+
                 except Exception as e:  # noqa
                     time.sleep(0.1)
 
         mocknet = MockNet(func_monitor_log,
-                          timeout_secs=120,
+                          timeout_secs=30,
                           node_count=10)
         mocknet.prepare_source()
         mocknet.run()
+
+    def test_launch_nodes_no_monitor(self):
+        def func_monitor_log():
+            # exit fast
+            time.sleep(2)
+
+        mocknet = MockNet(func_monitor_log,
+                          timeout_secs=30,
+                          node_count=10)
+        mocknet.prepare_source()
+        mocknet.run()
+
+    def test_launch_nodes_fast_timeout(self):
+        def func_monitor_log():
+            mocknet.writeout("Monitor START")
+            while mocknet.running:
+                # Block
+                pass
+            mocknet.writeout("Monitor STOP")
+
+        mocknet = MockNet(func_monitor_log,
+                          timeout_secs=30,
+                          node_count=10)
+        mocknet.prepare_source()
+
+        with self.assertRaises(TimeoutError):
+            mocknet.run()
