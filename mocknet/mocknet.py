@@ -11,9 +11,9 @@ import shutil
 import signal
 import subprocess
 import time
-from time import sleep
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Queue
+from time import sleep
 
 import yaml
 
@@ -32,7 +32,8 @@ def kill_process_group(pid):
 
 
 @contextlib.contextmanager
-def clean_up(test_future,
+def clean_up(mocknet,
+             test_future,
              pid_queue,
              stop_event):
     try:
@@ -48,9 +49,14 @@ def clean_up(test_future,
         test_future.result(timeout=2)
         MockNet.writeout('[Mocknet] monitor done')
 
+        mocknet.pool.shutdown()
+        mocknet.log_queue.cancel_join_thread()
+
         cmd = "ps aux | grep python"
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
+
+        MockNet.writeout('[Mocknet] clean up finished')
 
 
 class MockNet(object):
@@ -179,9 +185,9 @@ class MockNet(object):
             # Enqueue any output
             for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
                 s = "Node{:2} | {}".format(node_idx, line)
-                self.log_queue.put(s, block=False)
                 if stop_event.is_set():
                     break
+                self.log_queue.put(s, block=False)
 
             if stop_event.is_set():
                 kill_process_group(p.pid)
@@ -192,9 +198,8 @@ class MockNet(object):
         self.start_time = time.time()
 
         test_future = self.pool.submit(self.test_function)
-        start_time = time.time()
 
-        with clean_up(test_future, self.nodes_pids, self.stop_event):
+        with clean_up(self, test_future, self.nodes_pids, self.stop_event):
             for node_idx in range(self.node_count):
                 if test_future.running():
                     MockNet.writeout('[Mocknet] launch node %d' % node_idx)
