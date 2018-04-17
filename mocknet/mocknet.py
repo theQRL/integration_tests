@@ -119,7 +119,7 @@ class MockNet(object):
         os.makedirs(node_data_dir, exist_ok=True)
 
         config = {
-            'peer_list': [self.ip_port(LOCALHOST_IP, self.calc_port(num)) for num in range(node_idx)],
+            'peer_list': [self.ip_port(LOCALHOST_IP, self.calc_port(num)) for num in range(self.node_count)],
             'mining_enabled': False,
             'p2p_local_port': self.calc_port(node_idx),
             'p2p_public_port': self.calc_port(node_idx),
