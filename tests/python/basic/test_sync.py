@@ -14,14 +14,10 @@ class TestMocknetSync(TestCase):
         super().__init__(*args, **kwargs)
 
     def test_launch_log_nodes(self):
-        timeout = 120
-
         def func_monitor_log():
-            running_time = timeout
-            start = time.time()
             node_tracker = NodeLogTracker()
 
-            while time.time() - start < running_time:
+            while mocknet.running:
                 try:
                     msg = mocknet.log_queue.get(block=True, timeout=1)
                     print(msg, end='')
@@ -35,7 +31,7 @@ class TestMocknetSync(TestCase):
                     pass
 
         mocknet = MockNet(func_monitor_log,
-                          timeout_secs=timeout,
+                          timeout_secs=60,
                           node_count=3)
 
         mocknet.prepare_source()

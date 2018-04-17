@@ -10,6 +10,7 @@ import os
 import shutil
 import signal
 import subprocess
+import time
 from time import sleep
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Queue
@@ -26,11 +27,13 @@ def clean_up(pid_queue, stop_event):
     try:
         yield
     finally:
+        MockNet.writeout('[Mocknet] cleaning up')
         stop_event.set()
         while not pid_queue.empty():
             pid = pid_queue.get_nowait()
             pgrp = os.getpgid(pid)
             os.killpg(pgrp, signal.SIGKILL)
+            MockNet.writeout('[Mocknet] killed %d' % pid)
 
 
 class MockNet(object):
@@ -68,6 +71,8 @@ class MockNet(object):
         self._public_addresses = []
         self._mining_addresses = []
 
+        self.start_time = None
+
         if remove_data:
             # Clear mocknet data
             shutil.rmtree(self.data_dir, ignore_errors=True)
@@ -80,6 +85,12 @@ class MockNet(object):
     @property
     def running(self):
         return not self.stop_event.is_set()
+
+    def uptime(self):
+        if self.start_time is None:
+            return 0
+
+        return time.time() - self.start_time
 
     @staticmethod
     def writeout(text):
@@ -114,12 +125,15 @@ class MockNet(object):
         self._public_addresses.append(self.ip_port(LOCALHOST_IP, config['public_api_port']))
         self._mining_addresses.append(self.ip_port(LOCALHOST_IP, config['mining_api_port']))
 
+    def get_peers(self, node_idx):
+        return [self.ip_port(LOCALHOST_IP, self.calc_port(num)) for num in range(node_idx)]
+
     def start_node(self, node_idx: int, stop_event: multiprocessing.Event):
         node_data_dir = os.path.join(self.data_dir, "node{:03}".format(node_idx))
         os.makedirs(node_data_dir, exist_ok=True)
 
         config = {
-            'peer_list': [self.ip_port(LOCALHOST_IP, self.calc_port(num)) for num in range(self.node_count)],
+            'peer_list': self.get_peers(node_idx),
             'mining_enabled': False,
             'p2p_local_port': self.calc_port(node_idx),
             'p2p_public_port': self.calc_port(node_idx),
@@ -151,16 +165,24 @@ class MockNet(object):
                 break
 
     def run(self):
+        MockNet.writeout('[Mocknet] run')
         self.stop_event.clear()
+        self.start_time = time.time()
+
         with clean_up(self.nodes_pids, self.stop_event):
             test_future = self.pool.submit(self.test_function)
+            start_time = time.time()
 
             for node_idx in range(self.node_count):
-                self.nodes.append(self.pool.submit(self.start_node, node_idx, self.stop_event))
-                sleep(0.05)  # Delay before starting each node, so that nodes can connect to each other
+                if test_future.running():
+                    MockNet.writeout('[Mocknet] launch %d' % node_idx)
+                    self.nodes.append(self.pool.submit(self.start_node, node_idx, self.stop_event))
+                    sleep(2)
 
             try:
-                result = test_future.result(self.timeout_secs)
+                remaining_time = self.timeout_secs - (time.time() - start_time)
+                result = test_future.result(remaining_time)
+
             except concurrent.futures.TimeoutError:
                 test_future.cancel()
                 self.stop_event.set()
