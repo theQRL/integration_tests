@@ -1,6 +1,7 @@
 # coding=utf-8
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or http://www.opensource.org/licenses/mit-license.php.
+import subprocess
 import time
 from unittest import TestCase
 
@@ -46,16 +47,11 @@ class TestMocknetHelpers(TestCase):
 
     def test_launch_1_node(self):
         def func_monitor_log():
-            start = time.time()
-            while mocknet.running:
-
-                if time.time() - start > 5:
-                    return
-
+            while mocknet.uptime < 5:
                 try:
                     msg = mocknet.log_queue.get(False)
                     print(msg, end='')
-                except Exception as e:  # noqa
+                except Exception:  # noqa
                     time.sleep(0.1)
 
         mocknet = MockNet(func_monitor_log,
@@ -96,9 +92,11 @@ class TestMocknetHelpers(TestCase):
 
     def test_launch_nodes_fast_timeout(self):
         def func_monitor_log():
+            mocknet.writeout("Monitor START")
             while mocknet.running:
                 # Block
                 pass
+            mocknet.writeout("Monitor STOP")
 
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=30,

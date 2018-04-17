@@ -22,8 +22,19 @@ PORT_COUNT = 5  # Number of ports assigned to each node
 START_PORT = 10000  # Port from which assignment will start
 
 
+def kill_process_group(pid):
+    try:
+        pgrp = os.getpgid(pid)
+        os.killpg(pgrp, signal.SIGKILL)
+        MockNet.writeout('[Mocknet] killed pid %d' % pid)
+    except Exception as e:
+        MockNet.writeout('[Mocknet] killing pid %d : %s' % (pid, str(e)))
+
+
 @contextlib.contextmanager
-def clean_up(pid_queue, stop_event):
+def clean_up(test_future,
+             pid_queue,
+             stop_event):
     try:
         yield
     finally:
@@ -31,9 +42,15 @@ def clean_up(pid_queue, stop_event):
         stop_event.set()
         while not pid_queue.empty():
             pid = pid_queue.get_nowait()
-            pgrp = os.getpgid(pid)
-            os.killpg(pgrp, signal.SIGKILL)
-            MockNet.writeout('[Mocknet] killed %d' % pid)
+            kill_process_group(pid)
+
+        MockNet.writeout('[Mocknet] waiting')
+        test_future.result(timeout=2)
+        MockNet.writeout('[Mocknet] monitor done')
+
+        cmd = "ps aux | grep python"
+        p = subprocess.Popen(cmd, shell=True)
+        p.wait()
 
 
 class MockNet(object):
@@ -86,6 +103,7 @@ class MockNet(object):
     def running(self):
         return not self.stop_event.is_set()
 
+    @property
     def uptime(self):
         if self.start_time is None:
             return 0
@@ -149,52 +167,49 @@ class MockNet(object):
         with open(config_file, 'w') as f:
             yaml.dump(config, stream=f, Dumper=yaml.Dumper)
 
-        p = subprocess.Popen("{}/run_node.sh --qrldir {} {}".format(self.this_dir, node_data_dir, self.node_args),
-                             shell=True,
-                             preexec_fn=os.setsid,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
+        if not stop_event.is_set():
+            p = subprocess.Popen("{}/run_node.sh --qrldir {} {}".format(self.this_dir, node_data_dir, self.node_args),
+                                 shell=True,
+                                 preexec_fn=os.setsid,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT)
 
-        self.nodes_pids.put(p.pid)
+            self.nodes_pids.put(p.pid)
 
-        # Enqueue any output
-        for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
-            s = "Node{:2} | {}".format(node_idx, line)
-            self.log_queue.put(s, block=False)
+            # Enqueue any output
+            for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
+                s = "Node{:2} | {}".format(node_idx, line)
+                self.log_queue.put(s, block=False)
+                if stop_event.is_set():
+                    break
+
             if stop_event.is_set():
-                break
+                kill_process_group(p.pid)
 
     def run(self):
         MockNet.writeout('[Mocknet] run')
         self.stop_event.clear()
         self.start_time = time.time()
 
-        with clean_up(self.nodes_pids, self.stop_event):
-            test_future = self.pool.submit(self.test_function)
-            start_time = time.time()
+        test_future = self.pool.submit(self.test_function)
+        start_time = time.time()
 
+        with clean_up(test_future, self.nodes_pids, self.stop_event):
             for node_idx in range(self.node_count):
                 if test_future.running():
-                    MockNet.writeout('[Mocknet] launch %d' % node_idx)
+                    MockNet.writeout('[Mocknet] launch node %d' % node_idx)
                     self.nodes.append(self.pool.submit(self.start_node, node_idx, self.stop_event))
                     sleep(2)
-
             try:
-                remaining_time = self.timeout_secs - (time.time() - start_time)
+                remaining_time = self.timeout_secs - self.uptime
+                MockNet.writeout('[Mocknet] remaining time: %d' % remaining_time)
                 result = test_future.result(remaining_time)
-
             except concurrent.futures.TimeoutError:
-                test_future.cancel()
-                self.stop_event.set()
                 self.writeout_error("TIMEOUT")
                 raise TimeoutError
             except Exception:
-                test_future.cancel()
-                self.stop_event.set()
                 self.writeout_error("Exception detected")
                 raise
 
-            test_future.cancel()
-            self.stop_event.set()
             self.writeout("Finished")
             return result
