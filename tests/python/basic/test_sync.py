@@ -20,13 +20,10 @@ class TestMocknetSync(TestCase):
             while mocknet.running:
                 try:
                     msg = mocknet.log_queue.get(block=True, timeout=1)
-                    print(msg, end='')
                     node_tracker.parse(msg)
-
-                    if node_tracker.get_status('Node 0') == 'synced' and \
-                       node_tracker.get_status('Node 1') == 'synced' and \
-                       node_tracker.get_status('Node 2') == 'synced':
+                    if node_tracker.synced_count() == mocknet.node_count:
                         return
+
                 except Empty:
                     pass
 

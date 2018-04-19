@@ -11,6 +11,9 @@ import shutil
 import signal
 import subprocess
 import time
+
+from os.path import pardir
+from time import sleep
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Queue
 from time import sleep
@@ -83,7 +86,7 @@ class MockNet(object):
         self.log_queue = Queue()
         self.this_file = os.path.realpath(__file__)
         self.this_dir = os.path.dirname(self.this_file)
-        self.data_dir = os.path.join(self.this_dir, 'data')
+        self.data_dir = os.path.join(self.this_dir, pardir, 'tmp', 'data')
 
         self.nodes_pids = Queue()
         self.stop_event = multiprocessing.Event()
@@ -97,7 +100,6 @@ class MockNet(object):
         self.start_time = None
 
         if remove_data:
-            # Clear mocknet data
             shutil.rmtree(self.data_dir, ignore_errors=True)
 
     def prepare_source(self):

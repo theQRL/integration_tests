@@ -6,7 +6,15 @@ class NodeLogTracker(object):
     def __init__(self):
         self.node_status = {}
 
+    def synced_count(self):
+        count = 0
+        for k, v in self.node_status.items():
+            if v == 'synced':
+                count += 1
+        return count
+
     def parse(self, msg):
+        print(msg, end='')
         parts = msg.split('|')
         if len(parts) > 4:
             node_id = parts[0].strip()
