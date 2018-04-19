@@ -15,17 +15,12 @@ class TestMocknetSync(TestCase):
 
     def test_launch_log_nodes(self):
         def func_monitor_log():
-            node_tracker = NodeLogTracker(mocknet)
+            node_logtracker = NodeLogTracker(mocknet)
 
             while mocknet.running:
-                try:
-                    msg = mocknet.log_queue.get(block=True, timeout=1)
-                    node_tracker.parse(msg)
-                    if node_tracker.synced_count() == mocknet.node_count:
-                        return
-
-                except Empty:
-                    pass
+                node_logtracker.track()
+                if node_logtracker.synced_count() == mocknet.node_count:
+                    return
 
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=60,

@@ -4,6 +4,7 @@
 import time
 from unittest import TestCase
 
+from mocknet.NodeTracker import NodeLogTracker
 from mocknet.mocknet import MockNet
 
 
@@ -46,12 +47,9 @@ class TestMocknetHelpers(TestCase):
 
     def test_launch_1_node(self):
         def func_monitor_log():
+            node_logtracker = NodeLogTracker(mocknet)
             while mocknet.uptime < 5:
-                try:
-                    msg = mocknet.log_queue.get(False)
-                    print(msg, end='')
-                except Exception:  # noqa
-                    time.sleep(0.1)
+                node_logtracker.track()
 
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=10,
@@ -61,16 +59,11 @@ class TestMocknetHelpers(TestCase):
 
     def test_launch_log_nodes(self):
         def func_monitor_log():
+            node_logtracker = NodeLogTracker(mocknet)
             while mocknet.running:
-                try:
-                    msg = mocknet.log_queue.get(False)
-                    print(msg, end='')
-
-                    if len(mocknet.nodes) >= 10:
-                        return
-
-                except Exception as e:  # noqa
-                    time.sleep(0.1)
+                node_logtracker.track()
+                if len(mocknet.nodes) >= 10:
+                    return
 
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=30,

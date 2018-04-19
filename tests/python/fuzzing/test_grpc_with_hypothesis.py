@@ -27,17 +27,33 @@ class TestFuzzingAPI(TestCase):
         super().__init__(*args, **kwargs)
 
     def test_grpc_fuzzing(self):
-        timeout = 120
+        timeout = 60*15
 
         def func_monitor_log():
-            running_time = timeout
-            start = time.time()
-            node_tracker = NodeLogTracker()
+            node_tracker = NodeLogTracker(mocknet)
 
-            while time.time() - start < running_time:
+            while mocknet.uptime < 30:
+                node_tracker.track()
+                time.sleep(0.01)
+
+            if node_tracker.synced_count() < mocknet.node_count:
+                raise Exception("Nodes did not sync")
+
+            protobuf_strategies = modules_to_strategies(qrl_pb2)
+            publicapi = qrl_pb2._PUBLICAPI
+
+            self.assertTrue(publicapi.methods, "methods is empty")
+            req_attrs = []
+            for m in publicapi.methods:
+                req_attrs.append(ReqAttrNames(m.name, m.input_type.name))
+
+            stubs = [
+                qrl_pb2_grpc.PublicAPIStub(grpc.insecure_channel("127.0.0.1:10002"))
+            ]
+
+            while mocknet.uptime < 180:
                 try:
-                    msg = mocknet.log_queue.get(block=True, timeout=1)
-                    node_tracker.parse(msg)
+                    node_tracker.track()
                     if node_tracker.synced_count() == mocknet.node_count:
                         for i in range(1, PASS_NUM):
                             rand_stub = choice(stubs)
@@ -54,22 +70,13 @@ class TestFuzzingAPI(TestCase):
                                 print(req_arg)
                                 print('*******************************')
                                 print(err)
-                                raise
+#                                raise
+                            except Exception as e:
+                                pass
+                            time.sleep(1)
 
                 except Empty:
                     pass
-
-        protobuf_strategies = modules_to_strategies(qrl_pb2)
-        publicapi = qrl_pb2._PUBLICAPI
-
-        self.assertTrue(publicapi.methods, "methods is empty")
-        req_attrs = []
-        for m in publicapi.methods:
-            req_attrs.append(ReqAttrNames(m.name, m.input_type.name))
-
-        stubs = [
-            qrl_pb2_grpc.PublicAPIStub(grpc.insecure_channel("127.0.0.1:" + str(PUBLIC_API_PORT)))
-        ]
 
         # Launch mocknet
         mocknet = MockNet(func_monitor_log,
@@ -78,50 +85,3 @@ class TestFuzzingAPI(TestCase):
 
         mocknet.prepare_source()
         mocknet.run()
-
-# PASS_NUM = 100
-# import sys
-# sys.path.append('..')
-# import pytest
-# import docker
-# from random import choice
-# import grpc
-#
-#
-# from collections import namedtuple
-# ReqAttrNames = namedtuple('ReqAttrNames', ['method', 'arg'])
-#
-# @pytest.mark.grpchypothesis
-# def test_grpc_with_hypothesis():
-#     protobuf_strategies = modules_to_strategies(qrl_pb2)
-#     publicapi = qrl_pb2._PUBLICAPI
-#     if(not publicapi.methods):
-#         print("*******ASSERT: methods is empty ************")
-#         assert False
-#     req_attrs = []
-#     for m in publicapi.methods:
-#         req_attrs.append(ReqAttrNames(m.name, m.input_type.name))
-#
-#     def get_ip(container):
-#         return container.attrs['NetworkSettings']['Networks']['qrlnet_default']['IPAddress']
-#     stubs = []
-#     for container in docker.from_env().containers.list():
-#         channel = grpc.insecure_channel(get_ip(container) + ":" + str(PUBLIC_API_PORT))
-#         stubs.append(qrl_pb2_grpc.PublicAPIStub(channel))
-#     if not stubs:
-#         print("*******ASSERT: stubs is empty ************")
-#         assert False
-#     success = True
-#     for i in range(1, PASS_NUM):
-#         rand_stub = choice(stubs)
-#         rand_req = choice(req_attrs)
-#         req_strategy = protobuf_strategies[getattr(qrl_pb2, rand_req.arg)]
-#         req_arg = req_strategy.example()
-#         req_method = getattr(rand_stub, rand_req.method)
-#         try:
-#             resp = req_method(req_arg)
-#         except grpc.RpcError as err:
-#             success = False
-#             print("\n*******ERROR:***********\n", rand_req.method, "(\n")
-#             print(req_arg, ")\nraised error\n", err, "\n=======================\n")
-#     assert success
