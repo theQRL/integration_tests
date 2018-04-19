@@ -15,7 +15,7 @@ class TestMocknetSync(TestCase):
 
     def test_launch_log_nodes(self):
         def func_monitor_log():
-            node_tracker = NodeLogTracker()
+            node_tracker = NodeLogTracker(mocknet)
 
             while mocknet.running:
                 try:

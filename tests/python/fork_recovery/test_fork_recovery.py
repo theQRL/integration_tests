@@ -33,10 +33,10 @@ class TestMocknetForkRecovery(TestCase):
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
 
-    def test_launch_log_nodes(self):
+    def test_fork_recovery(self):
         timeout = 120
 
-        def state_check(mocknet):
+        def state_check():
             public_api_addresses = mocknet.public_addresses
             for public_api_address in public_api_addresses:
                 channel_public = grpc.insecure_channel(public_api_address)
@@ -59,20 +59,12 @@ class TestMocknetForkRecovery(TestCase):
                 return True
 
         def func_monitor_log():
-            node_tracker = NodeLogTracker()
-
+            node_tracker = NodeLogTracker(mocknet)
             while mocknet.running:
-                try:
-                    msg = mocknet.log_queue.get(block=True, timeout=1)
-                    print(msg, end='')
-                    node_tracker.parse(msg)
-
-                    if "Added Block #{0} {1}".format(LAST_BLOCK_NUMBER, LAST_BLOCK_HEADERHASH) in msg:
-                        state_check(mocknet)
-                        return
-
-                except Empty:
-                    pass
+                msg = node_tracker.track()
+                if "Added Block #{0} {1}".format(LAST_BLOCK_NUMBER, LAST_BLOCK_HEADERHASH) in msg:
+                    state_check()
+                    return
 
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=timeout,
