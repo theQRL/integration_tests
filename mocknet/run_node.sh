@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or http://www.opensource.org/licenses/mit-license.php.
-SCRIPT_PATH="$(dirname "$(readlink --canonicalize-existing "$0")")"
-SOURCE_PATH=${SCRIPT_PATH}/src
-VENV_PATH=${SCRIPT_PATH}/venv
+source ${BASH_SOURCE%/*}/set_env.sh
+###############
 
 echo
 source ${VENV_PATH}/bin/activate

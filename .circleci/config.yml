@@ -17,7 +17,7 @@ jobs:
   tests_xenial:
     # Run all tests in xenial
     docker:
-      - image: qrledger/qrl-docker:bionic
+      - image: qrledger/qrl-docker:xenial
     steps:
       - checkout
       - run: pip install -U -r requirements.txt

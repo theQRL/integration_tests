@@ -16,4 +16,8 @@ mocknet/src
 mocknet/venv
 mocknet/data
 
+tmp/data
+tmp/src
+tmp/venv
+
 \.pytest_cache
