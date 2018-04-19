@@ -16,8 +16,8 @@ from pyqrllib.pyqrllib import hstr2bin, bin2hstr
 from qrl.generated import qrl_pb2_grpc, qrl_pb2
 
 
-LAST_BLOCK_NUMBER = 201
-LAST_BLOCK_HEADERHASH = '7132f0828a2689bff7c563b2ad941092525e48e6afb66bf62a4311d3e438495e'
+LAST_BLOCK_NUMBER = 202
+LAST_BLOCK_HEADERHASH = '9aaf2719c99afd518eefe3f35160063f3d9115496c76d431e851ccb4869f2823'
 
 
 class TestMocknetForkRecovery(TestCase):
@@ -56,7 +56,7 @@ class TestMocknetForkRecovery(TestCase):
                                     'Expected : %s\n', bin2hstr(response.info.block_last_hash),
                                     'Found : %s ', LAST_BLOCK_HEADERHASH)
 
-                return True
+            return True
 
         def func_monitor_log():
             node_tracker = NodeLogTracker()
