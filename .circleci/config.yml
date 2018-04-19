@@ -48,6 +48,18 @@ jobs:
           name: Fork recovery Tests
           command: PYTHONPATH=$(pwd) pytest tests/python/fork_recovery
 
+  tests_fuzzing:
+    # Run all tests in xenial
+    docker:
+      - image: qrledger/qrl-docker:xenial
+    steps:
+      - checkout
+      - run: pip install -U -r requirements.txt
+      - run: pip install git+https://github.com/CurataEng/hypothesis-protobuf.git
+      - run:
+          name: Fuzzing Tests
+          command: PYTHONPATH=$(pwd) pytest tests/python/fuzzing
+
   tests_js:
     # Run javascript tests
     docker:
