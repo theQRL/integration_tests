@@ -13,7 +13,6 @@ import subprocess
 import time
 
 from os.path import pardir
-from time import sleep
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Queue
 from time import sleep

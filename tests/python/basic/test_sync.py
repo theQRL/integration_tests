@@ -1,8 +1,6 @@
 # coding=utf-8
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or http://www.opensource.org/licenses/mit-license.php.
-import time
-from queue import Empty
 from unittest import TestCase
 
 from mocknet.mocknet import MockNet
