@@ -72,6 +72,7 @@ function toBuffer(ab) {
 // TODO: The IP should change to something running locally for tests_old
 // let qrlClient = getQRLClient('104.251.219.215:9009');
 let qrlClient = getQRLClient('35.177.60.137:9009');
+// let qrlClient = getQRLClient('127.0.0.1:9009');
 
 
 // Concatenates multiple typed arrays into one.
@@ -120,7 +121,6 @@ var testtoaddress = '0105003e32fcbcdcaf09485272f1aa1c1e318daaa8cf7cd03bacf7cfcee
 var testfromaddress_bytes = stringToBytes(testfromaddress);
 var testfromxmsspk_bytes = stringToBytes(testfromxmsspk);
 var testtoaddress_bytes = stringToBytes(testtoaddress);
-
 
 
 // Test for GetNodeState
@@ -810,4 +810,343 @@ describe('TransferCoins', function() {
         expect(response.extended_transaction_unsigned.size).to.be.a('string');
         expect(parseInt(response.extended_transaction_unsigned.size)).to.be.a('number');
     });
+});
+
+
+
+// pushTransaction call
+// describe('PushTransaction - TransferCoins', function() {
+//     // this.timeout(50000);
+//     let response;
+//     // call API
+//     before(function() {
+//         this.enableTimeouts(false)
+//         return new Promise((resolve) => {
+//             qrlClient.then( function (qrlClient) {
+//                 // generating a new wallet
+//                 let i
+//                 const randomBytes = require('crypto').randomBytes(48)
+//                 const randomSeed = new qrllib.VectorUChar()
+//                 for (i = 0; i < 48; i += 1) {
+//                     randomSeed.push_back(randomBytes[i])
+//                 }
+//                 // Generate XMSS object
+//                 XMSS_OBJECT = new qrllib.Xmss(randomSeed, 10)
+//                 // stringToBytes(testfromxmsspk);
+//                 xmss_pk = stringToBytes(qrllib.bin2hstr(XMSS_OBJECT.getPK()))
+//
+//                 qrlClient.transferCoins({addresses_to: testtoaddress_bytes, amounts: 10000000000, fee:1000000, xmss_pk: xmss_pk}, (err, res) => {
+//
+//                     if (err){
+//                         console.log("Error: ", err.message);
+//                         return;
+//                     }
+//                     console.log("Sending API call")
+//                     const tx = res;
+//
+//                     // code from the wallet (@scottdonaldau)
+//                     const xmss_pk = XMSS_OBJECT.getPK()
+//                     const thisAddressBytes = XMSS_OBJECT.getAddress()
+//                     XMSS_OBJECT.setIndex(12)
+//
+//                     console.log("Preparing tx to sign...")
+//                     // Concatenate Uint8Arrays
+//                     let concatenatedArrays = concatenateTypedArrays(Uint8Array, tx.extended_transaction_unsigned.addr_from, toBigendianUint64BytesUnsigned(tx.extended_transaction_unsigned.tx.fee))
+//                     // Now append all recipient (outputs) to concatenatedArrays
+//                     const addrsToRaw = tx.extended_transaction_unsigned.tx.transfer.addrs_to
+//                     const amountsRaw = tx.extended_transaction_unsigned.tx.transfer.amounts
+//                     for (var i = 0; i < addrsToRaw.length; i++) {
+//                         concatenatedArrays = concatenateTypedArrays(Uint8Array,concatenatedArrays,addrsToRaw[i]) // Add address
+//                         concatenatedArrays = concatenateTypedArrays(Uint8Array,concatenatedArrays,toBigendianUint64BytesUnsigned(amountsRaw[i])) // Add amount
+//                     }
+//                     // Convert Uint8Array to VectorUChar
+//                     const hashableBytes = new qrllib.VectorUChar()
+//                     for (i = 0; i < concatenatedArrays.length; i += 1) {
+//                         hashableBytes.push_back(concatenatedArrays[i])
+//                     }
+//                     // Create sha256 sum of concatenatedarray
+//                     let shaSum = qrllib.sha2_256(hashableBytes)
+//                     // Sign the sha sum
+//                     tx.extended_transaction_unsigned.tx.signature = binaryToBytes(XMSS_OBJECT.sign(shaSum))
+//                     // Calculate transaction hash
+//                     let txnHashConcat = concatenateTypedArrays(Uint8Array,binaryToBytes(shaSum),tx.extended_transaction_unsigned.tx.signature,binaryToBytes(XMSS_OBJECT.getPK()))
+//
+//                     const txnHashableBytes = new qrllib.VectorUChar()
+//                     for (i = 0; i < txnHashConcat.length; i += 1) {
+//                         txnHashableBytes.push_back(txnHashConcat[i])
+//                     }
+//
+//                     let txnHash = qrllib.bin2hstr(qrllib.sha2_256(txnHashableBytes))
+//
+//                     // transferCoins returns a TransferCoinsResp, one needs to get the Transaction out and sign it
+//                     const confirmTxn = { transaction_signed: res.extended_transaction_unsigned.tx }
+//                     // confirmTxn.transaction_signed.master_addr = testfromaddress_bytes;
+//                     confirmTxn.transaction_signed.fee = tx.extended_transaction_unsigned.tx.fee
+//                     confirmTxn.transaction_signed.public_key = xmss_pk
+//                     confirmTxn.transaction_signed.signature = binaryToBytes(XMSS_OBJECT.sign(shaSum))
+//                     confirmTxn.transaction_signed.nonce = 12
+//                     confirmTxn.transaction_signed.transaction_hash = txnHash
+//                     confirmTxn.transaction_signed.transfer.addrs_to = tx.extended_transaction_unsigned.tx.transfer.addrs_to
+//                     confirmTxn.transaction_signed.transfer.amounts = tx.extended_transaction_unsigned.tx.transfer.amounts
+//
+//                     // pushTransaction API call
+//                     qrlClient.pushTransaction(confirmTxn, (err, res2) => {
+//                         if (err){
+//                             console.log("Error: ", err.message);
+//                             return;
+//                         }
+//                         console.log("RES2 : ", res2)
+//                         response = res2;
+//                         resolve(response);
+//                     });
+//                 });
+//             });
+//         });
+//     });
+//
+//     it('PushTransactionResp has correct *error_code* property', function(){
+//         expect(response).to.have.property('error_code');
+//     });
+// });
+
+
+
+
+
+describe('GetTokenTxn', function() {
+    let response;
+    // call API
+    before(function() {
+        return new Promise((resolve) => {
+            qrlClient.then( function (qrlClient) {
+                qrlClient.getTokenTxn({master_addr: testfromaddress_bytes, symbol:"JSTEST", name:"JSTEST", owner:"Q0105006d232eb403a0248f9d4c0476c06a7d7a1d0425420df2dd915b7fb46cf7da132699c27b93", decimals:10, initial_balances: {address: testtoaddress_bytes, amount: 10000000000} ,fee:1000000, xmss_pk: testfromxmsspk_bytes}, (err, res) => {
+                    if (err){
+                        console.log("Error: ", err.message);
+                        return;
+                    }
+                    response = res;
+                    resolve();
+                });
+            });
+        });
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *addr_from* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('addr_from');
+        expect(Buffer.from(response.extended_transaction_unsigned.addr_from).toString('hex')).to.equal(testfromaddress);
+    });
+    it('TransferCoinsResp has correct *extended_transaction_unsigned* property', function(){
+        expect(response).to.have.property('extended_transaction_unsigned');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *header* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('header');
+        expect(response.extended_transaction_unsigned.header).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *tx* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('tx');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transactionType* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transactionType');
+        expect(response.extended_transaction_unsigned.tx.transactionType).to.equal('token');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *master_addr* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('master_addr');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.master_addr)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.master_addr.length).to.equal(39);
+        expect(Buffer.from(response.extended_transaction_unsigned.tx.master_addr).toString('hex')).to.equal(testfromaddress);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *fee* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('fee');
+        expect(response.extended_transaction_unsigned.tx.fee).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.tx.fee)).to.be.a('number');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *public_key* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('public_key');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.public_key)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.public_key.length).to.equal(67);
+        expect(Buffer.from(response.extended_transaction_unsigned.tx.public_key).toString('hex')).to.equal(testfromxmsspk);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *signature* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('signature');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.signature)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.signature.length).to.equal(0);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *nonce* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('nonce');
+        expect(response.extended_transaction_unsigned.tx.nonce).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.tx.nonce)).to.be.a('number');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transaction_hash* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transaction_hash');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.transaction_hash)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.transaction_hash.length).to.equal(0);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transactionType* transfer', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transfer');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *coinbase* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('coinbase');
+        expect(response.extended_transaction_unsigned.tx.coinbase).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *latticePK* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('latticePK');
+        expect(response.extended_transaction_unsigned.tx.latticePK).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *message* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('message');
+        expect(response.extended_transaction_unsigned.tx.message).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *token* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('token');
+        expect(response.extended_transaction_unsigned.tx.token).to.have.all.keys(['symbol','name','owner','decimals','initial_balances']);
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.token.symbol)).to.equal(true);
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.token.name)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.token.decimals).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.tx.token.decimals)).to.be.a('number');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.token.owner)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.token.owner.length).to.equal(59);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transfer_token* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transfer_token');
+        expect(response.extended_transaction_unsigned.tx.transfer_token).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *slave* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('slave');
+        expect(response.extended_transaction_unsigned.tx.slave).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transfer* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transfer');
+        expect(response.extended_transaction_unsigned.tx.transfer).to.equal(null);
+
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *addr_from* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('addr_from');
+        expect(response.extended_transaction_unsigned.addr_from.length).to.equal(39);
+        expect(Buffer.from(response.extended_transaction_unsigned.addr_from).toString('hex')).to.equal(testfromaddress);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *size* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('size');
+        expect(response.extended_transaction_unsigned.size).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.size)).to.be.a('number');
+    });
+});
+
+
+
+
+describe('GetTransferTokenTxn', function() {
+    let response;
+    // call API
+    before(function() {
+        return new Promise((resolve) => {
+            qrlClient.then( function (qrlClient) {
+                qrlClient.getTransferTokenTxn({master_addr: testfromaddress_bytes, addresses_to: testtoaddress_bytes, amounts: 100, fee:0.001, xmss_pk: testfromxmsspk_bytes }, (err, res) => {
+                    if (err){
+                        console.log("Error: ", err.message);
+                        return;
+                    }
+                    response = res;
+                    resolve();
+                });
+            });
+        });
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *addr_from* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('addr_from');
+        expect(Buffer.from(response.extended_transaction_unsigned.addr_from).toString('hex')).to.equal(testfromaddress);
+    });
+    it('TransferCoinsResp has correct *extended_transaction_unsigned* property', function(){
+        expect(response).to.have.property('extended_transaction_unsigned');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *header* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('header');
+        expect(response.extended_transaction_unsigned.header).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *tx* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('tx');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transactionType* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transactionType');
+        expect(response.extended_transaction_unsigned.tx.transactionType).to.equal('transfer_token');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *master_addr* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('master_addr');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.master_addr)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.master_addr.length).to.equal(39);
+        expect(Buffer.from(response.extended_transaction_unsigned.tx.master_addr).toString('hex')).to.equal(testfromaddress);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *fee* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('fee');
+        expect(response.extended_transaction_unsigned.tx.fee).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.tx.fee)).to.be.a('number');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *public_key* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('public_key');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.public_key)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.public_key.length).to.equal(67);
+        expect(Buffer.from(response.extended_transaction_unsigned.tx.public_key).toString('hex')).to.equal(testfromxmsspk);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *signature* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('signature');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.signature)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.signature.length).to.equal(0);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *nonce* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('nonce');
+        expect(response.extended_transaction_unsigned.tx.nonce).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.tx.nonce)).to.be.a('number');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transaction_hash* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transaction_hash');
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.transaction_hash)).to.equal(true);
+        expect(response.extended_transaction_unsigned.tx.transaction_hash.length).to.equal(0);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transactionType* transfer', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transfer');
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *coinbase* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('coinbase');
+        expect(response.extended_transaction_unsigned.tx.coinbase).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *latticePK* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('latticePK');
+        expect(response.extended_transaction_unsigned.tx.latticePK).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *message* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('message');
+        expect(response.extended_transaction_unsigned.tx.message).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *token* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('token');
+        expect(response.extended_transaction_unsigned.tx.message).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transfer_token* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transfer_token');
+        expect(response.extended_transaction_unsigned.tx.transfer_token).to.have.all.keys(['token_txhash','addrs_to','amounts']);
+        expect(Buffer.isBuffer(response.extended_transaction_unsigned.tx.transfer_token.token_txhash)).to.equal(true);
+        expect(typeof(response.extended_transaction_unsigned.tx.transfer_token.addrs_to)).to.equal('object');
+        response.extended_transaction_unsigned.tx.transfer_token.addrs_to.forEach(i => expect(Buffer.isBuffer(i)).to.equal(true));
+        response.extended_transaction_unsigned.tx.transfer_token.addrs_to.forEach(i => expect(i.length).to.equal(39));
+        response.extended_transaction_unsigned.tx.transfer_token.amounts.forEach(i => expect(i).to.be.a('string'));
+        response.extended_transaction_unsigned.tx.transfer_token.amounts.forEach(i => expect(parseInt(i)).to.be.a('number'));
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *slave* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('slave');
+        expect(response.extended_transaction_unsigned.tx.slave).to.equal(null);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned.tx has correct *transfer* property', function(){
+        expect(response.extended_transaction_unsigned.tx).to.have.property('transfer');
+        expect(response.extended_transaction_unsigned.tx.transfer).to.equal(null);
+
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *addr_from* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('addr_from');
+        expect(response.extended_transaction_unsigned.addr_from.length).to.equal(39);
+        expect(Buffer.from(response.extended_transaction_unsigned.addr_from).toString('hex')).to.equal(testfromaddress);
+    });
+    it('TransferCoinsResp.extended_transaction_unsigned has correct *size* property', function(){
+        expect(response.extended_transaction_unsigned).to.have.property('size');
+        expect(response.extended_transaction_unsigned.size).to.be.a('string');
+        expect(parseInt(response.extended_transaction_unsigned.size)).to.be.a('number');
+    });
+
 });
