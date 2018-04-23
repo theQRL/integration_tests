@@ -10,6 +10,11 @@ class NodeLogTracker(object):
         self.node_status = {}
         self.mocknet = mocknet
 
+        self.abort_trigger = [
+            "<_Rendezvous of RPC that terminated with (StatusCode.UNKNOWN",
+            "Traceback (most recent call last):"
+        ]
+
     def synced_count(self):
         count = 0
         for k, v in self.node_status.items():
@@ -24,6 +29,11 @@ class NodeLogTracker(object):
             self.parse(msg)
             if output:
                 print(msg, end='')
+
+            for s in self.abort_trigger:
+                if s in msg:
+                    raise Exception("ABORT TRIGGERED")
+
         except Empty:
             time.sleep(0.05)
 

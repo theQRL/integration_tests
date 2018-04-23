@@ -65,12 +65,14 @@ class TestFuzzingAPI(TestCase):
                             try:
                                 resp = req_method(req_arg)
                             except grpc.RpcError as err:
-                                print('*******************************')
-                                print("\nERROR: %s \n" % rand_req.method)
-                                print(req_arg)
-                                print('*******************************')
-                                print(err)
-#                                raise
+                                print('*******************************\n')
+                                print("Method  : %s" % rand_req.method)
+                                print("error   : %s" % err)
+                                print("code    : %s" % err.code())
+                                print("details : %s" % err.details())
+                                print('*******************************\n')
+                                if err.code() == grpc.StatusCode.UNKNOWN:
+                                    raise
                             except Exception as e:
                                 pass
                             time.sleep(1)
