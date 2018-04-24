@@ -4,54 +4,80 @@ jobs:
     # Test mocknet
     docker:
       - image: qrledger/qrl-docker:xenial
+    environment:
+      PYTHONPATH: /root/project
     steps:
       - checkout
+      - run: apt install -y python3-venv
       - run: pip install -U -r requirements.txt
       - run:
           name: Mocknet Tests
-          command: PYTHONPATH=$(pwd) pytest tests/python/mocknet
+          command: pytest tests/python/mocknet
       - run:
           name: Basic Tests
-          command: PYTHONPATH=$(pwd) pytest tests/python/basic
+          command: pytest tests/python/basic
 
   tests_xenial:
     # Run all tests in xenial
     docker:
-      - image: qrledger/qrl-docker:bionic
+      - image: qrledger/qrl-docker:xenial
+    environment:
+      PYTHONPATH: /root/project
     steps:
       - checkout
+      - run: apt install -y python3-venv
       - run: pip install -U -r requirements.txt
       - run:
           name: Mocknet Tests
-          command: PYTHONPATH=$(pwd) pytest tests/python/mocknet
+          command: pytest tests/python/mocknet
       - run:
           name: Basic Tests
-          command: PYTHONPATH=$(pwd) pytest tests/python/basic
+          command: pytest tests/python/basic
       - run:
           name: Fork recovery Tests
-          command: PYTHONPATH=$(pwd) pytest tests/python/fork_recovery
+          command: pytest tests/python/fork_recovery
 
   tests_bionic:
     # Run all tests in bionic
     docker:
       - image: qrledger/qrl-docker:bionic
+    environment:
+      PYTHONPATH: /root/project
     steps:
       - checkout
+      - run: apt install -y python3-venv
       - run: pip install -U -r requirements.txt
       - run:
           name: Mocknet Tests
-          command: PYTHONPATH=$(pwd) pytest tests/python/mocknet
+          command: pytest tests/python/mocknet
       - run:
           name: Basic Tests
-          command: PYTHONPATH=$(pwd) pytest tests/python/basic
+          command: pytest tests/python/basic
       - run:
           name: Fork recovery Tests
-          command: PYTHONPATH=$(pwd) pytest tests/python/fork_recovery
+          command: pytest tests/python/fork_recovery
+
+  tests_fuzzing:
+    # Run all tests in xenial
+    docker:
+      - image: qrledger/qrl-docker:xenial
+    environment:
+      PYTHONPATH: /root/project
+    steps:
+      - checkout
+      - run: apt install -y python3-venv
+      - run: pip install -U -r requirements.txt
+      - run: pip install git+https://github.com/CurataEng/hypothesis-protobuf.git
+      - run:
+          name: Fuzzing Tests
+          command: pytest tests/python/fuzzing
 
   tests_js:
     # Run javascript tests
     docker:
       - image: qrledger/qrl-docker:xenial
+    environment:
+      PYTHONPATH: /root/project
     steps:
       - checkout
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -64,12 +90,15 @@ jobs:
     # to run this, execute circleci build --job debug
     docker:
       - image: qrledger/qrl-docker:xenial
+    environment:
+      PYTHONPATH: /root/project
     steps:
       - checkout
       - run: pip install -U -r requirements.txt
+      - run: apt install -y python3-venv
       - run:
           name: Debugging -  Adjust accordingly
-          command: PYTHONPATH=$(pwd) pytest tests/python/mocknet -k 'test_timeout'
+          command: pytest tests/python/mocknet -k 'test_timeout'
 
 
 workflows:

@@ -1,8 +1,6 @@
 # coding=utf-8
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or http://www.opensource.org/licenses/mit-license.php.
-import time
-from queue import Empty
 from unittest import TestCase
 
 from mocknet.mocknet import MockNet
@@ -15,20 +13,12 @@ class TestMocknetSync(TestCase):
 
     def test_launch_log_nodes(self):
         def func_monitor_log():
-            node_tracker = NodeLogTracker()
+            node_logtracker = NodeLogTracker(mocknet)
 
             while mocknet.running:
-                try:
-                    msg = mocknet.log_queue.get(block=True, timeout=1)
-                    print(msg, end='')
-                    node_tracker.parse(msg)
-
-                    if node_tracker.get_status('Node 0') == 'synced' and \
-                       node_tracker.get_status('Node 1') == 'synced' and \
-                       node_tracker.get_status('Node 2') == 'synced':
-                        return
-                except Empty:
-                    pass
+                node_logtracker.track()
+                if node_logtracker.synced_count() == mocknet.node_count:
+                    return
 
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=60,

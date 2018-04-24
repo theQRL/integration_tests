@@ -1,11 +1,9 @@
 # coding=utf-8
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or http://www.opensource.org/licenses/mit-license.php.
-import time
 import os
 import subprocess
 import grpc
-from queue import Empty
 from unittest import TestCase
 
 from mocknet.mocknet import MockNet
@@ -16,8 +14,8 @@ from pyqrllib.pyqrllib import hstr2bin, bin2hstr
 from qrl.generated import qrl_pb2_grpc, qrl_pb2
 
 
-LAST_BLOCK_NUMBER = 201
-LAST_BLOCK_HEADERHASH = '7132f0828a2689bff7c563b2ad941092525e48e6afb66bf62a4311d3e438495e'
+LAST_BLOCK_NUMBER = 202
+LAST_BLOCK_HEADERHASH = '9aaf2719c99afd518eefe3f35160063f3d9115496c76d431e851ccb4869f2823'
 
 
 class TestMocknetForkRecovery(TestCase):
@@ -33,10 +31,10 @@ class TestMocknetForkRecovery(TestCase):
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
 
-    def test_launch_log_nodes(self):
+    def test_fork_recovery(self):
         timeout = 120
 
-        def state_check(mocknet):
+        def state_check():
             public_api_addresses = mocknet.public_addresses
             for public_api_address in public_api_addresses:
                 channel_public = grpc.insecure_channel(public_api_address)
@@ -56,23 +54,15 @@ class TestMocknetForkRecovery(TestCase):
                                     'Expected : %s\n', bin2hstr(response.info.block_last_hash),
                                     'Found : %s ', LAST_BLOCK_HEADERHASH)
 
-                return True
+            return True
 
         def func_monitor_log():
-            node_tracker = NodeLogTracker()
-
+            node_tracker = NodeLogTracker(mocknet)
             while mocknet.running:
-                try:
-                    msg = mocknet.log_queue.get(block=True, timeout=1)
-                    print(msg, end='')
-                    node_tracker.parse(msg)
-
-                    if "Added Block #{0} {1}".format(LAST_BLOCK_NUMBER, LAST_BLOCK_HEADERHASH) in msg:
-                        state_check(mocknet)
-                        return
-
-                except Empty:
-                    pass
+                msg = node_tracker.track()
+                if "Added Block #{0} {1}".format(LAST_BLOCK_NUMBER, LAST_BLOCK_HEADERHASH) in msg:
+                    state_check()
+                    return
 
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=timeout,
