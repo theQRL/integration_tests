@@ -6,7 +6,7 @@ import subprocess
 import grpc
 from unittest import TestCase
 
-from mocknet.mocknet import MockNet
+from mocknet.MockNet import MockNet
 from mocknet.NodeTracker import NodeLogTracker
 
 from pyqrllib.pyqrllib import hstr2bin, bin2hstr
