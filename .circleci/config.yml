@@ -80,10 +80,14 @@ jobs:
       PYTHONPATH: /root/project
     steps:
       - checkout
+      - run: apt install -y python3-venv
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       - run: apt-get install -y nodejs
       - run: npm -v
-      - run: cd tests/js && npm install && npm rebuild && npm test
+      - run:
+          command: ./mocknet/MockNet.py
+          background: true
+      - run: sleep 15; cd tests/js && npm install && npm rebuild && npm test
 
   debug:
     # debugging job - this can be customize locally but it wont run in circleci

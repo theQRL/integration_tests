@@ -71,7 +71,7 @@ function toBuffer(ab) {
 // Connecting to the API
 // TODO: The IP should change to something running locally for tests_old
 // let qrlClient = getQRLClient('104.251.219.215:9009');
-let qrlClient = getQRLClient('35.177.60.137:9009');
+let qrlClient = getQRLClient('127.0.0.1:10002');
 // let qrlClient = getQRLClient('127.0.0.1:9009');
 
 
