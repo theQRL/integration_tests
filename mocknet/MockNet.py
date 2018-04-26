@@ -19,6 +19,8 @@ from time import sleep
 
 import yaml
 
+from mocknet.NodeTracker import NodeLogTracker
+
 LOCALHOST_IP = '127.0.0.1'
 PORT_COUNT = 5  # Number of ports assigned to each node
 START_PORT = 10000  # Port from which assignment will start
@@ -219,3 +221,16 @@ class MockNet(object):
 
             self.writeout("Finished")
             return result
+
+
+if __name__ == '__main__':
+    def func_monitor_log():
+        node_logtracker = NodeLogTracker(mocknet)
+        while mocknet.running:
+            node_logtracker.track()
+
+    mocknet = MockNet(func_monitor_log,
+                      timeout_secs=600,
+                      node_count=4)
+    mocknet.prepare_source()
+    mocknet.run()

@@ -5,7 +5,7 @@ import time
 from unittest import TestCase
 
 from mocknet.NodeTracker import NodeLogTracker
-from mocknet.mocknet import MockNet
+from mocknet.MockNet import MockNet
 
 
 class TestMocknetHelpers(TestCase):

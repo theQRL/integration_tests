@@ -9,7 +9,7 @@ from unittest import TestCase
 import grpc
 from qrl.generated import qrl_pb2, qrl_pb2_grpc
 
-from mocknet.mocknet import MockNet
+from mocknet.MockNet import MockNet
 from mocknet.NodeTracker import NodeLogTracker
 
 from hypothesis_protobuf.module_conversion import modules_to_strategies
