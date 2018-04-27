@@ -145,3 +145,4 @@ workflows:
       - tests_xenial
       - tests_bionic
       - tests_js
+      - tests_wallet
