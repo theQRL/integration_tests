@@ -116,7 +116,7 @@ jobs:
       - run: cd tests && git clone https://github.com/theQRL/qrl-wallet.git
       - run: cd tests/qrl-wallet && meteor npm install --unsafe-perm
       - run:
-          command: cd tests/qrl-wallet && meteor --allow-superuser
+          command: cd tests/qrl-wallet && meteor --allow-superuser --settings mocknet.json
           background: true
       - run: until curl --max-time 300 http://localhost:3000/; do sleep 1; done
       - run: cd tests/qrl-wallet && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests
