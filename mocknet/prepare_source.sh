@@ -26,6 +26,5 @@ source ${VENV_PATH}/bin/activate
 
 # Install dependencies
 pip install -U setuptools
-pip install -U pip
 pip install -U mock
 pip install -U -r ${SOURCE_PATH}/requirements.txt
