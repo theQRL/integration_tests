@@ -13,9 +13,9 @@ from pyqrllib.pyqrllib import hstr2bin, bin2hstr
 
 from qrl.generated import qrl_pb2_grpc, qrl_pb2
 
-
-LAST_BLOCK_NUMBER = 202
-LAST_BLOCK_HEADERHASH = '9aaf2719c99afd518eefe3f35160063f3d9115496c76d431e851ccb4869f2823'
+TIMEOUT = 240
+LAST_BLOCK_NUMBER = 203
+LAST_BLOCK_HEADERHASH = '92271b00b3f75e9e8af35d3ec9007da4989a8fba47c4a40f40a9e7e847890b70'
 
 
 class TestMocknetForkRecovery(TestCase):
@@ -32,8 +32,6 @@ class TestMocknetForkRecovery(TestCase):
         p.wait()
 
     def test_fork_recovery(self):
-        timeout = 120
-
         def state_check():
             public_api_addresses = mocknet.public_addresses
             for public_api_address in public_api_addresses:
@@ -65,9 +63,9 @@ class TestMocknetForkRecovery(TestCase):
                     return
 
         mocknet = MockNet(func_monitor_log,
-                          timeout_secs=timeout,
+                          timeout_secs=TIMEOUT,
                           node_count=2,
-                          node_args="--mockGetMeasurement 1000000000",
+                          node_args="--mockGetMeasurement 10000",
                           remove_data=False)
 
         mocknet.prepare_source()
