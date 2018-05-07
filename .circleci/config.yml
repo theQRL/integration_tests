@@ -98,7 +98,7 @@ jobs:
     steps:
       - checkout
       - run: apt update -y
-      - run: apt install -y locales default-jre default-jdk python3-venv
+      - run: apt install -y locales default-jre default-jdk python3-venv netcat
       - run: locale-gen en_US.UTF-8
       - run: localedef -i en_US -f UTF-8 en_US.UTF-8
       - run: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -113,9 +113,6 @@ jobs:
       - run: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
       - run: python3 get-pip.py --user --force-reinstall
       - run: pip install -U -r requirements.txt
-      - run:
-          command: nice ./mocknet/MockNet.py miningenabled
-          background: true
       - run: cd tests && git clone https://github.com/theQRL/qrl-wallet.git
       - run: cd tests && git clone https://github.com/theQRL/block-explorer.git
       - run: cd tests/qrl-wallet && meteor npm install --unsafe-perm
@@ -128,6 +125,10 @@ jobs:
           command: cd tests/block-explorer && meteor --allow-superuser --settings mocknet.json --port 3003
           background: true
       - run: until curl --max-time 300 http://localhost:3003/; do sleep 1; done
+      - run:
+          command: nice ./mocknet/MockNet.py miningenabled
+          background: true
+      - run: while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
       - run: cd tests/chimp && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests
 
   debug:
