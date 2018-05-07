@@ -61,7 +61,7 @@ module.exports = function () {
 
   this.Then(/^I should see shortly after "([^"]*)"$/, function (arg1) {
     let _el = '#transferSuccessMessage'
-    browser.waitForVisible(_el, 20000)
+    browser.waitForVisible(_el, 120000)
     expect(browser.getText(_el)).toEqual(arg1)
 
     // Write txn hash to file for Explorer test 6
