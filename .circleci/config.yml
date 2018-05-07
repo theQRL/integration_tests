@@ -89,8 +89,8 @@ jobs:
           background: true
       - run: sleep 15; cd tests/js && npm install && npm rebuild && npm test
 
-  tests_wallet:
-    # Run qrl-wallet tests
+  tests_webstack:
+    # Run full webstack integration tests (wallet and explorer)
     docker:
       - image: qrledger/qrl-docker:xenial
     environment:
@@ -110,16 +110,25 @@ jobs:
       - run: npm install -g qrl-electrify --unsafe-perm
       - run: npm install -g chimp --unsafe-perm
       - run: npm install -g selenium-standalone
+      - run: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+      - run: python3 get-pip.py --user --force-reinstall
+      - run: pip install -U -r requirements.txt
       - run:
-          command: ./mocknet/MockNet.py
+          command: nice ./mocknet/MockNet.py miningenabled
           background: true
       - run: cd tests && git clone https://github.com/theQRL/qrl-wallet.git
+      - run: cd tests && git clone https://github.com/theQRL/block-explorer.git
       - run: cd tests/qrl-wallet && meteor npm install --unsafe-perm
+      - run: cd tests/block-explorer && meteor npm install --unsafe-perm
       - run:
           command: cd tests/qrl-wallet && meteor --allow-superuser --settings mocknet.json
           background: true
       - run: until curl --max-time 300 http://localhost:3000/; do sleep 1; done
-      - run: cd tests/qrl-wallet && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests
+      - run:
+          command: cd tests/block-explorer && meteor --allow-superuser --settings mocknet.json --port 3003
+          background: true
+      - run: until curl --max-time 300 http://localhost:3003/; do sleep 1; done
+      - run: cd tests/chimp && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests
 
   debug:
     # debugging job - this can be customize locally but it wont run in circleci
@@ -136,7 +145,6 @@ jobs:
           name: Debugging -  Adjust accordingly
           command: pytest tests/python/mocknet -k 'test_timeout'
 
-
 workflows:
   version: 2
   build_all:
@@ -145,4 +153,4 @@ workflows:
       - tests_xenial
       - tests_bionic
       - tests_js
-      - tests_wallet
+      - tests_webstack
