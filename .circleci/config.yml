@@ -98,7 +98,7 @@ jobs:
     steps:
       - checkout
       - run: apt update -y
-      - run: apt install -y locales default-jre default-jdk python3-venv netcat
+      - run: apt install -y locales default-jre default-jdk python3-venv netcat cpulimit
       - run: locale-gen en_US.UTF-8
       - run: localedef -i en_US -f UTF-8 en_US.UTF-8
       - run: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
