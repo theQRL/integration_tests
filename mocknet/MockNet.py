@@ -72,7 +72,6 @@ class MockNet(object):
                  remove_data=True):
         print("")
         self.writeout("Starting mocknet")
-        self.writeout("Mining Enabled: {}".format(MINING_ENABLED))
 
         if node_count > 0:
             self.pool = ThreadPoolExecutor(max_workers=node_count * 2)
