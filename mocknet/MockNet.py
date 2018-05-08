@@ -12,7 +12,6 @@ import shutil
 import signal
 import subprocess
 import time
-import sys
 
 from os.path import pardir
 from concurrent.futures import ThreadPoolExecutor
@@ -26,17 +25,6 @@ from mocknet.NodeTracker import NodeLogTracker
 LOCALHOST_IP = '127.0.0.1'
 PORT_COUNT = 5  # Number of ports assigned to each node
 START_PORT = 10000  # Port from which assignment will start
-RUN_NODE_SCRIPT = 'run_node.sh'
-
-# Check if mining enabled
-try:
-    if sys.argv[1] == 'miningenabled':
-        MINING_ENABLED = True
-    else:
-        MINING_ENABLED = False
-except Exception as e:
-    MINING_ENABLED = False
-
 
 def kill_process_group(pid):
     try:
@@ -172,15 +160,9 @@ class MockNet(object):
         node_data_dir = os.path.join(self.data_dir, "node{:03}".format(node_idx))
         os.makedirs(node_data_dir, exist_ok=True)
 
-        # Only enable node mining on node 0
-        if MINING_ENABLED == True and node_idx == 0:
-            NODE_MINING_ENABLED = True
-        else:
-            NODE_MINING_ENABLED = False
-
         config = {
             'peer_list': self.get_peers(node_idx),
-            'mining_enabled': NODE_MINING_ENABLED,
+            'mining_enabled': True,
             'p2p_local_port': self.calc_port(node_idx),
             'p2p_public_port': self.calc_port(node_idx),
             'admin_api_port': self.calc_port(node_idx, 1),
@@ -196,13 +178,7 @@ class MockNet(object):
             yaml.dump(config, stream=f, Dumper=yaml.Dumper)
 
         if not stop_event.is_set():
-            # Only enable node mmining on node 0
-            if NODE_MINING_ENABLED == True:
-                RUN_NODE_SCRIPT = 'run_mining_node.sh'
-            else:
-                RUN_NODE_SCRIPT = 'run_node.sh'
-
-            p = subprocess.Popen("{}/{} --qrldir {} {}".format(self.this_dir, RUN_NODE_SCRIPT, node_data_dir, self.node_args),
+            p = subprocess.Popen("{}/run_node.sh --qrldir {} {}".format(self.this_dir, node_data_dir, self.node_args),
                                  shell=True,
                                  preexec_fn=os.setsid,
                                  stdout=subprocess.PIPE,

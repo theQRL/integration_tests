@@ -6,7 +6,7 @@ source ${BASH_SOURCE%/*}/set_env.sh
 
 echo
 export REPO_SLUG='theQRL/QRL'
-export REPO_BRANCH='master'
+export REPO_BRANCH='dev'
 
 # Clean up
 rm -rf ${VENV_PATH}
