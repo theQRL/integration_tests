@@ -98,12 +98,16 @@ jobs:
     steps:
       - checkout
       - run: apt update -y
-      - run: apt install -y locales default-jre default-jdk python3-venv netcat cpulimit
+      - run: apt install -y locales default-jre default-jdk python3-venv netcat cpulimit bsdtar
       - run: locale-gen en_US.UTF-8
       - run: localedef -i en_US -f UTF-8 en_US.UTF-8
       - run: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
       - run: apt install -y -f ./google-chrome-stable_current_amd64.deb
+      - run: mv /bin/tar /bin/tar.gnu
+      - run: ln -s /usr/bin/bsdtar /bin/tar
       - run: curl https://install.meteor.com/ | sh
+      - run: rm /bin/tar
+      - run: mv /bin/tar.gnu /bin/tar
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       - run: apt-get install -y nodejs
       - run: npm -v
@@ -126,7 +130,7 @@ jobs:
           background: true
       - run: until curl --max-time 300 http://localhost:3003/; do sleep 1; done
       - run:
-          command: nice ./mocknet/MockNet.py miningenabled
+          command: nice ./mocknet/MockNet.py
           background: true
       - run: while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
       - run: cd tests/chimp && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests

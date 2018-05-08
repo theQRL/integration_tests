@@ -9,13 +9,13 @@ Background:
 @watch
 Scenario: Visitor opens a wallet and sends a transaction
     When I click Open Wallet
-    And enter my mnemonic phrase "absorb filled deck fifty jumbo use valve hebrew easter delay shell afford wee pipe mercy tea loyal cain held affect alice cult unkind ridge storm cloth banana into bit affair geneva buckle recent false"
+    And enter my mnemonic phrase "absorb filled syrup axle occupy club fairly break liquid major patrol forbid throat swing emit hey inward blood pillow esteem madame cope under tent hawse glory muscle order bruise bold dad get carpet talk"
     And click Unlock Wallet
     Then I should see "Unlocking wallet..." on the page
-    And I should then see my wallet address "Q010500327b3cd777e1ecab93df873ea335de3413283ff2ba4a7ff577ef979eb99a54e06590f466" on the page
+    And I should then see my wallet address "Q01050058bb3f8cb66fd90d0347478e5bdf3a475e82cfc5fe5dc276500ca21531e6edaf3d2d0f7e" on the page
     When I then fill in the to address as "Q010200a3f33bbfff9432bee62828345ba4cb6e24182a43ea38f472ad3cf775941b25c0870d6f41"
-    And enter the amount as "42"
-    And enter the fee as "0.05"
+    And enter the amount as "2"
+    And enter the fee as "0.005"
     And change the OTS Key Index to "10"
     And click confirm
     Then I should see a loading icon
