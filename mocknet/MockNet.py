@@ -12,7 +12,7 @@ import shutil
 import signal
 import subprocess
 import time
-import argparse
+import sys
 
 from os.path import pardir
 from concurrent.futures import ThreadPoolExecutor
@@ -73,8 +73,16 @@ class MockNet(object):
                  remove_data=True):
         print("")
         self.writeout("Starting mocknet")
-        self.args = self.parse_arguments()
-        self.writeout("Mining Enabled: {}".format(self.args.mining_enabled))
+        
+        try:
+            if sys.argv[1] == 'enableMining':
+                self.mining_enabled = True
+            else:
+                self.mining_enabled = False
+        except Exception as e:
+            self.mining_enabled = False
+
+        self.writeout("Mining Enabled: {}".format(self.mining_enabled))
 
         if node_count > 0:
             self.pool = ThreadPoolExecutor(max_workers=node_count * 2)
@@ -105,12 +113,6 @@ class MockNet(object):
 
         if remove_data:
             shutil.rmtree(self.data_dir, ignore_errors=True)
-
-    def parse_arguments(self):
-        parser = argparse.ArgumentParser(description='QRL Mocknet')
-        parser.add_argument('--enableMining', '-m', dest='mining_enabled', action='store_true', required=False, default=False,
-                            help="Toggle Mining in Mocknet")
-        return parser.parse_args()
 
     def prepare_source(self):
         cmd = "{}/prepare_source.sh".format(self.this_dir)
@@ -170,7 +172,7 @@ class MockNet(object):
 
         config = {
             'peer_list': self.get_peers(node_idx),
-            'mining_enabled': self.args.mining_enabled,
+            'mining_enabled': self.mining_enabled,
             'p2p_local_port': self.calc_port(node_idx),
             'p2p_public_port': self.calc_port(node_idx),
             'admin_api_port': self.calc_port(node_idx, 1),
