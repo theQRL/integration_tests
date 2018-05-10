@@ -191,7 +191,7 @@ class MockNet(object):
             yaml.dump(config, stream=f, Dumper=yaml.Dumper)
 
         if not stop_event.is_set():
-            p = subprocess.Popen("{}/{}} --qrldir {} {}".format(self.this_dir, self.run_script, node_data_dir, self.node_args),
+            p = subprocess.Popen("{}/{} --qrldir {} {}".format(self.this_dir, self.run_script, node_data_dir, self.node_args),
                                  shell=True,
                                  preexec_fn=os.setsid,
                                  stdout=subprocess.PIPE,
