@@ -12,6 +12,7 @@ import shutil
 import signal
 import subprocess
 import time
+import sys
 
 from os.path import pardir
 from concurrent.futures import ThreadPoolExecutor
@@ -25,7 +26,6 @@ from mocknet.NodeTracker import NodeLogTracker
 LOCALHOST_IP = '127.0.0.1'
 PORT_COUNT = 5  # Number of ports assigned to each node
 START_PORT = 10000  # Port from which assignment will start
-
 
 def kill_process_group(pid):
     try:
@@ -73,6 +73,19 @@ class MockNet(object):
                  remove_data=True):
         print("")
         self.writeout("Starting mocknet")
+        
+        try:
+            if sys.argv[1] == 'enableMining':
+                self.mining_enabled = True
+                self.run_script = 'run_mining_node.sh'
+            else:
+                self.mining_enabled = False
+                self.run_script = 'run_node.sh'
+        except Exception as e:
+            self.mining_enabled = False
+            self.run_script = 'run_node.sh'
+
+        self.writeout("Mining Enabled: {}".format(self.mining_enabled))
 
         if node_count > 0:
             self.pool = ThreadPoolExecutor(max_workers=node_count * 2)
@@ -162,7 +175,7 @@ class MockNet(object):
 
         config = {
             'peer_list': self.get_peers(node_idx),
-            'mining_enabled': False,
+            'mining_enabled': self.mining_enabled,
             'p2p_local_port': self.calc_port(node_idx),
             'p2p_public_port': self.calc_port(node_idx),
             'admin_api_port': self.calc_port(node_idx, 1),
@@ -178,7 +191,7 @@ class MockNet(object):
             yaml.dump(config, stream=f, Dumper=yaml.Dumper)
 
         if not stop_event.is_set():
-            p = subprocess.Popen("{}/run_node.sh --qrldir {} {}".format(self.this_dir, node_data_dir, self.node_args),
+            p = subprocess.Popen("{}/{} --qrldir {} {}".format(self.this_dir, self.run_script, node_data_dir, self.node_args),
                                  shell=True,
                                  preexec_fn=os.setsid,
                                  stdout=subprocess.PIPE,
