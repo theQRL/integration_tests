@@ -1,12 +1,5 @@
 var fs = require('fs')
 
-/*
-fs.writeFileSync('/tmp/fs.tmp', browser.getTitle())
-
-var content = fs.readFileSync('/tmp/fs.tmp').toString()
-console.log(content)
-*/
-
 // This file contains steps shared over multiple tests.
 module.exports = function() {  
   this.setDefaultTimeout(300000); // 5 minute default timeout
@@ -80,6 +73,56 @@ module.exports = function() {
     })
     
     browser.setValue('#walletCode', arg1)
+  })
+
+  // Sending Txn Shared Functions
+  this.When(/^enter the fee as "([^"]*)"$/, function (arg1) {
+    browser.setValue('#fee', arg1)
+  })
+
+  this.When(/^change the OTS Key Index to "([^"]*)"$/, function (arg1) {
+    browser.setValue('#otsKey', arg1)
+  })
+
+  this.When(/^click confirm$/, function () {
+    browser.click('#generateTransaction')
+  })
+
+  this.When(/^I then fill in the to address as "([^"]*)"$/, function (arg1) {
+    browser.setValue('#to_1', arg1)
+  })
+
+  this.When(/^enter the amount as "([^"]*)"$/, function (arg1) {
+    browser.setValue('#amounts_1', arg1)
+  })
+
+  this.Then(/^I should see "([^"]*)"$/, function (arg1) {
+    let _el = '#transferRelayingMsg'
+    browser.waitForVisible(_el)
+    expect(browser.getText(_el)).toEqual(arg1)
+  })
+
+  this.Then(/^I should "([^"]*)"$/, function (arg1) {
+    let _el = '#transferFinalTxnStatus'
+
+    browser.waitUntil(function () {
+      const thisResult = browser.getText(_el)
+      if(thisResult.indexOf(arg1) >=0) {
+        return true
+      }
+    }, 300000, 'expected transaction to be in pending state')
+  })
+
+  this.Then(/^shortly after I should see "([^"]*)"$/, function (arg1) {
+    let _el = '#transferFinalTxnStatus'
+
+    browser.waitUntil(function () {
+      const thisResult = browser.getText(_el)
+      if(thisResult.indexOf(arg1) >=0) {
+        return true
+      }
+    }, 300000, 'expected transaction confirmation within 5 minutes')
+
   })
 
   /* EXPLORER */
