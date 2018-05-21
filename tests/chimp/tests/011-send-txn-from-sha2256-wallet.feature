@@ -1,6 +1,6 @@
-Feature: Open Shake 256 Wallet and Send Txn
+Feature: Open SHA2_256 Wallet and Send Txn
     As a visitor to the site,
-    I should be able to open an existing shake 256 wallet
+    I should be able to open an existing SHA2_256 wallet
     And send a transaction from it
 
 Background:
