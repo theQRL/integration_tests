@@ -26,7 +26,6 @@ Scenario: Visitor opens a wallet and creates a token
     And enter the fee as "0.005"
     And change the OTS Key Index to "11"
     And click create token
-    Then I should see a loading icon
     And I should then see a form confirming my token creation transaction
     When I then click confirmation token
     Then I should see the relaying message "Your token is being relayed into the QRL network..."

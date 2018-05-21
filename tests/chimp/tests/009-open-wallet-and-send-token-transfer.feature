@@ -19,7 +19,6 @@ Scenario: Visitor opens a wallet and sends a token transfer transaction
     And enter the fee as "0.005"
     And change the OTS Key Index to "12"
     And click confirm
-    Then I should see a loading icon
     And I should then see a form confirming my token transfer transaction
     When I then click confirmation transaction for token transfer
     Then I should see a token relaying message "Your transaction is being relayed into the QRL network..."
