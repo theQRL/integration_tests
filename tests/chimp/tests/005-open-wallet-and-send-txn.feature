@@ -13,8 +13,11 @@ Scenario: Visitor opens a wallet and sends a transaction
     And click Unlock Wallet
     Then I should see "Unlocking wallet..." on the page
     And I should then see my wallet address "Q01050058bb3f8cb66fd90d0347478e5bdf3a475e82cfc5fe5dc276500ca21531e6edaf3d2d0f7e" on the page
-    When I then fill in the to address as "Q010200a3f33bbfff9432bee62828345ba4cb6e24182a43ea38f472ad3cf775941b25c0870d6f41"
-    And enter the amount as "2"
+    When I then fill in the to address as "Q02040084c25e7c81ea109853ef474c925a3f6a10ae7ceb5651e26282e5877bd4ce49039fc59bb9"
+    And enter the amount as "5"
+    And I click Add Another Recipient
+    When I then fill in the second to address as "Q000400243b6f4a60669afbb192a04157822da2dfb1d0f1b99856df6f6948b1704a5fc552c4e3f8"
+    And enter the second amount as "10"
     And enter the fee as "0.005"
     And change the OTS Key Index to "10"
     And click confirm
