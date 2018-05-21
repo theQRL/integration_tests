@@ -27,6 +27,7 @@ LOCALHOST_IP = '127.0.0.1'
 PORT_COUNT = 5  # Number of ports assigned to each node
 START_PORT = 10000  # Port from which assignment will start
 
+
 def kill_process_group(pid):
     try:
         pgrp = os.getpgid(pid)
