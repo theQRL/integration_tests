@@ -1,6 +1,6 @@
-Feature: Open Wallet and Send Txn
+Feature: Open SHA2_256 Wallet and Send Txn
     As a visitor to the site,
-    I should be able to open an existing wallet
+    I should be able to open an existing SHA2_256 wallet
     And send a transaction from it
 
 Background:
@@ -9,16 +9,15 @@ Background:
 @watch
 Scenario: Visitor opens a wallet and sends a transaction
     When I click Open Wallet
-    And enter my mnemonic phrase "absorb filled syrup axle occupy club fairly break liquid major patrol forbid throat swing emit hey inward blood pillow esteem madame cope under tent hawse glory muscle order bruise bold dad get carpet talk"
+    And enter my mnemonic phrase "aback drank itself lousy kitten tenant task cheek fort tom series heyday fig sorrow swan tehran legend gemini calmly beech arrive prior with airy orphan for royal afloat loaf host gorge stair avenue midst"
     And click Unlock Wallet
     Then I should see "Unlocking wallet..." on the page
-    And I should then see my wallet address "Q01050058bb3f8cb66fd90d0347478e5bdf3a475e82cfc5fe5dc276500ca21531e6edaf3d2d0f7e" on the page
+    And I should then see my wallet address "Q000400243b6f4a60669afbb192a04157822da2dfb1d0f1b99856df6f6948b1704a5fc552c4e3f8" on the page
     When I then fill in the to address as "Q010200a3f33bbfff9432bee62828345ba4cb6e24182a43ea38f472ad3cf775941b25c0870d6f41"
-    And enter the amount as "2"
+    And enter the amount as "1"
     And enter the fee as "0.005"
-    And change the OTS Key Index to "10"
+    And change the OTS Key Index to "5"
     And click confirm
-    Then I should see a loading icon
     And I should then see a form confirming my transaction
     When I then click confirmation transaction
     Then I should see "Your transaction is being relayed into the QRL network..."

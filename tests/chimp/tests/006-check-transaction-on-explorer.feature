@@ -8,4 +8,4 @@ Background:
 Scenario: Validate explorer shows transaction
 	When I browse to the recent transaction page
 	Then I should see the transaction appear
-	And the amount transferred should be "2"
+	And the amount transferred should be "15"

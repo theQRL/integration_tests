@@ -1,16 +1,10 @@
 var fs = require('fs')
 
-/*
-fs.writeFileSync('/tmp/fs.tmp', browser.getTitle())
-
-var content = fs.readFileSync('/tmp/fs.tmp').toString()
-console.log(content)
-*/
-
 // This file contains steps shared over multiple tests.
 module.exports = function() {  
-  this.setDefaultTimeout(300000); // 5 minute default timeout
   'use strict';
+
+  this.setDefaultTimeout(300000); // 5 minute default timeout
 
   /* SHARED */
   this.Then(/^I should see the title as "([^"]*)"$/, function (arg1) {
@@ -80,6 +74,86 @@ module.exports = function() {
     })
     
     browser.setValue('#walletCode', arg1)
+  })
+
+  // Sending Txn Shared Functions
+  this.When(/^enter the fee as "([^"]*)"$/, function (arg1) {
+    browser.setValue('#fee', arg1)
+  })
+
+  this.When(/^change the OTS Key Index to "([^"]*)"$/, function (arg1) {
+    browser.setValue('#otsKey', arg1)
+  })
+
+  this.When(/^click confirm$/, function () {
+    browser.click('#generateTransaction')
+  })
+
+  this.When(/^I then fill in the to address as "([^"]*)"$/, function (arg1) {
+    browser.setValue('#to_1', arg1)
+  })
+
+  this.When(/^enter the amount as "([^"]*)"$/, function (arg1) {
+    browser.setValue('#amounts_1', arg1)
+  })
+
+  this.When(/^I click Add Another Recipient$/, function () {
+    browser.click('#addTransferRecipient')
+  })
+
+  this.When(/^I then fill in the second to address as "([^"]*)"$/, function (arg1) {
+    browser.setValue('#to_2', arg1)
+  })
+
+  this.When(/^enter the second amount as "([^"]*)"$/, function (arg1) {
+    browser.setValue('#amounts_2', arg1)
+  })
+
+  this.Then(/^I should then see a form confirming my transaction$/, function () {
+    let _el = '#confirmTransactionArea'
+    browser.waitForVisible(_el, 60000)
+  })
+
+  this.When(/^I then click confirmation transaction$/, function () {
+    browser.click('#confirmTransaction')
+  })
+
+  this.Then(/^I should see shortly after "([^"]*)"$/, function (arg1) {
+    let _el = '#transferSuccessMessage'
+    browser.waitForVisible(_el, 120000)
+    expect(browser.getText(_el)).toEqual(arg1)
+
+    // Write txn hash to file for Explorer test 6
+    fs.writeFileSync('/tmp/chimp-TXN_HASH', browser.getText('#confirmedTransferTxnHash'))
+  })
+
+  this.Then(/^I should see "([^"]*)"$/, function (arg1) {
+    let _el = '#transferRelayingMsg'
+    browser.waitForVisible(_el)
+    expect(browser.getText(_el)).toEqual(arg1)
+  })
+
+  this.Then(/^I should "([^"]*)"$/, function (arg1) {
+    let _el = '#transferFinalTxnStatus'
+
+    browser.waitUntil(function () {
+      const thisResult = browser.getText(_el)
+      if(thisResult.indexOf(arg1) >=0) {
+        return true
+      }
+    }, 300000, 'expected transaction to be in pending state')
+  })
+
+  this.Then(/^shortly after I should see "([^"]*)"$/, function (arg1) {
+    let _el = '#transferFinalTxnStatus'
+
+    browser.waitUntil(function () {
+      const thisResult = browser.getText(_el)
+      if(thisResult.indexOf(arg1) >=0) {
+        return true
+      }
+    }, 300000, 'expected transaction confirmation within 5 minutes')
+
   })
 
   /* EXPLORER */
