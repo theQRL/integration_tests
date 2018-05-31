@@ -74,7 +74,7 @@ class MockNet(object):
                  remove_data=True):
         print("")
         self.writeout("Starting mocknet")
-        
+
         try:
             if sys.argv[1] == 'enableMining':
                 self.mining_enabled = True
@@ -246,6 +246,7 @@ if __name__ == '__main__':
 
     mocknet = MockNet(func_monitor_log,
                       timeout_secs=600,
-                      node_count=4)
+                      node_count=4,
+                      node_args="--mocknet")
     mocknet.prepare_source()
     mocknet.run()
