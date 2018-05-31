@@ -72,6 +72,21 @@ jobs:
           name: Fuzzing Tests
           command: pytest tests/python/fuzzing
 
+  tests_fastnet:
+    # Run all tests in xenial
+    docker:
+      - image: qrledger/qrl-docker:xenial
+    environment:
+      PYTHONPATH: /root/project
+    steps:
+      - checkout
+      - run: apt install -y python3-venv
+      - run: pip install -U -r requirements.txt
+      - run: pip install git+https://github.com/CurataEng/hypothesis-protobuf.git
+      - run:
+          name: Fast block time - No errors detected for 2 mins
+          command: pytest tests/python/fastnet
+
   tests_js:
     # Run javascript tests
     docker:
@@ -148,7 +163,7 @@ jobs:
       - run: apt install -y python3-venv
       - run:
           name: Debugging -  Adjust accordingly
-          command: pytest tests/python/mocknet -k 'test_timeout'
+          command: pytest tests/python/fastnet
 
 workflows:
   version: 2
@@ -159,3 +174,6 @@ workflows:
       - tests_bionic
       - tests_js
       - tests_webstack
+      - tests_fuzzing
+      - tests_fastnet
+
