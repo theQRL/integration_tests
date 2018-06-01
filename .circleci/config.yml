@@ -102,7 +102,7 @@ jobs:
       - run:
           command: ./mocknet/MockNet.py
           background: true
-      - run: sleep 15; cd tests/js && npm install && npm rebuild && npm test
+      - run: sleep 180; cd tests/js && npm install && npm rebuild && npm test
 
   tests_webstack:
     # Run full webstack integration tests (wallet and explorer)
