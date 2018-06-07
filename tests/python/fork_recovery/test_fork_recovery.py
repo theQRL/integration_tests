@@ -14,16 +14,16 @@ from pyqrllib.pyqrllib import hstr2bin, bin2hstr
 from qrl.generated import qrl_pb2_grpc, qrl_pb2
 
 TIMEOUT = 240
-LAST_BLOCK_NUMBER = 203
-LAST_BLOCK_HEADERHASH = '92271b00b3f75e9e8af35d3ec9007da4989a8fba47c4a40f40a9e7e847890b70'
+LAST_BLOCK_NUMBER = 201
+LAST_BLOCK_HEADERHASH = 'c6aab4cef3d8c3af22499f00b279b581dc3967b5a5e53867061a049c54dfc254'
 
 ADDR_1 = '01060019f902ffbba4afd07fa2a75dacd9580d342a0e714610869b0b3d0b134abb56d16cc85924'
-BALANCE_1 = 687254411283
-TX_COUNT_1 = 105
+BALANCE_1 = 1327903977666
+TX_COUNT_1 = 202
 
 ADDR_2 = '0106001a1bbb8e5df52a3befb27a3ed3caa253d2a712e02e8606cf202fd8b3971189dfc27893d3'
-BALANCE_2 = 658961818919
-TX_COUNT_2 = 99
+BALANCE_2 = 0
+TX_COUNT_2 = 0
 
 
 class TestMocknetForkRecovery(TestCase):
@@ -90,7 +90,7 @@ class TestMocknetForkRecovery(TestCase):
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=TIMEOUT,
                           node_count=2,
-                          node_args="--mockGetMeasurement 10000",
+                          node_args="--mockGetMeasurement 10000000000",
                           remove_data=False)
 
         mocknet.prepare_source()
