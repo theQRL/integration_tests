@@ -17,6 +17,14 @@ TIMEOUT = 240
 LAST_BLOCK_NUMBER = 203
 LAST_BLOCK_HEADERHASH = '92271b00b3f75e9e8af35d3ec9007da4989a8fba47c4a40f40a9e7e847890b70'
 
+ADDR_1 = '01060019f902ffbba4afd07fa2a75dacd9580d342a0e714610869b0b3d0b134abb56d16cc85924'
+BALANCE_1 = 687254411283
+TX_COUNT_1 = 105
+
+ADDR_2 = '0106001a1bbb8e5df52a3befb27a3ed3caa253d2a712e02e8606cf202fd8b3971189dfc27893d3'
+BALANCE_2 = 658961818919
+TX_COUNT_2 = 99
+
 
 class TestMocknetForkRecovery(TestCase):
     def __init__(self, *args, **kwargs):
@@ -30,6 +38,17 @@ class TestMocknetForkRecovery(TestCase):
         cmd = "{0}/{1}".format(self.script_dir, script_file)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
+
+    def _verify_address_state(self, address_state, balance, txn_count):
+        if address_state.balance != balance:
+            raise Exception('Expected Balance %s \n Found balance %s',
+                            balance,
+                            address_state.balance)
+
+        if len(address_state.transaction_hashes) != txn_count:
+            raise Exception('Expected Balance %s \n Found balance %s',
+                            txn_count,
+                            len(address_state.transaction_hashes))
 
     def test_fork_recovery(self):
         def state_check():
@@ -51,6 +70,12 @@ class TestMocknetForkRecovery(TestCase):
                     raise Exception('Last Block Headerhash mismatch\n'
                                     'Expected : %s\n', bin2hstr(response.info.block_last_hash),
                                     'Found : %s ', LAST_BLOCK_HEADERHASH)
+
+                response = stub.GetAddressState(request=qrl_pb2.GetAddressStateReq(address=bytes(hstr2bin(ADDR_1))))
+                self._verify_address_state(response.state, BALANCE_1, TX_COUNT_1)
+
+                response = stub.GetAddressState(request=qrl_pb2.GetAddressStateReq(address=bytes(hstr2bin(ADDR_2))))
+                self._verify_address_state(response.state, BALANCE_2, TX_COUNT_2)
 
             return True
 
