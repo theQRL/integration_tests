@@ -13,7 +13,7 @@ module.exports = function () {
 
   this.Then(/^I should see "([^"]*)" on the page$/, function (arg1) {
     let _el = '#unlocking p'
-    browser.waitForVisible(_el)
+    browser.waitForVisible(_el, 30000)
     expect(browser.getText(_el)).toEqual(arg1)
   })
 
