@@ -12,10 +12,11 @@ class NodeLogTracker(object):
 
         self.abort_triggers = [
             "<_Rendezvous of RPC that terminated with (StatusCode.UNKNOWN",
-            "Traceback (most recent call last):"
+            "Traceback (most recent call last):",
+            "Headerhash false for block"
         ]
 
-        self.abort_requested = False
+        self.abort_requested_at = None
 
     def synced_count(self):
         count = 0
@@ -32,15 +33,19 @@ class NodeLogTracker(object):
             if output:
                 print(msg, end='')
 
-            for s in self.abort_triggers:
-                if s in msg:
-                    self.abort_requested = True
+            if self.abort_requested_at is None:
+                for s in self.abort_triggers:
+                    if s in msg:
+                        self.abort_requested_at = time.time()
+                        self.mocknet.writeout_error('ABORT REQUESTED!!!!!!')
+                        break
 
         except Empty:
-            if self.abort_requested:
-                raise Exception("ABORT TRIGGERED")
+            pass
 
-            time.sleep(0.05)
+        if self.abort_requested_at is not None:
+            if time.time() - self.abort_requested_at > 0.5:
+                raise Exception("ABORT TRIGGERED")
 
         return msg
 
