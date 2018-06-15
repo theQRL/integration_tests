@@ -11,12 +11,11 @@ import os
 import shutil
 import signal
 import subprocess
-import time
 import sys
-
-from os.path import pardir
+import time
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Queue
+from os.path import pardir
 from time import sleep
 
 import yaml
@@ -192,11 +191,15 @@ class MockNet(object):
             yaml.dump(config, stream=f, Dumper=yaml.Dumper)
 
         if not stop_event.is_set():
-            p = subprocess.Popen("{}/{} --qrldir {} {}".format(self.this_dir, self.run_script, node_data_dir, self.node_args),
-                                 shell=True,
-                                 preexec_fn=os.setsid,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
+            p = subprocess.Popen("{}/{} --qrldir {} {}".format(
+                self.this_dir,
+                self.run_script,
+                node_data_dir,
+                self.node_args),
+                shell=True,
+                preexec_fn=os.setsid,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
 
             self.nodes_pids.put(p.pid)
 
@@ -243,6 +246,7 @@ if __name__ == '__main__':
         node_logtracker = NodeLogTracker(mocknet)
         while mocknet.running:
             node_logtracker.track()
+
 
     mocknet = MockNet(func_monitor_log,
                       timeout_secs=600,
