@@ -15,12 +15,12 @@ class TestMocknet10Min(TestCase):
         def func_monitor_log():
             node_logtracker = NodeLogTracker(mocknet)
 
-            while mocknet.uptime < 120:
+            while mocknet.uptime < 600:
                 node_logtracker.track()
 
         mocknet = MockNet(func_monitor_log,
-                          timeout_secs=150,
-                          node_count=3,
+                          timeout_secs=600,
+                          node_count=10,
                           node_args="--mocknet")
 
         mocknet.prepare_source()
