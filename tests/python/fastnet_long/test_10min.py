@@ -19,7 +19,7 @@ class TestMocknet10Min(TestCase):
                 node_logtracker.track()
 
         mocknet = MockNet(func_monitor_log,
-                          timeout_secs=600,
+                          timeout_secs=630,
                           node_count=10,
                           node_args="--mocknet")
 
