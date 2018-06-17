@@ -13,7 +13,8 @@ class NodeLogTracker(object):
         self.abort_triggers = [
             "<_Rendezvous of RPC that terminated with (StatusCode.UNKNOWN",
             "Traceback (most recent call last):",
-            "Headerhash false for block"
+            "Headerhash false for block",
+            "Failed PoW Validation"
         ]
 
         self.abort_requested_at = None
