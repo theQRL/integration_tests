@@ -6,8 +6,13 @@ from queue import Empty
 
 
 class NodeLogTracker(object):
+    MAX_IDLE_TIME = 10
+    MAX_NO_ADDITION_TIME = 10
+
     def __init__(self, mocknet):
         self.node_status = {}
+        self.node_last_event = {}
+        self.node_last_addition = {}
         self.mocknet = mocknet
 
         self.abort_triggers = [
@@ -50,12 +55,26 @@ class NodeLogTracker(object):
 
         return msg
 
+    def check_idle_nodes(self):
+        for k, v in self.node_last_event.items():
+            if time.time() - v > self.MAX_IDLE_TIME:
+                raise Exception("{} - no event for more than {} secs".format(k, self.MAX_IDLE_TIME))
+
+    def check_last_addition(self):
+        for k, v in self.node_last_addition.items():
+            if time.time() - v > self.MAX_NO_ADDITION_TIME:
+                raise Exception("{} - no addition for more than {} secs".format(k, self.MAX_NO_ADDITION_TIME))
+
     def parse(self, msg):
         parts = msg.split('|')
         if len(parts) > 4:
             node_id = parts[0].strip()
             status = parts[3].strip()
             self.node_status[node_id] = status
+            self.node_last_event[node_id] = time.time()
+
+            if "Added Block #" in msg:
+                self.node_last_addition[node_id] = time.time()
 
     def get_status(self, node_id):
         return self.node_status.get(node_id, 'unknown')

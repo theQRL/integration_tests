@@ -225,7 +225,7 @@ class MockNet(object):
                 if test_future.running():
                     MockNet.writeout('[Mocknet] launch node %d' % node_idx)
                     self.nodes.append(self.pool.submit(self.start_node, node_idx, self.stop_event))
-                    sleep(2)
+                    sleep(1)
             try:
                 remaining_time = self.timeout_secs - self.uptime
                 MockNet.writeout('[Mocknet] remaining time: %d' % remaining_time)
