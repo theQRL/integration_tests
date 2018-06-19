@@ -23,7 +23,7 @@ import yaml
 from mocknet.NodeTracker import NodeLogTracker
 
 LOCALHOST_IP = '127.0.0.1'
-PORT_COUNT = 5  # Number of ports assigned to each node
+PORT_COUNT = 6  # Number of ports assigned to each node
 START_PORT = 10000  # Port from which assignment will start
 
 
@@ -111,6 +111,7 @@ class MockNet(object):
         self._admin_addresses = []
         self._public_addresses = []
         self._mining_addresses = []
+        self._debug_addresses = []
 
         self.start_time = None
 
@@ -161,10 +162,15 @@ class MockNet(object):
     def mining_addresses(self):
         return self._mining_addresses
 
+    @property
+    def debug_addresses(self):
+        return self._debug_addresses
+
     def append_api_addresses(self, config):
         self._admin_addresses.append(self.ip_port(LOCALHOST_IP, config['admin_api_port']))
         self._public_addresses.append(self.ip_port(LOCALHOST_IP, config['public_api_port']))
         self._mining_addresses.append(self.ip_port(LOCALHOST_IP, config['mining_api_port']))
+        self._debug_addresses.append(self.ip_port(LOCALHOST_IP, config['debug_api_port']))
 
     def get_peers(self, node_idx):
         return [self.ip_port(LOCALHOST_IP, self.calc_port(num)) for num in range(node_idx)]
@@ -176,12 +182,14 @@ class MockNet(object):
         config = {
             'peer_list': self.get_peers(node_idx),
             'mining_enabled': self.mining_enabled,
+            'debug_api_enabled': True,
             'p2p_local_port': self.calc_port(node_idx),
             'p2p_public_port': self.calc_port(node_idx),
             'admin_api_port': self.calc_port(node_idx, 1),
             'public_api_port': self.calc_port(node_idx, 2),
             'mining_api_port': self.calc_port(node_idx, 3),
-            'grpc_proxy_port': self.calc_port(node_idx, 4)
+            'debug_api_port': self.calc_port(node_idx, 4),
+            'grpc_proxy_port': self.calc_port(node_idx, 5),
         }
 
         self.append_api_addresses(config)
