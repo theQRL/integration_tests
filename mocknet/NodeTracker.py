@@ -6,8 +6,8 @@ from queue import Empty
 
 
 class NodeLogTracker(object):
-    MAX_IDLE_TIME = 10
-    MAX_NO_ADDITION_TIME = 10
+    MAX_IDLE_TIME = 60
+    MAX_NO_ADDITION_TIME = 60
 
     def __init__(self, mocknet):
         self.node_status = {}
