@@ -180,6 +180,8 @@ class MockNet(object):
         os.makedirs(node_data_dir, exist_ok=True)
 
         config = {
+            'genesis_timestamp': 1528402558,
+            'genesis_prev_headerhash': 'Thirst of Quantas',
             'peer_list': self.get_peers(node_idx),
             'mining_enabled': self.mining_enabled,
             'debug_api_enabled': True,
