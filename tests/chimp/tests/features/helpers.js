@@ -32,9 +32,13 @@ module.exports = function() {
       // browser context
       passphraseBox = document.getElementById("passphrase");
       passphraseBox.type = "text";
+
+      passphraseBox2 = document.getElementById("passphraseConfirm");
+      passphraseBox2.type = "text";
     })
 
     browser.setValue('#passphrase', arg1)
+    browser.setValue('#passphraseConfirm', arg1)
   })
   
   this.When(/^press Create Wallet$/, function () {

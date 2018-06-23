@@ -125,7 +125,7 @@ jobs:
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       - run: apt-get install -y nodejs
       - run: npm -v
-      - run: npm install -g qrl-electrify --unsafe-perm
+      - run: npm install -g electrify-qrl --unsafe-perm
       - run: npm install -g chimp --unsafe-perm
       - run: npm install -g selenium-standalone
       - run: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
