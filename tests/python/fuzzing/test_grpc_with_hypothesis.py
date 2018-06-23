@@ -55,27 +55,27 @@ class TestFuzzingAPI(TestCase):
                 try:
                     node_tracker.track()
                     if node_tracker.synced_count() == mocknet.node_count:
-                        for i in range(1, PASS_NUM):
-                            rand_stub = choice(stubs)
-                            rand_req = choice(req_attrs)
-                            req_strategy = protobuf_strategies[getattr(qrl_pb2, rand_req.arg)]
-                            req_arg = req_strategy.example()
-                            req_method = getattr(rand_stub, rand_req.method)
+                        rand_stub = choice(stubs)
+                        rand_req = choice(req_attrs)
+                        req_strategy = protobuf_strategies[getattr(qrl_pb2, rand_req.arg)]
+                        req_arg = req_strategy.example()
+                        req_method = getattr(rand_stub, rand_req.method)
 
-                            try:
-                                resp = req_method(req_arg)
-                            except grpc.RpcError as err:
-                                print('*******************************\n')
-                                print("Method  : %s" % rand_req.method)
-                                print("error   : %s" % err)
-                                print("code    : %s" % err.code())
-                                print("details : %s" % err.details())
-                                print('*******************************\n')
-                                if err.code() == grpc.StatusCode.UNKNOWN:
-                                    raise
-                            except Exception as e:
-                                pass
-                            time.sleep(1)
+                        try:
+                            resp = req_method(req_arg)
+                        except grpc.RpcError as err:
+                            print('*******************************')
+                            print("Time    : %s" % mocknet.uptime)
+                            print("Method  : %s" % rand_req.method)
+                            print("error   : %s" % err)
+                            print("code    : %s" % err.code())
+                            print("details : %s" % err.details())
+                            print('*******************************\n')
+                            if err.code() == grpc.StatusCode.UNKNOWN:
+                                raise
+                        except Exception as e:
+                            pass
+                        time.sleep(1)
 
                 except Empty:
                     pass
