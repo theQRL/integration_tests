@@ -101,7 +101,9 @@ jobs:
       - run:
           command: ./mocknet/MockNet.py
           background: true
-      - run: sleep 180; cd tests/js && npm install && npm rebuild && npm test
+      - run: apt install -y netcat
+      - run: while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
+      - run: cd tests/js && npm install && npm rebuild && npm test
 
   tests_webstack:
     # Run full webstack integration tests (wallet and explorer)
