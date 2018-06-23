@@ -72,8 +72,7 @@ jobs:
           name: Fuzzing Tests
           command: pytest tests/python/fuzzing
 
-  tests_fastnet:
-    # Run all tests in xenial
+  tests_fastnet_long:
     docker:
       - image: qrledger/qrl-docker:xenial
     environment:
@@ -84,8 +83,8 @@ jobs:
       - run: pip install -U -r requirements.txt
       - run: pip install git+https://github.com/CurataEng/hypothesis-protobuf.git
       - run:
-          name: Fast block time - No errors detected for 2 mins
-          command: pytest tests/python/fastnet
+          name: Fast block time ( 1 block/sec) - No errors detected for 10 mins
+          command: pytest tests/python/fastnet_long
 
   tests_js:
     # Run javascript tests
@@ -102,7 +101,7 @@ jobs:
       - run:
           command: ./mocknet/MockNet.py
           background: true
-      - run: sleep 15; cd tests/js && npm install && npm rebuild && npm test
+      - run: sleep 180; cd tests/js && npm install && npm rebuild && npm test
 
   tests_webstack:
     # Run full webstack integration tests (wallet and explorer)
@@ -175,5 +174,5 @@ workflows:
       - tests_js
       - tests_webstack
       - tests_fuzzing
-      - tests_fastnet
+      - tests_fastnet_long
 

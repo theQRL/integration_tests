@@ -11,12 +11,11 @@ import os
 import shutil
 import signal
 import subprocess
-import time
 import sys
-
-from os.path import pardir
+import time
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Queue
+from os.path import pardir
 from time import sleep
 
 import yaml
@@ -24,7 +23,7 @@ import yaml
 from mocknet.NodeTracker import NodeLogTracker
 
 LOCALHOST_IP = '127.0.0.1'
-PORT_COUNT = 5  # Number of ports assigned to each node
+PORT_COUNT = 6  # Number of ports assigned to each node
 START_PORT = 10000  # Port from which assignment will start
 
 
@@ -74,7 +73,7 @@ class MockNet(object):
                  remove_data=True):
         print("")
         self.writeout("Starting mocknet")
-        
+
         try:
             if sys.argv[1] == 'enableMining':
                 self.mining_enabled = True
@@ -112,6 +111,7 @@ class MockNet(object):
         self._admin_addresses = []
         self._public_addresses = []
         self._mining_addresses = []
+        self._debug_addresses = []
 
         self.start_time = None
 
@@ -162,10 +162,15 @@ class MockNet(object):
     def mining_addresses(self):
         return self._mining_addresses
 
+    @property
+    def debug_addresses(self):
+        return self._debug_addresses
+
     def append_api_addresses(self, config):
         self._admin_addresses.append(self.ip_port(LOCALHOST_IP, config['admin_api_port']))
         self._public_addresses.append(self.ip_port(LOCALHOST_IP, config['public_api_port']))
         self._mining_addresses.append(self.ip_port(LOCALHOST_IP, config['mining_api_port']))
+        self._debug_addresses.append(self.ip_port(LOCALHOST_IP, config['debug_api_port']))
 
     def get_peers(self, node_idx):
         return [self.ip_port(LOCALHOST_IP, self.calc_port(num)) for num in range(node_idx)]
@@ -175,14 +180,18 @@ class MockNet(object):
         os.makedirs(node_data_dir, exist_ok=True)
 
         config = {
+            'genesis_timestamp': 1528402558,
+            'genesis_prev_headerhash': 'Thirst of Quantas',
             'peer_list': self.get_peers(node_idx),
             'mining_enabled': self.mining_enabled,
+            'debug_api_enabled': True,
             'p2p_local_port': self.calc_port(node_idx),
             'p2p_public_port': self.calc_port(node_idx),
             'admin_api_port': self.calc_port(node_idx, 1),
             'public_api_port': self.calc_port(node_idx, 2),
             'mining_api_port': self.calc_port(node_idx, 3),
-            'grpc_proxy_port': self.calc_port(node_idx, 4)
+            'debug_api_port': self.calc_port(node_idx, 4),
+            'grpc_proxy_port': self.calc_port(node_idx, 5),
         }
 
         self.append_api_addresses(config)
@@ -192,11 +201,15 @@ class MockNet(object):
             yaml.dump(config, stream=f, Dumper=yaml.Dumper)
 
         if not stop_event.is_set():
-            p = subprocess.Popen("{}/{} --qrldir {} {}".format(self.this_dir, self.run_script, node_data_dir, self.node_args),
-                                 shell=True,
-                                 preexec_fn=os.setsid,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
+            p = subprocess.Popen("{}/{} --qrldir {} {}".format(
+                self.this_dir,
+                self.run_script,
+                node_data_dir,
+                self.node_args),
+                shell=True,
+                preexec_fn=os.setsid,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
 
             self.nodes_pids.put(p.pid)
 
@@ -222,7 +235,7 @@ class MockNet(object):
                 if test_future.running():
                     MockNet.writeout('[Mocknet] launch node %d' % node_idx)
                     self.nodes.append(self.pool.submit(self.start_node, node_idx, self.stop_event))
-                    sleep(2)
+                    sleep(1)
             try:
                 remaining_time = self.timeout_secs - self.uptime
                 MockNet.writeout('[Mocknet] remaining time: %d' % remaining_time)
@@ -244,8 +257,10 @@ if __name__ == '__main__':
         while mocknet.running:
             node_logtracker.track()
 
+
     mocknet = MockNet(func_monitor_log,
                       timeout_secs=600,
-                      node_count=4)
+                      node_count=4,
+                      node_args="--mocknet")
     mocknet.prepare_source()
     mocknet.run()

@@ -6,16 +6,29 @@ from queue import Empty
 
 
 class NodeLogTracker(object):
+    MAX_IDLE_TIME = 60
+    MAX_NO_ADDITION_TIME = 60
+
     def __init__(self, mocknet):
         self.node_status = {}
+        self.node_last_event = {}
+        self.node_last_addition = {}
         self.mocknet = mocknet
 
         self.abort_triggers = [
             "<_Rendezvous of RPC that terminated with (StatusCode.UNKNOWN",
-            "Traceback (most recent call last):"
+            "Traceback (most recent call last):",
+            "Headerhash false for block",
+            "Failed PoW Validation"
         ]
 
-        self.abort_requested = False
+        # FIXME: Move this to regex
+        self.add_block_triggers = [
+            "Apply block #",
+            "Added Block #"
+        ]
+
+        self.abort_requested_at = None
 
     def synced_count(self):
         count = 0
@@ -32,17 +45,31 @@ class NodeLogTracker(object):
             if output:
                 print(msg, end='')
 
-            for s in self.abort_triggers:
-                if s in msg:
-                    self.abort_requested = True
+            if self.abort_requested_at is None:
+                for s in self.abort_triggers:
+                    if s in msg:
+                        self.abort_requested_at = time.time()
+                        self.mocknet.writeout_error('ABORT REQUESTED!!!!!!')
+                        break
 
         except Empty:
-            if self.abort_requested:
+            pass
+
+        if self.abort_requested_at is not None:
+            if time.time() - self.abort_requested_at > 0.5:
                 raise Exception("ABORT TRIGGERED")
 
-            time.sleep(0.05)
-
         return msg
+
+    def check_idle_nodes(self):
+        for k, v in self.node_last_event.items():
+            if time.time() - v > self.MAX_IDLE_TIME:
+                raise Exception("{} - no event for more than {} secs".format(k, self.MAX_IDLE_TIME))
+
+    def check_last_addition(self):
+        for k, v in self.node_last_addition.items():
+            if time.time() - v > self.MAX_NO_ADDITION_TIME:
+                raise Exception("{} - no addition for more than {} secs".format(k, self.MAX_NO_ADDITION_TIME))
 
     def parse(self, msg):
         parts = msg.split('|')
@@ -50,6 +77,12 @@ class NodeLogTracker(object):
             node_id = parts[0].strip()
             status = parts[3].strip()
             self.node_status[node_id] = status
+            self.node_last_event[node_id] = time.time()
+
+            for v in self.add_block_triggers:
+                if v in msg:
+                    self.node_last_addition[node_id] = time.time()
+                    break
 
     def get_status(self, node_id):
         return self.node_status.get(node_id, 'unknown')

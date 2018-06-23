@@ -17,10 +17,12 @@ class TestMocknet10Min(TestCase):
 
             while mocknet.uptime < 120:
                 node_logtracker.track()
+                node_logtracker.check_idle_nodes()
+                node_logtracker.check_last_addition()
 
         mocknet = MockNet(func_monitor_log,
                           timeout_secs=150,
-                          node_count=3,
+                          node_count=5,
                           node_args="--mocknet")
 
         mocknet.prepare_source()
