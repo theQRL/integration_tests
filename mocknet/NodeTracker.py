@@ -22,6 +22,12 @@ class NodeLogTracker(object):
             "Failed PoW Validation"
         ]
 
+        # FIXME: Move this to regex
+        self.add_block_triggers = [
+            "Apply block #",
+            "Added Block #"
+        ]
+
         self.abort_requested_at = None
 
     def synced_count(self):
@@ -73,8 +79,10 @@ class NodeLogTracker(object):
             self.node_status[node_id] = status
             self.node_last_event[node_id] = time.time()
 
-            if "Added Block #" in msg:
-                self.node_last_addition[node_id] = time.time()
+            for v in self.add_block_triggers:
+                if v in msg:
+                    self.node_last_addition[node_id] = time.time()
+                    break
 
     def get_status(self, node_id):
         return self.node_status.get(node_id, 'unknown')
