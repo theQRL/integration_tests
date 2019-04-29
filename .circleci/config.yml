@@ -107,6 +107,7 @@ jobs:
 
   tests_webstack:
     # Run full webstack integration tests (wallet and explorer)
+    machine: true
     docker:
       - image: qrledger/qrl-docker:xenial
     environment:
