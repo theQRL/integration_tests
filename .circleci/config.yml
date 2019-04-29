@@ -118,8 +118,7 @@ jobs:
       - run: sudo apt install -y locales default-jre default-jdk python3 netcat cpulimit bsdtar
       - run: sudo locale-gen en_US.UTF-8
       - run: sudo localedef -i en_US -f UTF-8 en_US.UTF-8
-      - run: sudo wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-      - run: sudo apt install -y -f ./google-chrome-stable_current_amd64.deb
+      - run: sudo apt install -y google-chrome-stable
       - run: sudo mv /bin/tar /bin/tar.gnu
       - run: sudo ln -s /usr/bin/bsdtar /bin/tar
       - run: sudo curl https://install.meteor.com/ | sh
