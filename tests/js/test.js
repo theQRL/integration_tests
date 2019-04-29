@@ -622,7 +622,7 @@ describe('GetLatestData - All', function() {
             console.log(`block_number: ${i.header.block_number}`);
             console.log(`hash_header_prev: ${i.header.hash_header_prev}`);
             if (i.header.block_number === '0' ) {
-                expect(i.header.hash_header_prev).to.equal('The sleeper must awaken');
+                expect(i.header.hash_header_prev.length).to.equal('The sleeper must awaken'.length);
             } else {
                 expect(i.header.hash_header_prev.length).to.equal(32);
             }
