@@ -593,6 +593,7 @@ describe('GetLatestData - All', function() {
                         return;
                     }
                     response = res;
+                    console.log(res);
                     resolve();
                 });
             });
