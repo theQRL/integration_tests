@@ -114,43 +114,43 @@ jobs:
       PYTHONPATH: /root/project
     steps:
       - checkout
-      - run: apt update -y
-      - run: apt install -y locales default-jre default-jdk python3-venv netcat cpulimit bsdtar
-      - run: locale-gen en_US.UTF-8
-      - run: localedef -i en_US -f UTF-8 en_US.UTF-8
-      - run: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-      - run: apt install -y -f ./google-chrome-stable_current_amd64.deb
-      - run: mv /bin/tar /bin/tar.gnu
-      - run: ln -s /usr/bin/bsdtar /bin/tar
-      - run: curl https://install.meteor.com/ | sh
-      - run: rm /bin/tar
-      - run: mv /bin/tar.gnu /bin/tar
-      - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-      - run: apt-get install -y nodejs
-      - run: npm -v
-      - run: npm install -g electrify-qrl --unsafe-perm
-      - run: npm install -g chimp --unsafe-perm
-      - run: npm install -g selenium-standalone
-      - run: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-      - run: python3 get-pip.py --user --force-reinstall
-      - run: pip install -U -r requirements.txt
-      - run: cd tests && git clone https://github.com/theQRL/qrl-wallet.git
-      - run: cd tests && git clone https://github.com/theQRL/block-explorer.git
-      - run: cd tests/qrl-wallet && meteor npm install --unsafe-perm
-      - run: cd tests/block-explorer && meteor npm install --unsafe-perm
+      - run: sudo apt update -y
+      - run: sudo apt install -y locales default-jre default-jdk python3-venv netcat cpulimit bsdtar
+      - run: sudo locale-gen en_US.UTF-8
+      - run: sudo localedef -i en_US -f UTF-8 en_US.UTF-8
+      - run: sudo wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+      - run: sudo apt install -y -f ./google-chrome-stable_current_amd64.deb
+      - run: sudo mv /bin/tar /bin/tar.gnu
+      - run: sudo ln -s /usr/bin/bsdtar /bin/tar
+      - run: sudo curl https://install.meteor.com/ | sh
+      - run: sudo rm /bin/tar
+      - run: sudo mv /bin/tar.gnu /bin/tar
+      - run: sudo curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+      - run: sudo apt-get install -y nodejs
+      - run: sudo npm -v
+      - run: sudo npm install -g electrify-qrl --unsafe-perm
+      - run: sudo npm install -g chimp --unsafe-perm
+      - run: sudo npm install -g selenium-standalone
+      - run: sudo curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+      - run: sudo python3 get-pip.py --user --force-reinstall
+      - run: sudo pip install -U -r requirements.txt
+      - run: sudo cd tests && git clone https://github.com/theQRL/qrl-wallet.git
+      - run: sudo cd tests && git clone https://github.com/theQRL/block-explorer.git
+      - run: sudo cd tests/qrl-wallet && meteor npm install --unsafe-perm
+      - run: sudo cd tests/block-explorer && meteor npm install --unsafe-perm
       - run:
-          command: cd tests/qrl-wallet && meteor --allow-superuser --settings mocknet.json
+          command: sudo cd tests/qrl-wallet && meteor --allow-superuser --settings mocknet.json
           background: true
-      - run: until curl --max-time 300 http://localhost:3000/; do sleep 1; done
+      - run: sudo until curl --max-time 300 http://localhost:3000/; do sleep 1; done
       - run:
-          command: cd tests/block-explorer && meteor --allow-superuser --settings mocknet.json --port 3003
+          command: sudo cd tests/block-explorer && meteor --allow-superuser --settings mocknet.json --port 3003
           background: true
-      - run: until curl --max-time 300 http://localhost:3003/; do sleep 1; done
+      - run: sudo until curl --max-time 300 http://localhost:3003/; do sleep 1; done
       - run:
-          command: nice ./mocknet/MockNet.py enableMining
+          command: sudo nice ./mocknet/MockNet.py enableMining
           background: true
-      - run: while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
-      - run: cd tests/chimp && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests
+      - run: sudo while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
+      - run: sudo cd tests/chimp && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests
 
   debug:
     # debugging job - this can be customize locally but it wont run in circleci
