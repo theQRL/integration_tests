@@ -621,7 +621,11 @@ describe('GetLatestData - All', function() {
         response.blockheaders.forEach((i) => {
             console.log(`block_number: ${i.header.block_number}`);
             console.log(`hash_header_prev: ${i.header.hash_header_prev}`);
-            expect(i.header.hash_header_prev.length).to.equal(32);
+            if (i.header.block_number === '0' ) {
+                expect(i.header.hash_header_prev).to.equal('The sleeper must awaken');
+            } else {
+                expect(i.header.hash_header_prev.length).to.equal(32);
+            }
         })
         response.blockheaders.forEach(i => expect( Buffer.isBuffer(i.header.merkle_root)).to.equal(true) );
         response.blockheaders.forEach(i => expect(i.header.merkle_root.length).to.equal(32) );
