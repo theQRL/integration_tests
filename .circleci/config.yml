@@ -131,12 +131,12 @@ jobs:
       - run: npm install -g chimp@0.51.1
       - run: npm install -g selenium-standalone
       - run: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-      - run: sudo python3 get-pip.py --user --force-reinstall
-      - run: sudo pip install -U -r requirements.txt
-      - run: sudo cd tests && git clone https://github.com/theQRL/qrl-wallet.git
-      - run: sudo cd tests && git clone https://github.com/theQRL/block-explorer.git
-      - run: sudo cd tests/qrl-wallet && meteor npm install --unsafe-perm --allow-root
-      - run: sudo cd tests/block-explorer && meteor npm install --unsafe-perm --allow-root
+      - run: python3 get-pip.py --user --force-reinstall
+      - run: pip install -U -r requirements.txt
+      - run: cd tests && git clone https://github.com/theQRL/qrl-wallet.git
+      - run: cd tests && git clone https://github.com/theQRL/block-explorer.git
+      - run: cd tests/qrl-wallet && meteor npm install --unsafe-perm --allow-root
+      - run: cd tests/block-explorer && meteor npm install --unsafe-perm --allow-root
       - run:
           command: sudo cd tests/qrl-wallet && meteor --allow-superuser --settings mocknet.json
           background: true
