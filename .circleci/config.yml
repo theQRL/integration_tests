@@ -132,10 +132,8 @@ jobs:
       - run: npm install -g electrify-qrl --unsafe-perm --allow-root
       - run: npm install -g chimp@0.51.1
       - run: npm install -g selenium-standalone
-      - run: pyenv versions
-      - run: pyenv global 3.5.2
-      - run: pip install -U setuptools
-      - run: pip install -U -r requirements.txt
+      - run: pip3 install -U setuptools
+      - run: pip3 install -U -r requirements.txt
       - run: cd tests && git clone https://github.com/theQRL/qrl-wallet.git
       - run: cd tests && git clone https://github.com/theQRL/block-explorer.git
       - run: cd tests/qrl-wallet && meteor npm install --unsafe-perm --allow-root
