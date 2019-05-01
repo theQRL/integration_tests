@@ -128,7 +128,7 @@ jobs:
       - run: sudo mv /bin/tar.gnu /bin/tar
       - run: sudo npm -v
       - run: sudo npm install -g electrify-qrl --unsafe-perm --allow-root
-      - run: sudo npm install -g chimpy --unsafe-perm --allow-root
+      - run: sudo npm install -g chimp@0.5.1
       - run: sudo npm install -g selenium-standalone
       - run: sudo curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
       - run: sudo python3 get-pip.py --user --force-reinstall
@@ -149,7 +149,7 @@ jobs:
           command: sudo nice ./mocknet/MockNet.py enableMining
           background: true
       - run: sudo while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
-      - run: sudo cd tests/chimp && chimpy --ddp=http://localhost:3000 --browser=chrome --path=tests
+      - run: sudo cd tests/chimp && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests
 
   debug:
     # debugging job - this can be customize locally but it wont run in circleci
