@@ -130,7 +130,7 @@ jobs:
       - run: npm install -g electrify-qrl --unsafe-perm --allow-root
       - run: npm install -g chimp@0.51.1
       - run: npm install -g selenium-standalone
-      - run: pyenv list
+      - run: pyenv versions
       - run: pyenv global 3.7
       - run: pip3 install -U -r requirements.txt
       - run: cd tests && git clone https://github.com/theQRL/qrl-wallet.git
