@@ -114,6 +114,7 @@ jobs:
       PYTHONPATH: /root/project
     steps:
       - checkout
+      - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       - run: sudo apt update -y
       - run: sudo apt install -y locales default-jre default-jdk python3 netcat cpulimit bsdtar nodejs
       - run: sudo locale-gen en_US.UTF-8
