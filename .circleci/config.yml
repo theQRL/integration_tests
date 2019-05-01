@@ -107,14 +107,10 @@ jobs:
 
   tests_webstack:
     # Run full webstack integration tests (wallet and explorer)
-    machine: true
-#    docker:
-#      - image: qrledger/qrl-docker:xenial
-    environment:
-      PYTHONPATH: /root/project
-      pre:
-        - cat /etc/*release
-        - pyenv global 3.5.2
+  machine:
+    pre:
+      - cat /etc/*release
+      - pyenv global 2.7.11 3.5.1
     steps:
       - checkout
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
