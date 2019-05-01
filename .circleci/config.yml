@@ -112,6 +112,9 @@ jobs:
 #      - image: qrledger/qrl-docker:xenial
     environment:
       PYTHONPATH: /root/project
+      pre:
+        - cat /etc/*release
+        - pyenv global 3.5.2
     steps:
       - checkout
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -132,7 +135,6 @@ jobs:
       - run: npm install -g electrify-qrl --unsafe-perm --allow-root
       - run: npm install -g chimp@0.51.1
       - run: npm install -g selenium-standalone
-      - run: pyenv local 3.5.2
       - run: pip3 install -U setuptools
       - run: pip3 install -U -r requirements.txt
       - run: cd tests && git clone https://github.com/theQRL/qrl-wallet.git
