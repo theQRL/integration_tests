@@ -176,7 +176,7 @@ workflows:
       - build
       - tests_xenial
       - tests_bionic
-#      - tests_js
-#      - tests_webstack
+      - tests_js
+      - tests_webstack
       - tests_fuzzing
       - tests_fastnet_long
