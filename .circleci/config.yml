@@ -110,49 +110,49 @@ jobs:
 
   tests_webstack:
     # Run full webstack integration tests (wallet and explorer)
-    docker:
-      - image: qrledger/qrl-docker:xenial
-    environment:
-      PYTHONPATH: /root/project
+    machine: true
+    pre:
+      - cat /etc/*release
+      - pyenv global 2.7.11 3.5.1
     steps:
       - checkout
-      - run: apt update -y
-      - run: apt install -y locales default-jre default-jdk python3-venv netcat cpulimit bsdtar
-      - run: locale-gen en_US.UTF-8
-      - run: localedef -i en_US -f UTF-8 en_US.UTF-8
-      - run: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-      - run: apt install -y -f ./google-chrome-stable_current_amd64.deb
-      - run: mv /bin/tar /bin/tar.gnu
-      - run: ln -s /usr/bin/bsdtar /bin/tar
-      - run: curl https://install.meteor.com/ | sh
-      - run: rm /bin/tar
-      - run: mv /bin/tar.gnu /bin/tar
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-      - run: apt-get install -y nodejs
-      - run: npm -v
-      - run: npm install -g electrify-qrl --unsafe-perm
-      - run: npm install -g chimp --unsafe-perm
+      - run: sudo apt update -y
+      - run: sudo apt install -y locales default-jre default-jdk python3 python3-pip netcat cpulimit bsdtar nodejs
+      - run: sudo wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz && tar xzvf cmake-3.7.2-Linux-x86_64.tar.gz
+      - run: sudo echo "export PATH=$PWD/cmake-3.7.2-Linux-x86_64/bin:$PATH" >> $BASH_ENV
+      - run: sudo locale-gen en_US.UTF-8
+      - run: sudo localedef -i en_US -f UTF-8 en_US.UTF-8
+      - run: sudo curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+      - run: sudo dpkg -i google-chrome.deb
+      - run: sudo mv /bin/tar /bin/tar.gnu
+      - run: sudo ln -s /usr/bin/bsdtar /bin/tar
+      - run: sudo curl https://install.meteor.com/ | sh
+      - run: sudo rm /bin/tar
+      - run: sudo mv /bin/tar.gnu /bin/tar
+      - run: sudo npm -v
+      - run: npm install -g electrify-qrl --unsafe-perm --allow-root
+      - run: npm install -g chimp@0.51.1
       - run: npm install -g selenium-standalone
-      - run: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-      - run: python3 get-pip.py --user --force-reinstall
-      - run: pip install -U -r requirements.txt
+      - run: pip3 install -U setuptools
+      - run: pip3 install -U -r requirements.txt
       - run: cd tests && git clone https://github.com/theQRL/qrl-wallet.git
       - run: cd tests && git clone https://github.com/theQRL/block-explorer.git
-      - run: cd tests/qrl-wallet && meteor npm install --unsafe-perm
-      - run: cd tests/block-explorer && meteor npm install --unsafe-perm
+      - run: cd tests/qrl-wallet && meteor npm install --unsafe-perm --allow-root
+      - run: cd tests/block-explorer && meteor npm install --unsafe-perm --allow-root
       - run:
-          command: cd tests/qrl-wallet && meteor --allow-superuser --settings mocknet.json
+          command: sudo cd tests/qrl-wallet && meteor --allow-superuser --settings mocknet.json
           background: true
-      - run: until curl --max-time 300 http://localhost:3000/; do sleep 1; done
+      - run: sudo until curl --max-time 300 http://localhost:3000/; do sleep 1; done
       - run:
-          command: cd tests/block-explorer && meteor --allow-superuser --settings mocknet.json --port 3003
+          command: sudo cd tests/block-explorer && meteor --allow-superuser --settings mocknet.json --port 3003
           background: true
-      - run: until curl --max-time 300 http://localhost:3003/; do sleep 1; done
+      - run: sudo until curl --max-time 300 http://localhost:3003/; do sleep 1; done
       - run:
-          command: nice ./mocknet/MockNet.py enableMining
+          command: sudo nice ./mocknet/MockNet.py enableMining
           background: true
-      - run: while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
-      - run: cd tests/chimp && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests
+      - run: sudo while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
+      - run: sudo cd tests/chimp && chimp --ddp=http://localhost:3000 --browser=chrome --path=tests
 
   debug:
     # debugging job - this can be customize locally but it wont run in circleci
