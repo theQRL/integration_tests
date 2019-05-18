@@ -8,11 +8,12 @@ jobs:
       PYTHONPATH: /root/project
     steps:
       - checkout
+      - run: pip3 install -U -r requirements.txt
       - run: apt install -y python3-venv
-      - run: pip install -U -r requirements.txt
       - run:
           name: Mocknet Tests
           command: pytest tests/python/mocknet
+      - run: pip3 install -U -r requirements.txt
       - run:
           name: Basic Tests
           command: pytest tests/python/basic
@@ -30,6 +31,7 @@ jobs:
       - run:
           name: Mocknet Tests
           command: pytest tests/python/mocknet
+      - run: pip3 install -U -r requirements.txt
       - run:
           name: Basic Tests
           command: pytest tests/python/basic
@@ -50,6 +52,7 @@ jobs:
       - run:
           name: Mocknet Tests
           command: pytest tests/python/mocknet
+      - run: pip3 install -U -r requirements.txt
       - run:
           name: Basic Tests
           command: pytest tests/python/basic
@@ -173,8 +176,7 @@ workflows:
       - build
       - tests_xenial
       - tests_bionic
-      - tests_js
-      - tests_webstack
+#      - tests_js
+#      - tests_webstack
       - tests_fuzzing
       - tests_fastnet_long
-
