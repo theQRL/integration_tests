@@ -16,9 +16,9 @@ rm -rf ${PROJECT_PATH}/tmp/data/node001
 
 mkdir -p ${PROJECT_PATH}/tmp/data/node000
 mv ${PROJECT_PATH}/tmp/testing_data/fork_recovery/.qrl_150/data ${PROJECT_PATH}/tmp/data/node000
-cp ${PROJECT_PATH}/tests/python/fork_recovery/data/genesis.yml ${PROJECT_PATH}/tmp/data/node000/data
+cp ${PROJECT_PATH}/tests/python/fork_recovery/data/genesis.yml ${PROJECT_PATH}/tmp/data/node000/
 
 
 mkdir -p ${PROJECT_PATH}/tmp/data/node001
 mv ${PROJECT_PATH}/tmp/testing_data/fork_recovery/.qrl_200/data ${PROJECT_PATH}/tmp/data/node001
-cp ${PROJECT_PATH}/tests/python/fork_recovery/data/genesis.yml ${PROJECT_PATH}/tmp/data/node001/data
+cp ${PROJECT_PATH}/tests/python/fork_recovery/data/genesis.yml ${PROJECT_PATH}/tmp/data/node001/
