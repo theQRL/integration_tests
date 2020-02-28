@@ -77,8 +77,6 @@ jobs:
       - run: python3 -m pip install -U pip setuptools
       - run: git submodule update --init --recursive --remote
       - run: python3 -m pip install -U -r requirements.txt
-      - run: python3 -m pip install -U -r test-requirements.txt
-      - run: python3 -m pip install -U -r tests_integration/requirements.txt
       - run: python3 -m pip install git+https://github.com/CurataEng/hypothesis-protobuf.git
       - run:
           name: Fuzzing Tests
@@ -100,8 +98,6 @@ jobs:
       - run: python3 -m pip install -U pip setuptools
       - run: git submodule update --init --recursive --remote
       - run: python3 -m pip install -U -r requirements.txt
-      - run: python3 -m pip install -U -r test-requirements.txt
-      - run: python3 -m pip install -U -r tests_integration/requirements.txt
       - run: python3 -m pip install git+https://github.com/CurataEng/hypothesis-protobuf.git
       - run:
           name: Fast block time ( 1 block/sec) - No errors detected for 10 mins
