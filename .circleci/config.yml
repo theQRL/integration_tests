@@ -103,24 +103,24 @@ jobs:
           name: Fast block time ( 1 block/sec) - No errors detected for 10 mins
           command: pytest tests/python/fastnet_long
 
-  tests_js:
+#  tests_js:
     # Run javascript tests
-    docker:
-      - image: qrledger/qrl-docker-ci:xenial
-    environment:
-      PYTHONPATH: /root/project
-    steps:
-      - checkout
-      - run: apt install -y python3-venv
-      - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-      - run: apt-get install -y nodejs
-      - run: npm -v
-      - run:
-          command: ./mocknet/MockNet.py
-          background: true
-      - run: apt install -y netcat
-      - run: while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
-      - run: cd tests/js && npm install && npm rebuild && npm test
+#    docker:
+#      - image: qrledger/qrl-docker-ci:xenial
+#    environment:
+#      PYTHONPATH: /root/project
+#    steps:
+#      - checkout
+#      - run: apt install -y python3-venv
+#      - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+#      - run: apt-get install -y nodejs
+#      - run: npm -v
+#      - run:
+#          command: ./mocknet/MockNet.py
+#          background: true
+#      - run: apt install -y netcat
+#      - run: while ! echo exit | nc 127.0.0.1 10002; do sleep 10; done
+#      - run: cd tests/js && npm install && npm rebuild && npm test
 
   tests_webstack:
     # Run full webstack integration tests (wallet and explorer)
@@ -190,7 +190,7 @@ workflows:
       - build
       - tests_xenial
       - tests_bionic
-      - tests_js
+     # - tests_js
      # - tests_webstack
       - tests_fuzzing
       - tests_fastnet_long
