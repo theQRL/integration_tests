@@ -40,4 +40,4 @@ git+https://github.com/jplomas/qryptonight.git
 git+https://github.com/jplomas/qrandomx.git
 
 # JSON-RPC (if integration tests use RPC)
-json-rpc>=1.15.0,<2.0.0% 
+json-rpc>=1.15.0,<2.0.0
