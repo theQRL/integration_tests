@@ -3,7 +3,7 @@ jobs:
   build:
     # Test mocknet
     docker:
-      - image: qrledger/qrl-docker-ci:bionic
+      - image: qrledger/qrl-docker-ci:noble
     environment:
       PYTHONPATH: /root/project
     steps:
@@ -18,10 +18,10 @@ jobs:
           name: Basic Tests
           command: pytest tests/python/basic
 
-  tests_bionic:
-    # Run all tests in bionic
+  tests_noble:
+    # Run all tests in noble
     docker:
-      - image: qrledger/qrl-docker-ci:bionic
+      - image: qrledger/qrl-docker-ci:noble
     environment:
       PYTHONPATH: /root/project
     steps:
@@ -63,7 +63,7 @@ jobs:
 
   tests_fastnet_long:
     docker:
-      - image: qrledger/qrl-docker-ci:bionic
+      - image: qrledger/qrl-docker-ci:noble
     environment:
       PYTHONPATH: /root/project
     steps:
@@ -143,7 +143,7 @@ jobs:
     # debugging job - this can be customize locally but it wont run in circleci
     # to run this, execute circleci build --job debug
     docker:
-      - image: qrledger/qrl-docker-ci:bionic
+      - image: qrledger/qrl-docker-ci:noble
     environment:
       PYTHONPATH: /root/project
     steps:
@@ -159,7 +159,7 @@ workflows:
   build_all:
     jobs:
       - build
-      - tests_bionic
+      - tests_noble
      # - tests_js
      # - tests_webstack
      # - tests_fuzzing
