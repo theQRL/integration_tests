@@ -10,6 +10,9 @@ jobs:
       - checkout
       - run: pip3 install -U -r requirements.txt
       - run: apt install -y python3-venv
+      # chmod and chown scripts in mocknet folder to current user
+      - run: chmod +x mocknet/*.sh
+      - run: chown -R $(whoami) mocknet/*.sh
       - run:
           name: Mocknet Tests
           command: pytest tests/python/mocknet
@@ -27,6 +30,8 @@ jobs:
     steps:
       - checkout
       - run: apt install -y python3-venv
+      - run: chmod +x mocknet/*.sh
+      - run: chown -R $(whoami) mocknet/*.sh
       - run: pip install -U -r requirements.txt
       - run:
           name: Mocknet Tests
@@ -101,6 +106,8 @@ jobs:
       - pyenv global 2.7.11 3.5.1
     steps:
       - checkout
+      - run: chmod +x mocknet/*.sh
+      - run: chown -R $(whoami) mocknet/*.sh
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       - run: sudo apt update -y
       - run: sudo apt install -y locales default-jre default-jdk python3 python3-pip netcat cpulimit bsdtar nodejs
