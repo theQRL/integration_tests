@@ -6,7 +6,7 @@ source ${BASH_SOURCE%/*}/set_env.sh
 
 echo
 export REPO_SLUG='jplomas/QRL'
-export REPO_BRANCH='master'
+export REPO_BRANCH='noble'
 
 # Clean up
 rm -rf ${VENV_PATH}
