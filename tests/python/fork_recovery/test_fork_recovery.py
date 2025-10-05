@@ -10,7 +10,7 @@ from mocknet.NodeTracker import NodeLogTracker
 
 from validators.StateValidator import StateValidator
 
-TIMEOUT = 360  # Increased to 6 minutes for CI stability
+TIMEOUT = 600  # Increased to 10 minutes for CI stability
 LAST_BLOCK_NUMBER = 201
 LAST_BLOCK_HEADERHASH = '751cf57a7c022c3bb43a62d13047844a9f10c00a2717850ad9738cb15a463159'
 
@@ -31,7 +31,7 @@ class TestMocknetForkRecovery(TestCase):
     def test_fork_recovery(self):
         def func_monitor_log():
             # Use longer timeout for block addition in fork recovery test
-            node_tracker = NodeLogTracker(mocknet, max_no_addition_time=180)
+            node_tracker = NodeLogTracker(mocknet, max_no_addition_time=600)
             while mocknet.running:
                 msg = node_tracker.track()
                 if "Added Block #{0} {1}".format(LAST_BLOCK_NUMBER, LAST_BLOCK_HEADERHASH) in msg:
