@@ -11,7 +11,7 @@ jobs:
       - run: pip3 install -U -r requirements.txt
       - run: apt install -y python3-venv
       # chmod and chown scripts in mocknet folder to current user
-      - run: chmod +x -R mocknet/
+      - run: chmod +x mocknet/*.sh
       - run: chown -R $(whoami) mocknet/
       - run:
           name: Mocknet Tests
@@ -30,8 +30,10 @@ jobs:
     steps:
       - checkout
       - run: apt install -y python3-venv
-      - run: chmod +x -R mocknet/
-      - run: chown -R $(whoami) mocknet/
+      - run: chmod +x mocknet/*.sh
+      - run: chown -R $(whoami) mocknet/*.sh
+      - run: chmod +x tests/python/fork_recovery/scripts/prepare_data.sh
+      - run: chown -R $(whoami) tests/python/fork_recovery/scripts/prepare_data.sh
       - run: pip install -U -r requirements.txt
       - run:
           name: Mocknet Tests
@@ -72,7 +74,7 @@ jobs:
       PYTHONPATH: /root/project
     steps:
       - checkout
-      - run: chmod +x -R mocknet/
+      - run: chmod +x mocknet/*.sh
       - run: chown -R $(whoami) mocknet/
       - run: git submodule update --init --recursive --remote
       - run: python3 -m pip install -U -r requirements.txt
@@ -104,7 +106,7 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: chmod +x -R mocknet/
+      - run: chmod +x mocknet/*.sh
       - run: chown -R $(whoami) mocknet/
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       - run: sudo apt update -y
