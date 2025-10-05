@@ -73,6 +73,8 @@ jobs:
       PYTHONPATH: /root/project
     steps:
       - checkout
+      - run: chmod +x -R mocknet/
+      - run: chown -R $(whoami) mocknet/
       - run: git submodule update --init --recursive --remote
       - run: python3 -m pip install -U -r requirements.txt
       - run:

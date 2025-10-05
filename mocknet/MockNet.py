@@ -121,7 +121,9 @@ class MockNet(object):
     def prepare_source(self):
         cmd = "{}/prepare_source.sh".format(self.this_dir)
         p = subprocess.Popen(cmd, shell=True)
-        p.wait()
+        return_code = p.wait()
+        if return_code != 0:
+            raise RuntimeError(f"prepare_source.sh failed with return code {return_code}")
 
     @property
     def running(self):
@@ -201,19 +203,56 @@ class MockNet(object):
             yaml.dump(config, stream=f, Dumper=yaml.Dumper)
 
         if not stop_event.is_set():
-            p = subprocess.Popen("{}/{} --qrldir {} {}".format(
+            node_cmd = "{}/{} --qrldir {} {}".format(
                 self.this_dir,
                 self.run_script,
                 node_data_dir,
-                self.node_args),
+                self.node_args)
+            
+            p = subprocess.Popen(node_cmd,
                 shell=True,
                 preexec_fn=os.setsid,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT)
+                stderr=subprocess.PIPE)  # Separate stderr for better error handling
 
             self.nodes_pids.put(p.pid)
+            
+            # Check if the process started successfully
+            # Wait a brief moment to see if it immediately exits due to permission/other errors
+            time.sleep(0.2)
+            if p.poll() is not None:
+                # Process has already exited, this is likely a failure
+                return_code = p.returncode
+                # Capture any error output
+                try:
+                    stdout, stderr = p.communicate(timeout=1)
+                    error_msg = f"Node {node_idx} failed to start. Command: {node_cmd}, Return code: {return_code}"
+                    if stderr:
+                        error_msg += f", stderr: {stderr.decode('utf-8', errors='ignore').strip()}"
+                    if stdout:
+                        error_msg += f", stdout: {stdout.decode('utf-8', errors='ignore').strip()}"
+                    raise RuntimeError(error_msg)
+                except subprocess.TimeoutExpired:
+                    p.kill()
+                    raise RuntimeError(f"Node {node_idx} failed to start. Command: {node_cmd}, Return code: {return_code}")
 
-            # Enqueue any output
+            # Enqueue any output (stdout and stderr)
+            import threading
+            def read_stderr():
+                try:
+                    for line in io.TextIOWrapper(p.stderr, encoding="utf-8"):
+                        s = "Node{:2} | [STDERR] {}".format(node_idx, line)
+                        if stop_event.is_set():
+                            break
+                        self.log_queue.put(s, block=False)
+                except:
+                    pass  # Ignore errors in stderr reading thread
+            
+            # Start stderr reading thread
+            stderr_thread = threading.Thread(target=read_stderr, daemon=True)
+            stderr_thread.start()
+            
+            # Read stdout in main thread
             for line in io.TextIOWrapper(p.stdout, encoding="utf-8"):
                 s = "Node{:2} | {}".format(node_idx, line)
                 if stop_event.is_set():
@@ -234,8 +273,17 @@ class MockNet(object):
             for node_idx in range(self.node_count):
                 if test_future.running():
                     MockNet.writeout('[Mocknet] launch node %d' % node_idx)
-                    self.nodes.append(self.pool.submit(self.start_node, node_idx, self.stop_event))
+                    node_future = self.pool.submit(self.start_node, node_idx, self.stop_event)
+                    self.nodes.append(node_future)
                     sleep(1)
+                    
+                    # Check if the node launch failed immediately
+                    if node_future.done():
+                        try:
+                            node_future.result()  # This will raise an exception if the node failed
+                        except Exception as e:
+                            self.writeout_error(f"Node {node_idx} failed to launch: {e}")
+                            raise RuntimeError(f"Node {node_idx} failed to launch") from e
             try:
                 remaining_time = self.timeout_secs - self.uptime
                 MockNet.writeout('[Mocknet] remaining time: %d' % remaining_time)
