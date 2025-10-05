@@ -24,6 +24,11 @@ protobuf>=4.21.0,<7.0.0
 PyYAML>=6.0,<7.0
 simplejson>=3.19.0,<4.0.0
 
+# Google APIs (needed for protobuf generated files)
+google-api-python-client>=2.100.0,<3.0.0
+google-auth>=2.23.0,<3.0.0
+httplib2>=0.22.0,<1.0.0
+
 # Web framework (if integration tests use Flask)
 Flask>=3.0.0,<4.0.0
 click>=8.1.0,<9.0.0
