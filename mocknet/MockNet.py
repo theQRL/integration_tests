@@ -290,7 +290,7 @@ class MockNet(object):
                 result = test_future.result(remaining_time)
             except concurrent.futures.TimeoutError:
                 self.writeout_error("TIMEOUT")
-                raise concurrent.futures.TimeoutError
+                raise
             except Exception:
                 self.writeout_error("Exception detected")
                 raise
