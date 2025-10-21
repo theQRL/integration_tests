@@ -4,12 +4,11 @@ jobs:
     # Test mocknet
     docker:
       - image: qrledger/qrl-docker-ci:noble
-    environment:
-      PYTHONPATH: /root/project
+    # environment:
+    #   PYTHONPATH: /root/project
     steps:
       - checkout
       - run: pip3 install -U -r requirements.txt
-      - run: apt install -y python3-venv
       # chmod and chown scripts in mocknet folder to current user
       - run: chmod +x mocknet/*.sh
       - run: chown -R $(whoami) mocknet/
@@ -25,11 +24,10 @@ jobs:
     # Run all tests in noble
     docker:
       - image: qrledger/qrl-docker-ci:noble
-    environment:
-      PYTHONPATH: /root/project
+    # environment:
+    #   PYTHONPATH: /root/project
     steps:
       - checkout
-      - run: apt install -y python3-venv
       - run: chmod +x mocknet/*.sh
       - run: chown -R $(whoami) mocknet/*.sh
       - run: chmod +x tests/python/fork_recovery/scripts/prepare_data.sh
@@ -70,8 +68,8 @@ jobs:
   tests_fastnet_long:
     docker:
       - image: qrledger/qrl-docker-ci:noble
-    environment:
-      PYTHONPATH: /root/project
+    # environment:
+    #   PYTHONPATH: /root/project
     steps:
       - checkout
       - run: chmod +x mocknet/*.sh
@@ -151,12 +149,11 @@ jobs:
     # to run this, execute circleci build --job debug
     docker:
       - image: qrledger/qrl-docker-ci:noble
-    environment:
-      PYTHONPATH: /root/project
+    # environment:
+    #   PYTHONPATH: /root/project
     steps:
       - checkout
       - run: pip install -U -r requirements.txt
-      - run: apt install -y python3-venv
       - run:
           name: Debugging -  Adjust accordingly
           command: pytest tests/python/fastnet
