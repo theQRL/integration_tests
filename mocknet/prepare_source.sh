@@ -5,7 +5,7 @@ source ${BASH_SOURCE%/*}/set_env.sh
 ###############
 
 echo
-export REPO_SLUG='jplomas/QRL'
+export REPO_SLUG='theQRL/QRL'
 export REPO_BRANCH='noble'
 
 # Clean up
