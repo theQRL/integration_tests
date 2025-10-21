@@ -4,7 +4,7 @@
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 TMP_PATH="$( cd ${SCRIPT_PATH}/../tmp ; pwd -P )"
 SOURCE_PATH=${TMP_PATH}/src
-VENV_PATH=${TMP_PATH}/venv
+# VENV_PATH=${TMP_PATH}/venv
 
 echo "SCRIPT_PATH    ${SCRIPT_PATH}"
 echo "TMP_PATH       ${TMP_PATH}"

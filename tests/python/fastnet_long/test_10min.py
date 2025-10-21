@@ -13,7 +13,8 @@ class TestMocknet10Min(TestCase):
 
     def test_launch_log_nodes(self):
         def func_monitor_log():
-            node_logtracker = NodeLogTracker(mocknet)
+            # Use longer timeout for block addition in 10-minute test (3 minutes)
+            node_logtracker = NodeLogTracker(mocknet, max_no_addition_time=180)
 
             while mocknet.uptime < 600:
                 node_logtracker.track()
