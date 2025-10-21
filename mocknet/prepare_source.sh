@@ -6,7 +6,7 @@ source ${BASH_SOURCE%/*}/set_env.sh
 
 echo
 export REPO_SLUG='jplomas/QRL'
-export REPO_BRANCH='noble'
+export REPO_BRANCH='noble-work-in-progress'
 
 if [ ! -z ${TESTINPLACE:-} ]; then
     rsync -qar . ${SOURCE_PATH} --exclude tests_integration # > /dev/null
