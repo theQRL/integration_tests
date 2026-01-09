@@ -5,7 +5,7 @@ SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 PROJECT_PATH=$(cd "${SCRIPT_PATH}/../../../../"; pwd)
 
 # Get Fork Testing Data
-git clone https://github.com/cyyber/testing_data --depth=1 ${PROJECT_PATH}/tmp/testing_data
+git clone https://github.com/theqrl/testing_data --depth=1 ${PROJECT_PATH}/tmp/testing_data
 
 ls ${PROJECT_PATH}/tmp
 ls ${PROJECT_PATH}/tmp/testing_data
