@@ -160,4 +160,8 @@ workflows:
      # - tests_js
      # - tests_webstack
      # - tests_fuzzing
-      - tests_fastnet_long
+      # tests_fastnet_long is not run on master: ten mining nodes on a 2 vCPU
+      # bionic-old container fork constantly, and the miner's logged traceback
+      # for a stale solution trips the test's abort trigger. It runs on the
+      # noble-work-in-progress branch instead.
+     # - tests_fastnet_long
