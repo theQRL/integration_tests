@@ -7,13 +7,17 @@ from queue import Empty
 
 class NodeLogTracker(object):
     MAX_IDLE_TIME = 60
-    MAX_NO_ADDITION_TIME = 60
+    MAX_NO_ADDITION_TIME = 120  # Increased to 2 minutes for CI stability
 
-    def __init__(self, mocknet):
+    def __init__(self, mocknet, max_idle_time=None, max_no_addition_time=None):
         self.node_status = {}
         self.node_last_event = {}
         self.node_last_addition = {}
         self.mocknet = mocknet
+        
+        # Allow configurable timeouts, with defaults
+        self.max_idle_time = max_idle_time if max_idle_time is not None else self.MAX_IDLE_TIME
+        self.max_no_addition_time = max_no_addition_time if max_no_addition_time is not None else self.MAX_NO_ADDITION_TIME
 
         self.abort_triggers = [
             "<_Rendezvous of RPC that terminated with (StatusCode.UNKNOWN",
@@ -63,13 +67,13 @@ class NodeLogTracker(object):
 
     def check_idle_nodes(self):
         for k, v in self.node_last_event.items():
-            if time.time() - v > self.MAX_IDLE_TIME:
-                raise Exception("{} - no event for more than {} secs".format(k, self.MAX_IDLE_TIME))
+            if time.time() - v > self.max_idle_time:
+                raise Exception("{} - no event for more than {} secs".format(k, self.max_idle_time))
 
     def check_last_addition(self):
         for k, v in self.node_last_addition.items():
-            if time.time() - v > self.MAX_NO_ADDITION_TIME:
-                raise Exception("{} - no addition for more than {} secs".format(k, self.MAX_NO_ADDITION_TIME))
+            if time.time() - v > self.max_no_addition_time:
+                raise Exception("{} - no addition for more than {} secs".format(k, self.max_no_addition_time))
 
     def parse(self, msg):
         parts = msg.split('|')

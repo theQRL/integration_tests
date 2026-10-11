@@ -1,9 +1,9 @@
-version: 2
+version: 2.1
 jobs:
   build:
     # Test mocknet
     docker:
-      - image: qrledger/qrl-docker-ci:bionic
+      - image: qrledger/qrl-docker-ci:bionic-old
     environment:
       PYTHONPATH: /root/project
     steps:
@@ -21,7 +21,7 @@ jobs:
   tests_bionic:
     # Run all tests in bionic
     docker:
-      - image: qrledger/qrl-docker-ci:bionic
+      - image: qrledger/qrl-docker-ci:bionic-old
     environment:
       PYTHONPATH: /root/project
     steps:
@@ -63,7 +63,7 @@ jobs:
 
   tests_fastnet_long:
     docker:
-      - image: qrledger/qrl-docker-ci:bionic
+      - image: qrledger/qrl-docker-ci:bionic-old
     environment:
       PYTHONPATH: /root/project
     steps:
@@ -96,9 +96,6 @@ jobs:
   tests_webstack:
     # Run full webstack integration tests (wallet and explorer)
     machine: true
-    pre:
-      - cat /etc/*release
-      - pyenv global 2.7.11 3.5.1
     steps:
       - checkout
       - run: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -143,7 +140,7 @@ jobs:
     # debugging job - this can be customize locally but it wont run in circleci
     # to run this, execute circleci build --job debug
     docker:
-      - image: qrledger/qrl-docker-ci:bionic
+      - image: qrledger/qrl-docker-ci:bionic-old
     environment:
       PYTHONPATH: /root/project
     steps:
